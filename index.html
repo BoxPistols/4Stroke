@@ -1,0 +1,494 @@
+
+<html>
+  <html lang="ja"></html>
+  <head>
+    <title>My Site - </title>
+    <style>@charset "UTF-8";
+@import "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css";
+@import url("https://fonts.googleapis.com/css2?family=Kaisei+Opti:wght@400;500&display=swap");
+:root {
+  --color1: #f92672;
+  --color2: #a6e22e;
+  --color3: #fd971f;
+  --color4: #66d9ef;
+  --color5: #ae81ff;
+  --color6: #e6db74;
+  --color7: #75715e;
+  --color8: #272822;
+  --white: whitesmoke;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: currentColor;
+  border-radius: 8px;
+}
+
+/*
+TODO:
+- 背景画像、半透明に https://codepen.io/TurkAysenur/pen/ZEpxeYm
+- logo
+- font
+- js化
+- React/Next
+- 各タイトルにスクロール
+*/
+* {
+  outline: none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  scroll-behavior: smooth;
+  font-family: "Kaisei Opti", serif;
+  display: flex;
+  padding: 1vh;
+  min-height: 100vh;
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+body:before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  background-image: linear-gradient(45deg, rgba(128, 0, 128, 0.82), rgba(0, 0, 255, 0.82)), url("https://picsum.photos/1200/800/?image=133");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+  -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
+  background-size: cover;
+  z-index: -1;
+}
+@media only screen and (max-height: 680px) {
+  body {
+    overflow-y: auto;
+  }
+}
+
+p {
+  margin: 0.1em 0 0.5em;
+  padding: 0;
+  line-height: 1.8;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  overflow: hidden;
+  -webkit-backdrop-filter: blur(2px);
+          backdrop-filter: blur(2px);
+  margin: auto 1vw;
+  padding: 1vh 1vw 1vh;
+  width: 98vw;
+  min-width: 98vw;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+@media only screen and (max-height: 780px) {
+  .container {
+    overflow-y: auto;
+  }
+}
+
+input.title {
+  height: 2em;
+  background: #fff2;
+  outline: none;
+  border: none;
+  color: #fff;
+  display: flex;
+  font-size: 1em;
+  padding: 0.2em 0.8em;
+  min-width: 30vw;
+  margin: auto 0;
+  border-radius: 1em;
+  border: 1px solid #f8f8ff;
+}
+
+header.header {
+  padding-left: 1vw;
+  position: fixed;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  left: 1vw;
+  top: 1vh;
+}
+
+h1 {
+  margin: 4px 0 8px;
+  line-height: 1.5;
+  font-size: 2.8em;
+  font-weight: 400;
+  margin: 0.15em 0.2em;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0ch;
+  line-height: 1;
+}
+
+.logo-s {
+  font-size: 1.6em;
+  letter-spacing: 0.1ch;
+  border-bottom: 1px solid silver;
+  line-height: 1.3;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#message {
+  left: 13vw;
+  font-size: 1em;
+  position: fixed;
+  top: 30px;
+  color: #f8f8f890;
+}
+
+h2,
+h3 {
+  font-weight: 400;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+  color: var(--white);
+  margin: 0.2em 0.2em;
+  letter-spacing: 0.05ch;
+}
+
+h3 {
+  color: var(--color5);
+  font-size: 1.5em;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  overflow: hidden;
+  -webkit-backdrop-filter: blur(2px);
+          backdrop-filter: blur(2px);
+  margin: auto 1vw;
+  padding: 1vh 1vw 1vh;
+  width: 98vw;
+  min-width: 98vw;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+@media only screen and (max-height: 780px) {
+  .container {
+    overflow-y: auto;
+  }
+}
+
+.org_text {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  border-radius: 8px;
+  overflow: auto;
+}
+
+.org_text .mol_text {
+  background: #0004;
+  border-radius: 6px;
+  padding: 1vh 1vw;
+  width: calc(100vw / 2 - 8vw);
+  margin: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.org_text .clear-area {
+  display: flex;
+  align-items: center;
+  margin: 8px;
+}
+.org_text input[type=button] {
+  background: #0005;
+  color: currentcolor;
+  border-color: currentcolor;
+}
+.org_text .mol_text:nth-child(1) h3,
+.org_text .mol_text:nth-child(1) textarea,
+.org_text .mol_text:nth-child(1) input[type=button] {
+  color: var(--color4);
+}
+.org_text .mol_text:nth-child(2) h3,
+.org_text .mol_text:nth-child(2) textarea,
+.org_text .mol_text:nth-child(2) input[type=button] {
+  color: var(--color2);
+  border-color: var(--color2);
+}
+.org_text .mol_text:nth-child(3) h3,
+.org_text .mol_text:nth-child(3) textarea,
+.org_text .mol_text:nth-child(3) input[type=button] {
+  color: var(--color3);
+  border-color: var(--color3);
+}
+.org_text .mol_text:nth-child(4) h3,
+.org_text .mol_text:nth-child(4) textarea,
+.org_text .mol_text:nth-child(4) input[type=button] {
+  color: var(--color1);
+  border-color: var(--color1);
+}
+
+textarea {
+  resize: none;
+  overflow: auto;
+  padding: 0.5ch;
+  font-size: 0.8em;
+  font-family: "Kaisei Opti", serif;
+  min-height: 8em;
+  width: 96%;
+  margin: auto;
+  justify-content: center;
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.4);
+  font-size: 1em;
+  border: 2px solid currentcolor !important;
+  border-radius: 8px;
+  transition: 0.15s;
+}
+textarea:hover {
+  border-color: white !important;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+textarea:focus, textarea:focus-visible {
+  border: 2px solid currentcolor !important;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+    </style>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"></script>
+    <script>// function disableScroll(event) {
+//  event.preventDefault();
+// }
+// // スクロール禁止
+// document.querySelectorAll("body").onclick = function () {
+//  // イベントと関数を紐付け
+//  document.addEventListener("touchmove", disableScroll, { passive: false });
+//  document.addEventListener("mousewheel", disableScroll, { passive: false });
+// };
+
+// $(function () {
+//  $(".mol_text").draggable();
+// });
+// if (localStorage.getItem("kioku" + num )) {};
+
+$(function () {
+ $(".org_text .mol_text").each(function (i) {
+  let num = $(".org_text .mol_text").index(this) + 1;
+  $("#kioku" + num).val(localStorage.getItem("kioku" + num));
+ });
+ // テーマの設定
+ $("#kioku-title1").val(localStorage.getItem("kioku-title1"));
+ $("#kioku-title2").val(localStorage.getItem("kioku-title2"));
+
+ $("input.clear").on("click", function () {
+  let i = $("input.clear").index(this) + 1;
+  console.log($(this).data("clear") + i + "が押された");
+
+  var retVal = confirm("消しマンボ?");
+  if (retVal == true) {
+   alert("闇に葬りマンボ...");
+   $("#kioku" + i).val("");
+   localStorage.removeItem("kioku" + i);
+   $("this").attr("disabled", true);
+   document.querySelector("#kioku" + i).value = "";
+   return true;
+  } else {
+   alert("やっぱやめとくわ");
+   return false;
+  }
+  localStorage.removeItem("kioku" + i);
+ });
+
+ $("textarea").on("keyup", function () {
+  let i = $("textarea").index(this) + 1;
+  localStorage.setItem("kioku" + i, $("#kioku" + i).val());
+  // console.log($(this).data('kioku') + i + 'が押された');
+  $("#message").fadeIn(300).fadeOut(300);
+ });
+
+ // テーマの設定
+
+ // $(".title").each(function (i) {
+ //  let num = $(".title").index(this) + 1;
+ //  $("#kioku-title" + num).val(localStorage.getItem("kioku-title" + num));
+ // });
+
+ $("input").on("keyup", function () {
+  // let j = $("input").index(this) + 1;
+  localStorage.setItem("kioku-title1", $("#kioku-title1").val());
+  localStorage.setItem("kioku-title2", $("#kioku-title2").val());
+ });
+ //  テーマEnd
+});
+
+// Scroll
+// https://sterfield.co.jp/designer/横スクロールを可能にできる「jquery-mousewheel」を使用して/
+$(function () {
+ // window.onwheel = (e) => (e.preventDefault = false);
+
+ //コンテンツの横サイズ
+ var cont = $(".container");
+ var contW = $(".container").outerWidth(true) * $("div", cont).length;
+
+ cont.css("width", contW);
+ //スクロールスピード
+ var speed = 10;
+ //マウスホイールで横移動
+ $("html").mousewheel(function (event, mov) {
+  //ie firefox
+  $(this).scrollLeft($(this).scrollLeft() - mov * speed);
+  //webkit
+  $("body").scrollLeft($("body").scrollLeft() - mov * speed);
+  // return false; //縦スクロール不可
+ });
+ // $("a[href^=#]").click(function () {
+ //  var speed = 400; // ミリ秒
+ //  var href = $(this).attr("href");
+ //  var target = $(href == "#" || href == "" ? "html" : href);
+ //  var position = target.offset().left; //targetの位置を取得
+ //  $("html, body").animate({ scrollLeft: position }, speed, "swing");
+ //  return false;
+ // });
+});
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
+<div class="run">
+  <div id="message" style="display: none">Save..</div>
+</div>
+<header class="header">
+  <h1>4</h1>
+  <div class="logo-s">Stroke</div><span id="message" style="display: none">Save</span>
+</header>
+<div class="container">
+  <h2>- A -</h2>
+  <input class="title event" id="kioku-title1" data-kioku="kioku-title1" name="kioku-title1" data-i="13" value="kioku-title1" autocomplete="off"/>
+  <div class="org_text">
+    <div class="mol_text">
+      <h3>Key</h3>
+      <textarea class="kioku1 event" id="kioku1" data-kioku="A" name="kioku1" data-i="1"></textarea>
+      <div class="clear-area">
+        <input class="clear" id="clear1" data-clear="clearA" type="button" value="Delete Key"/>
+      </div>
+    </div>
+    <div class="mol_text">
+      <h3>Issue</h3>
+      <textarea class="kioku2 event" id="kioku2" data-kioku="B" name="kioku2" data-i="2"></textarea>
+      <div class="clear-area">
+        <input class="clear" id="clear2" data-clear="clearB" type="button" value="Delete Issue"/>
+      </div>
+    </div>
+    <div class="mol_text">
+      <h3>Action</h3>
+      <textarea class="kioku3 event" id="kioku3" data-kioku="C" name="kioku3" data-i="3"></textarea>
+      <div class="clear-area">
+        <input class="clear" id="clear3" data-clear="clearC" type="button" value="Delete Action"/>
+      </div>
+    </div>
+    <div class="mol_text">
+      <h3>Publish</h3>
+      <textarea class="kioku4 event" id="kioku4" data-kioku="D" name="kioku4" data-i="4"></textarea>
+      <div class="clear-area">
+        <input class="clear" id="clear4" data-clear="clearD" type="button" value="Delete Publish"/>
+      </div>
+    </div>
+    <div class="run_bottom">
+      <p id="message2" style="display: none">AutoSave..</p>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <h2>- B -</h2>
+  <input class="title event" id="kioku-title2" data-kioku="kioku-title2" name="kioku-title2" data-i="14" value="kioku-title2" autocomplete="off"/>
+  <div class="org_text">
+    <div class="mol_text">
+      <h3>Key</h3>
+      <textarea class="kioku5 event" id="kioku5" data-kioku="B-A" name="kioku5" data-i="5"></textarea>
+      <div class="clear-area">
+        <input class="clear" id="clear5" data-clear="clearA" type="button" value="Delete Key"/>
+      </div>
+    </div>
+    <div class="mol_text">
+      <h3>Issue</h3>
+      <textarea class="kioku6 event" id="kioku6" data-kioku="B-B" name="kioku6" data-i="6"></textarea>
+      <div class="clear-area">
+        <input class="clear" id="clear6" data-clear="clearB" type="button" value="Delete Issue"/>
+      </div>
+    </div>
+    <div class="mol_text">
+      <h3>Action</h3>
+      <textarea class="kioku7 event" id="kioku7" data-kioku="B-C" name="kioku7" data-i="7"></textarea>
+      <div class="clear-area">
+        <input class="clear" id="clear7" data-clear="clearC" type="button" value="Delete Action"/>
+      </div>
+    </div>
+    <div class="mol_text">
+      <h3>Publish</h3>
+      <textarea class="kioku8 event" id="kioku8" data-kioku="B-D" name="kioku8" data-i="8"></textarea>
+      <div class="clear-area">
+        <input class="clear" id="clear8" data-clear="clearD" type="button" value="Delete Publish"/>
+      </div>
+    </div>
+    <div id="MissionB"></div>
+    <div class="run_bottom">
+      <p id="message2" style="display: none">AutoSave..</p>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <h2>- C -</h2>
+  <input class="title event" id="kioku-title3" data-kioku="kioku-title3" name="kioku-title3" data-i="15" value="kioku-title3" autocomplete="off"/>
+  <div class="org_text">
+    <div class="mol_text">
+      <h3>Key</h3>
+      <textarea class="kioku9 event" id="kioku9" data-kioku="C-A" name="kioku9" data-i="9"></textarea>
+      <div class="clear-area">
+        <input class="clear" id="clear9" data-clear="clearA" type="button" value="Delete Key"/>
+      </div>
+    </div>
+    <div class="mol_text">
+      <h3>Issue</h3>
+      <textarea class="kioku10 event" id="kioku10" data-kioku="C-B" name="kioku10" data-i="10"></textarea>
+      <div class="clear-area">
+        <input class="clear" id="clear10" data-clear="clearB" type="button" value="Delete Issue"/>
+      </div>
+    </div>
+    <div class="mol_text">
+      <h3>Action</h3>
+      <textarea class="kioku11 event" id="kioku11" data-kioku="C-C" name="kioku11" data-i="11"></textarea>
+      <div class="clear-area">
+        <input class="clear" id="clear11" data-clear="clearC" type="button" value="Delete Action"/>
+      </div>
+    </div>
+    <div class="mol_text">
+      <h3>Publish</h3>
+      <textarea class="kioku12 event" id="kioku12" data-kioku="C-D" name="kioku12" data-i="12"></textarea>
+      <div class="clear-area">
+        <input class="clear" id="clear12" data-clear="clearD" type="button" value="Delete Publish"/>
+      </div>
+    </div>
+  </div>
+</div>

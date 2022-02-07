@@ -1,0 +1,13 @@
+html
+  head
+    title My Site - #{title}
+    block scripts
+    style
+      include ../styles/style.processed.css     
+    script(src='https://code.jquery.com/jquery-3.2.1.min.js')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js')
+    script
+      include ../app.js
+  body
+    block content 
+    
