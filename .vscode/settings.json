@@ -1,9 +1,4 @@
 {
-  "workbench.colorCustomizations": {
-    "activityBar.background": "#262660",
-    "titleBar.activeBackground": "#353687",
-    "titleBar.activeForeground": "#FAFAFD"
-  },
   "files.autoSave": "afterDelay",
   "html.format.wrapAttributes": "preserve"
 }

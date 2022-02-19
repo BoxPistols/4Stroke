@@ -14,6 +14,7 @@
 // if (localStorage.getItem("kioku" + num )) {};
 
 $(function () {
+
   $(".org_text .mol_text").each(function (i) {
     let num = $(".org_text .mol_text").index(this) + 1;
     $("#kioku" + num).val(localStorage.getItem("kioku" + num));
