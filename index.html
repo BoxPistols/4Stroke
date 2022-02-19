@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>4Stroke - </title>
+  <title>4Stroke</title>
   <style>@charset "UTF-8";
 @import "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css";
 @import url("https://fonts.googleapis.com/css2?family=Kaisei+Opti:wght@400;500&display=swap");
@@ -90,25 +90,8 @@ p {
   line-height: 1.8;
 }
 
-.container {
+.garages {
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  overflow: hidden;
-  -webkit-backdrop-filter: blur(2px);
-          backdrop-filter: blur(2px);
-  margin: auto 1vw;
-  padding: 1vh 1vw 1vh;
-  width: 98vw;
-  min-width: 98vw;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-}
-@media only screen and (max-height: 780px) {
-  .container {
-    overflow-y: auto;
-  }
 }
 
 input.title {
@@ -179,10 +162,7 @@ h3 {
 }
 
 .container {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  overflow: hidden;
+  overflow: auto;
   -webkit-backdrop-filter: blur(2px);
           backdrop-filter: blur(2px);
   margin: auto 1vw;
@@ -195,7 +175,7 @@ h3 {
 }
 @media only screen and (max-height: 780px) {
   .container {
-    overflow-y: auto;
+    overflow: auto;
   }
 }
 
@@ -291,17 +271,17 @@ textarea:focus, textarea:focus-visible {
 // $(function () {
 //  $(".mol_text").draggable();
 // });
-// if (localStorage.getItem("kioku" + num )) {};
+// if (localStorage.getItem("stroke" + num )) {};
 
 $(function () {
   $(".org_text .mol_text").each(function (i) {
     let num = $(".org_text .mol_text").index(this) + 1;
-    $("#kioku" + num).val(localStorage.getItem("kioku" + num));
+    $("#stroke" + num).val(localStorage.getItem("stroke" + num));
   });
   // テーマの設定
-  $("#kioku-title1").val(localStorage.getItem("kioku-title1"));
-  $("#kioku-title2").val(localStorage.getItem("kioku-title2"));
-  $("#kioku-title3").val(localStorage.getItem("kioku-title3"));
+  $("#stroke-title1").val(localStorage.getItem("stroke-title1"));
+  $("#stroke-title5").val(localStorage.getItem("stroke-title5"));
+  $("#stroke-title3").val(localStorage.getItem("stroke-title3"));
 
   $("input.clear").on("click", function () {
     let i = $("input.clear").index(this) + 1;
@@ -310,22 +290,22 @@ $(function () {
     var retVal = confirm("消しマンボ?");
     if(retVal == true) {
       alert("闇に葬りマンボ...");
-      $("#kioku" + i).val("");
-      localStorage.removeItem("kioku" + i);
+      $("#stroke" + i).val("");
+      localStorage.removeItem("stroke" + i);
       $("this").attr("disabled", true);
-      document.querySelector("#kioku" + i).value = "";
+      document.querySelector("#stroke" + i).value = "";
       return true;
     } else {
       alert("やっぱやめとくわ");
       return false;
     }
-    localStorage.removeItem("kioku" + i);
+    localStorage.removeItem("stroke" + i);
   });
 
   $("textarea").on("keyup", function () {
     let i = $("textarea").index(this) + 1;
-    localStorage.setItem("kioku" + i, $("#kioku" + i).val());
-    // console.log($(this).data('kioku') + i + 'が押された');
+    localStorage.setItem("stroke" + i, $("#stroke" + i).val());
+    // console.log($(this).data('stroke') + i + 'が押された');
     $("#message").fadeIn(300).fadeOut(300);
   });
 
@@ -333,15 +313,15 @@ $(function () {
 
   // $(".title").each(function (i) {
   //  let num = $(".title").index(this) + 1;
-  //  $("#kioku-title" + num).val(localStorage.getItem("kioku-title" + num));
+  //  $("#stroke-title" + num).val(localStorage.getItem("stroke-title" + num));
   // });
 
 
   $("input").on("keyup", function () {
     // let j = $("input").index(this) + 1;
-    localStorage.setItem("kioku-title1", $("#kioku-title1").val());
-    localStorage.setItem("kioku-title2", $("#kioku-title2").val());
-    localStorage.setItem("kioku-title3", $("#kioku-title3").val());
+    localStorage.setItem("stroke-title1", $("#stroke-title1").val());
+    localStorage.setItem("stroke-title5", $("#stroke-title5").val());
+    localStorage.setItem("stroke-title3", $("#stroke-title3").val());
   });
   //  テーマEnd
 });
@@ -352,8 +332,8 @@ $(function () {
   // window.onwheel = (e) => (e.preventDefault = false);
 
   //コンテンツの横サイズ
-  var cont = $(".container");
-  var contW = $(".container").outerWidth(true) * $("div", cont).length;
+  var cont = $(".garages");
+  var contW = $(".garages").outerWidth(true) * $("div", cont).length;
 
   cont.css("width", contW);
   //スクロールスピード
@@ -378,8 +358,7 @@ $(function () {
 
   </script>
 </head>
-<body>
-</body>
+<body></body>
 <div class="run">
   <div id="message" style="display: none">Save..</div>
 </div>
@@ -387,111 +366,77 @@ $(function () {
   <h1>4</h1>
   <div class="logo-s">Stroke</div><span id="message" style="display: none">Save</span>
 </header>
-<div class="container">
-  <h2>- A -</h2>
-  <input class="title event" id="kioku-title1" data-kioku="kioku-title1" name="kioku-title1" data-i="13" value="kioku-title1" autocomplete="off">
-  <div class="org_text">
-    <div class="mol_text">
-      <h3>Key</h3>
-      <textarea class="kioku1 event" id="kioku1" data-kioku="A" name="kioku1" data-i="1"></textarea>
-      <div class="clear-area">
-        <input class="clear" id="clear1" data-clear="clearA" type="button" value="Delete Key">
-      </div>
-    </div>
-    <div class="mol_text">
-      <h3>Issue</h3>
-      <textarea class="kioku2 event" id="kioku2" data-kioku="B" name="kioku2" data-i="2"></textarea>
-      <div class="clear-area">
-        <input class="clear" id="clear2" data-clear="clearB" type="button" value="Delete Issue">
-      </div>
-    </div>
-    <div class="mol_text">
-      <h3>Action</h3>
-      <textarea class="kioku3 event" id="kioku3" data-kioku="C" name="kioku3" data-i="3"></textarea>
-      <div class="clear-area">
-        <input class="clear" id="clear3" data-clear="clearC" type="button" value="Delete Action">
-      </div>
-    </div>
-    <div class="mol_text">
-      <h3>Publish</h3>
-      <textarea class="kioku4 event" id="kioku4" data-kioku="D" name="kioku4" data-i="4"></textarea>
-      <div class="clear-area">
-        <input class="clear" id="clear4" data-clear="clearD" type="button" value="Delete Publish">
-      </div>
-    </div>
-    <div class="run_bottom">
-      <p id="message2" style="display: none">AutoSave..</p>
-    </div>
-  </div>
+<div class="run_bottom">
+  <p id="message2" style="display: none">AutoSave..</p>
 </div>
 <div class="container">
-  <h2>- B -</h2>
-  <input class="title event" id="kioku-title2" data-kioku="kioku-title2" name="kioku-title2" data-i="14" value="kioku-title2" autocomplete="off">
-  <div class="org_text">
-    <div class="mol_text">
-      <h3>Key</h3>
-      <textarea class="kioku5 event" id="kioku5" data-kioku="B-A" name="kioku5" data-i="5"></textarea>
-      <div class="clear-area">
-        <input class="clear" id="clear5" data-clear="clearA" type="button" value="Delete Key">
+  <div class="garages"> 
+    <div class="garage">
+      <h2>A</h2>
+      <input class="title event" id="stroke-title1" data-stroke="stroke-title1" name="stroke-title1" value="stroke-title1" autocomplete="off" data-i="1">
+      <div class="org_text">
+        <div class="mol_text">
+          <h3>Key</h3>
+          <textarea class="stroke1 event" id="stroke1" name="stroke1" data-i="1" data-stroke="A"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear1" data-clear="clearA" type="button" value="Delete Key">
+          </div>
+        </div>
+        <div class="mol_text">
+          <h3>Issue</h3>
+          <textarea class="stroke2 event" id="stroke2" name="stroke2" data-i="2" data-stroke="B"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear2" data-clear="clearB" type="button" value="Delete Key">
+          </div>
+        </div>
+        <div class="mol_text">
+          <h3>Action</h3>
+          <textarea class="stroke3 event" id="stroke3" name="stroke3" data-i="3" data-stroke="C"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear3" data-clear="clearC" type="button" value="Delete Key">
+          </div>
+        </div>
+        <div class="mol_text">
+          <h3>Publish</h3>
+          <textarea class="stroke4 event" id="stroke4" name="stroke4" data-i="4" data-stroke="D"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear4" data-clear="clearD" type="button" value="Delete Key">
+          </div>
+        </div>
       </div>
     </div>
-    <div class="mol_text">
-      <h3>Issue</h3>
-      <textarea class="kioku6 event" id="kioku6" data-kioku="B-B" name="kioku6" data-i="6"></textarea>
-      <div class="clear-area">
-        <input class="clear" id="clear6" data-clear="clearB" type="button" value="Delete Issue">
-      </div>
-    </div>
-    <div class="mol_text">
-      <h3>Action</h3>
-      <textarea class="kioku7 event" id="kioku7" data-kioku="B-C" name="kioku7" data-i="7"></textarea>
-      <div class="clear-area">
-        <input class="clear" id="clear7" data-clear="clearC" type="button" value="Delete Action">
-      </div>
-    </div>
-    <div class="mol_text">
-      <h3>Publish</h3>
-      <textarea class="kioku8 event" id="kioku8" data-kioku="B-D" name="kioku8" data-i="8"></textarea>
-      <div class="clear-area">
-        <input class="clear" id="clear8" data-clear="clearD" type="button" value="Delete Publish">
-      </div>
-    </div>
-    <div id="MissionB"></div>
-    <div class="run_bottom">
-      <p id="message2" style="display: none">AutoSave..</p>
-    </div>
-  </div>
-</div>
-<div class="container">
-  <h2>- C -</h2>
-  <input class="title event" id="kioku-title3" data-kioku="kioku-title3" name="kioku-title3" data-i="15" value="kioku-title3" autocomplete="off">
-  <div class="org_text">
-    <div class="mol_text">
-      <h3>Key</h3>
-      <textarea class="kioku9 event" id="kioku9" data-kioku="C-A" name="kioku9" data-i="9"></textarea>
-      <div class="clear-area">
-        <input class="clear" id="clear9" data-clear="clearA" type="button" value="Delete Key">
-      </div>
-    </div>
-    <div class="mol_text">
-      <h3>Issue</h3>
-      <textarea class="kioku10 event" id="kioku10" data-kioku="C-B" name="kioku10" data-i="10"></textarea>
-      <div class="clear-area">
-        <input class="clear" id="clear10" data-clear="clearB" type="button" value="Delete Issue">
-      </div>
-    </div>
-    <div class="mol_text">
-      <h3>Action</h3>
-      <textarea class="kioku11 event" id="kioku11" data-kioku="C-C" name="kioku11" data-i="11"></textarea>
-      <div class="clear-area">
-        <input class="clear" id="clear11" data-clear="clearC" type="button" value="Delete Action">
-      </div>
-    </div>
-    <div class="mol_text">
-      <h3>Publish</h3>
-      <textarea class="kioku12 event" id="kioku12" data-kioku="C-D" name="kioku12" data-i="12"></textarea>
-      <div class="clear-area">
-        <input class="clear" id="clear12" data-clear="clearD" type="button" value="Delete Publish">
+    <div class="garage">
+      <h2>B</h2>
+      <input class="title event" id="stroke-title5" data-stroke="stroke-title5" name="stroke-title5" value="stroke-title5" autocomplete="off" data-i="5">
+      <div class="org_text">
+        <div class="mol_text">
+          <h3>Key</h3>
+          <textarea class="stroke5 event" id="stroke5" name="stroke5" data-i="5" data-stroke="A"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear5" data-clear="clearA" type="button" value="Delete Key">
+          </div>
+        </div>
+        <div class="mol_text">
+          <h3>Issue</h3>
+          <textarea class="stroke6 event" id="stroke6" name="stroke6" data-i="6" data-stroke="B"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear6" data-clear="clearB" type="button" value="Delete Key">
+          </div>
+        </div>
+        <div class="mol_text">
+          <h3>Action</h3>
+          <textarea class="stroke7 event" id="stroke7" name="stroke7" data-i="7" data-stroke="C"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear7" data-clear="clearC" type="button" value="Delete Key">
+          </div>
+        </div>
+        <div class="mol_text">
+          <h3>Publish</h3>
+          <textarea class="stroke8 event" id="stroke8" name="stroke8" data-i="8" data-stroke="D"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear8" data-clear="clearD" type="button" value="Delete Key">
+          </div>
+        </div>
       </div>
     </div>
   </div>

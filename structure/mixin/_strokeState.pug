@@ -1,0 +1,6 @@
+mixin StrokeState(_stateTitle, _num, _titleName)
+  .mol_text
+    h3= _stateTitle
+    textarea(id="stroke"+_num, class="stroke"+_num, name="stroke"+_num, data-i=_num, data-stroke=_titleName).event
+    div.clear-area
+      input(id="clear"+_num).clear(data-clear="clear"+_titleName, type="button", value="Delete Key")

@@ -83,25 +83,8 @@ p {
   line-height: 1.8;
 }
 
-.container {
+.garages {
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  overflow: hidden;
-  -webkit-backdrop-filter: blur(2px);
-          backdrop-filter: blur(2px);
-  margin: auto 1vw;
-  padding: 1vh 1vw 1vh;
-  width: 98vw;
-  min-width: 98vw;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-}
-@media only screen and (max-height: 780px) {
-  .container {
-    overflow-y: auto;
-  }
 }
 
 input.title {
@@ -172,10 +155,7 @@ h3 {
 }
 
 .container {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  overflow: hidden;
+  overflow: auto;
   -webkit-backdrop-filter: blur(2px);
           backdrop-filter: blur(2px);
   margin: auto 1vw;
@@ -188,7 +168,7 @@ h3 {
 }
 @media only screen and (max-height: 780px) {
   .container {
-    overflow-y: auto;
+    overflow: auto;
   }
 }
 

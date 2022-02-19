@@ -1,0 +1,22 @@
+include _strokeState.pug
+
+mixin Strokes(_titleName, _num)
+  .garage
+    h2= _titleName
+    input(id="stroke-title"+_num).title.event(
+      data-stroke="stroke-title" + _num,
+      name="stroke-title" + _num,
+      value="stroke-title" + _num    
+      autocomplete="off"
+      data-i= _num,
+    )
+
+    .org_text
+      //- Loop State
+      + StrokeState("Key", _num, "A")
+      + StrokeState("Issue", parseInt(_num + 1) , "B")
+      + StrokeState("Action", parseInt(_num + 2), "C")
+      + StrokeState("Publish", parseInt(_num + 3), "D")
+
+.run_bottom
+  p#message2(style="display: none") AutoSave..

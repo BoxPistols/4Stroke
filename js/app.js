@@ -11,17 +11,17 @@
 // $(function () {
 //  $(".mol_text").draggable();
 // });
-// if (localStorage.getItem("kioku" + num )) {};
+// if (localStorage.getItem("stroke" + num )) {};
 
 $(function () {
   $(".org_text .mol_text").each(function (i) {
     let num = $(".org_text .mol_text").index(this) + 1;
-    $("#kioku" + num).val(localStorage.getItem("kioku" + num));
+    $("#stroke" + num).val(localStorage.getItem("stroke" + num));
   });
   // テーマの設定
-  $("#kioku-title1").val(localStorage.getItem("kioku-title1"));
-  $("#kioku-title2").val(localStorage.getItem("kioku-title2"));
-  $("#kioku-title3").val(localStorage.getItem("kioku-title3"));
+  $("#stroke-title1").val(localStorage.getItem("stroke-title1"));
+  $("#stroke-title5").val(localStorage.getItem("stroke-title5"));
+  $("#stroke-title3").val(localStorage.getItem("stroke-title3"));
 
   $("input.clear").on("click", function () {
     let i = $("input.clear").index(this) + 1;
@@ -30,22 +30,22 @@ $(function () {
     var retVal = confirm("消しマンボ?");
     if(retVal == true) {
       alert("闇に葬りマンボ...");
-      $("#kioku" + i).val("");
-      localStorage.removeItem("kioku" + i);
+      $("#stroke" + i).val("");
+      localStorage.removeItem("stroke" + i);
       $("this").attr("disabled", true);
-      document.querySelector("#kioku" + i).value = "";
+      document.querySelector("#stroke" + i).value = "";
       return true;
     } else {
       alert("やっぱやめとくわ");
       return false;
     }
-    localStorage.removeItem("kioku" + i);
+    localStorage.removeItem("stroke" + i);
   });
 
   $("textarea").on("keyup", function () {
     let i = $("textarea").index(this) + 1;
-    localStorage.setItem("kioku" + i, $("#kioku" + i).val());
-    // console.log($(this).data('kioku') + i + 'が押された');
+    localStorage.setItem("stroke" + i, $("#stroke" + i).val());
+    // console.log($(this).data('stroke') + i + 'が押された');
     $("#message").fadeIn(300).fadeOut(300);
   });
 
@@ -53,15 +53,15 @@ $(function () {
 
   // $(".title").each(function (i) {
   //  let num = $(".title").index(this) + 1;
-  //  $("#kioku-title" + num).val(localStorage.getItem("kioku-title" + num));
+  //  $("#stroke-title" + num).val(localStorage.getItem("stroke-title" + num));
   // });
 
 
   $("input").on("keyup", function () {
     // let j = $("input").index(this) + 1;
-    localStorage.setItem("kioku-title1", $("#kioku-title1").val());
-    localStorage.setItem("kioku-title2", $("#kioku-title2").val());
-    localStorage.setItem("kioku-title3", $("#kioku-title3").val());
+    localStorage.setItem("stroke-title1", $("#stroke-title1").val());
+    localStorage.setItem("stroke-title5", $("#stroke-title5").val());
+    localStorage.setItem("stroke-title3", $("#stroke-title3").val());
   });
   //  テーマEnd
 });
@@ -72,8 +72,8 @@ $(function () {
   // window.onwheel = (e) => (e.preventDefault = false);
 
   //コンテンツの横サイズ
-  var cont = $(".container");
-  var contW = $(".container").outerWidth(true) * $("div", cont).length;
+  var cont = $(".garages");
+  var contW = $(".garages").outerWidth(true) * $("div", cont).length;
 
   cont.css("width", contW);
   //スクロールスピード

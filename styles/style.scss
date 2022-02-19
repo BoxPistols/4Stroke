@@ -3,14 +3,16 @@
 
 .container {
   // overflow: hidden;
-  display: flex;
-  justify-content: center;
+  // display: flex;
+  // justify-content: center;
   // align-items: center;
-  flex-wrap: wrap;
+  // flex-wrap: wrap;
 
-  overflow: hidden;
+  // overflow: hidden;
+  overflow: auto;
   @media only screen and (max-height: 780px) {
-    overflow-y: auto;
+    // overflow-y: auto;
+    overflow: auto;
   }
 
 
