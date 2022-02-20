@@ -19,7 +19,7 @@
   display: flex;
   padding: 1vh 2vw;
 
-  .org_text {
+  .garage-strokes {
     display: grid;
     grid-template-columns: repeat(2, auto);
     border-radius: 8px;
@@ -27,7 +27,7 @@
   }
 
   //===== Input Text
-  .org_text .mol_text {
+  .garage-strokes .mol_text {
     background: #0004;
     border-radius: 6px;
     // border: 1px solid rgba(#999, 40%);
@@ -40,7 +40,7 @@
 
   $c4: var(--color4);
 
-  .org_text {
+  .garage-strokes {
     // Delete Button
     .clear-area {
       display: flex;
@@ -120,7 +120,7 @@
 }
 // ===== Media
 // @media only screen and (max-width: 640px) {
-//  .org_text .mol_text {
+//  .garage-strokes .mol_text {
 //   flex-wrap: wrap;
 //   width: 94%;
 //  }

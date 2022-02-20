@@ -162,13 +162,13 @@ h3 {
   display: flex;
   padding: 1vh 2vw;
 }
-.garages .org_text {
+.garages .garage-strokes {
   display: grid;
   grid-template-columns: repeat(2, auto);
   border-radius: 8px;
   overflow: auto;
 }
-.garages .org_text .mol_text {
+.garages .garage-strokes .mol_text {
   background: #0004;
   border-radius: 6px;
   padding: 1vh 1vw;
@@ -176,36 +176,36 @@ h3 {
   margin: 4px;
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
-.garages .org_text .clear-area {
+.garages .garage-strokes .clear-area {
   display: flex;
   align-items: center;
   margin: 8px 1vw;
 }
-.garages .org_text input[type=button] {
+.garages .garage-strokes input[type=button] {
   background: #0005;
   color: currentcolor;
   border-color: currentcolor;
 }
-.garages .org_text .mol_text:nth-child(1) h3,
-.garages .org_text .mol_text:nth-child(1) textarea,
-.garages .org_text .mol_text:nth-child(1) input[type=button] {
+.garages .garage-strokes .mol_text:nth-child(1) h3,
+.garages .garage-strokes .mol_text:nth-child(1) textarea,
+.garages .garage-strokes .mol_text:nth-child(1) input[type=button] {
   color: var(--color4);
 }
-.garages .org_text .mol_text:nth-child(2) h3,
-.garages .org_text .mol_text:nth-child(2) textarea,
-.garages .org_text .mol_text:nth-child(2) input[type=button] {
+.garages .garage-strokes .mol_text:nth-child(2) h3,
+.garages .garage-strokes .mol_text:nth-child(2) textarea,
+.garages .garage-strokes .mol_text:nth-child(2) input[type=button] {
   color: var(--color2);
   border-color: var(--color2);
 }
-.garages .org_text .mol_text:nth-child(3) h3,
-.garages .org_text .mol_text:nth-child(3) textarea,
-.garages .org_text .mol_text:nth-child(3) input[type=button] {
+.garages .garage-strokes .mol_text:nth-child(3) h3,
+.garages .garage-strokes .mol_text:nth-child(3) textarea,
+.garages .garage-strokes .mol_text:nth-child(3) input[type=button] {
   color: var(--color3);
   border-color: var(--color3);
 }
-.garages .org_text .mol_text:nth-child(4) h3,
-.garages .org_text .mol_text:nth-child(4) textarea,
-.garages .org_text .mol_text:nth-child(4) input[type=button] {
+.garages .garage-strokes .mol_text:nth-child(4) h3,
+.garages .garage-strokes .mol_text:nth-child(4) textarea,
+.garages .garage-strokes .mol_text:nth-child(4) input[type=button] {
   color: var(--color1);
   border-color: var(--color1);
 }

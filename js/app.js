@@ -1,7 +1,7 @@
 $(function () {
   // メモ入力欄の設定　LocalStorageの取得
-  $(".org_text .mol_text").each(function (i) {
-    let num = $(".org_text .mol_text").index(this) + 1;
+  $(".garage-strokes .mol_text").each(function (i) {
+    let num = $(".garage-strokes .mol_text").index(this) + 1;
     $("#stroke" + num).val(localStorage.getItem("stroke" + num));
   });
   // タイトルの設定　LocalStorageの取得

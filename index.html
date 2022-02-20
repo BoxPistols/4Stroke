@@ -169,13 +169,13 @@ h3 {
   display: flex;
   padding: 1vh 2vw;
 }
-.garages .org_text {
+.garages .garage-strokes {
   display: grid;
   grid-template-columns: repeat(2, auto);
   border-radius: 8px;
   overflow: auto;
 }
-.garages .org_text .mol_text {
+.garages .garage-strokes .mol_text {
   background: #0004;
   border-radius: 6px;
   padding: 1vh 1vw;
@@ -183,36 +183,36 @@ h3 {
   margin: 4px;
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
-.garages .org_text .clear-area {
+.garages .garage-strokes .clear-area {
   display: flex;
   align-items: center;
   margin: 8px 1vw;
 }
-.garages .org_text input[type=button] {
+.garages .garage-strokes input[type=button] {
   background: #0005;
   color: currentcolor;
   border-color: currentcolor;
 }
-.garages .org_text .mol_text:nth-child(1) h3,
-.garages .org_text .mol_text:nth-child(1) textarea,
-.garages .org_text .mol_text:nth-child(1) input[type=button] {
+.garages .garage-strokes .mol_text:nth-child(1) h3,
+.garages .garage-strokes .mol_text:nth-child(1) textarea,
+.garages .garage-strokes .mol_text:nth-child(1) input[type=button] {
   color: var(--color4);
 }
-.garages .org_text .mol_text:nth-child(2) h3,
-.garages .org_text .mol_text:nth-child(2) textarea,
-.garages .org_text .mol_text:nth-child(2) input[type=button] {
+.garages .garage-strokes .mol_text:nth-child(2) h3,
+.garages .garage-strokes .mol_text:nth-child(2) textarea,
+.garages .garage-strokes .mol_text:nth-child(2) input[type=button] {
   color: var(--color2);
   border-color: var(--color2);
 }
-.garages .org_text .mol_text:nth-child(3) h3,
-.garages .org_text .mol_text:nth-child(3) textarea,
-.garages .org_text .mol_text:nth-child(3) input[type=button] {
+.garages .garage-strokes .mol_text:nth-child(3) h3,
+.garages .garage-strokes .mol_text:nth-child(3) textarea,
+.garages .garage-strokes .mol_text:nth-child(3) input[type=button] {
   color: var(--color3);
   border-color: var(--color3);
 }
-.garages .org_text .mol_text:nth-child(4) h3,
-.garages .org_text .mol_text:nth-child(4) textarea,
-.garages .org_text .mol_text:nth-child(4) input[type=button] {
+.garages .garage-strokes .mol_text:nth-child(4) h3,
+.garages .garage-strokes .mol_text:nth-child(4) textarea,
+.garages .garage-strokes .mol_text:nth-child(4) input[type=button] {
   color: var(--color1);
   border-color: var(--color1);
 }
@@ -246,8 +246,8 @@ h3 {
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"></script>
   <script>$(function () {
   // メモ入力欄の設定　LocalStorageの取得
-  $(".org_text .mol_text").each(function (i) {
-    let num = $(".org_text .mol_text").index(this) + 1;
+  $(".garage-strokes .mol_text").each(function (i) {
+    let num = $(".garage-strokes .mol_text").index(this) + 1;
     $("#stroke" + num).val(localStorage.getItem("stroke" + num));
   });
   // タイトルの設定　LocalStorageの取得
@@ -339,7 +339,7 @@ $(function () {
     <div class="garage">
       <h2>A</h2>
       <input class="stroke-title1 title event" data-stroke="stroke-title1" name="stroke-title1" value="stroke-title1" autocomplete="off" data-i="1">
-      <div class="org_text">
+      <div class="garage-strokes">
         <div class="mol_text">
           <h3>Key</h3>
           <textarea class="stroke1 event" id="stroke1" name="stroke1" data-i="1" data-stroke="A"></textarea>
@@ -373,7 +373,7 @@ $(function () {
     <div class="garage">
       <h2>B</h2>
       <input class="stroke-title2 title event" data-stroke="stroke-title2" name="stroke-title2" value="stroke-title2" autocomplete="off" data-i="5">
-      <div class="org_text">
+      <div class="garage-strokes">
         <div class="mol_text">
           <h3>Key</h3>
           <textarea class="stroke5 event" id="stroke5" name="stroke5" data-i="5" data-stroke="A"></textarea>
@@ -407,7 +407,7 @@ $(function () {
     <div class="garage">
       <h2>C</h2>
       <input class="stroke-title3 title event" data-stroke="stroke-title3" name="stroke-title3" value="stroke-title3" autocomplete="off" data-i="9">
-      <div class="org_text">
+      <div class="garage-strokes">
         <div class="mol_text">
           <h3>Key</h3>
           <textarea class="stroke9 event" id="stroke9" name="stroke9" data-i="9" data-stroke="A"></textarea>
@@ -434,6 +434,40 @@ $(function () {
           <textarea class="stroke12 event" id="stroke12" name="stroke12" data-i="12" data-stroke="D"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear12" data-clear="clearD" type="button" value="Delete Key">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="garage">
+      <h2>D</h2>
+      <input class="stroke-title4 title event" data-stroke="stroke-title4" name="stroke-title4" value="stroke-title4" autocomplete="off" data-i="13">
+      <div class="garage-strokes">
+        <div class="mol_text">
+          <h3>Key</h3>
+          <textarea class="stroke13 event" id="stroke13" name="stroke13" data-i="13" data-stroke="A"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear13" data-clear="clearA" type="button" value="Delete Key">
+          </div>
+        </div>
+        <div class="mol_text">
+          <h3>Issue</h3>
+          <textarea class="stroke14 event" id="stroke14" name="stroke14" data-i="14" data-stroke="B"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear14" data-clear="clearB" type="button" value="Delete Key">
+          </div>
+        </div>
+        <div class="mol_text">
+          <h3>Action</h3>
+          <textarea class="stroke15 event" id="stroke15" name="stroke15" data-i="15" data-stroke="C"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear15" data-clear="clearC" type="button" value="Delete Key">
+          </div>
+        </div>
+        <div class="mol_text">
+          <h3>Publish</h3>
+          <textarea class="stroke16 event" id="stroke16" name="stroke16" data-i="16" data-stroke="D"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear16" data-clear="clearD" type="button" value="Delete Key">
           </div>
         </div>
       </div>
