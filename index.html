@@ -56,7 +56,8 @@ body {
   font-family: "Kaisei Opti", serif;
   display: flex;
   padding: 1vh;
-  min-height: 100vh;
+  min-height: 90vh;
+  padding-top: 10vh;
   overflow-y: hidden;
   overflow-x: scroll;
 }
@@ -78,20 +79,11 @@ body:before {
   background-size: cover;
   z-index: -1;
 }
-@media only screen and (max-height: 680px) {
-  body {
-    overflow-y: auto;
-  }
-}
 
 p {
   margin: 0.1em 0 0.5em;
   padding: 0;
   line-height: 1.8;
-}
-
-.garages {
-  display: flex;
 }
 
 input.title {
@@ -161,33 +153,29 @@ h3 {
   font-size: 1.5em;
 }
 
-.container {
+.garages-container {
+  width: 98vw;
   overflow: auto;
   -webkit-backdrop-filter: blur(2px);
           backdrop-filter: blur(2px);
   margin: auto 1vw;
   padding: 1vh 1vw 1vh;
-  width: 98vw;
-  min-width: 98vw;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
 }
-@media only screen and (max-height: 780px) {
-  .container {
-    overflow: auto;
-  }
-}
-
-.org_text {
+.garages {
+  width: auto;
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+  padding: 1vh 2vw;
+}
+.garages .org_text {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
   border-radius: 8px;
   overflow: auto;
 }
-
-.org_text .mol_text {
+.garages .org_text .mol_text {
   background: #0004;
   border-radius: 6px;
   padding: 1vh 1vw;
@@ -195,42 +183,40 @@ h3 {
   margin: 4px;
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
-
-.org_text .clear-area {
+.garages .org_text .clear-area {
   display: flex;
   align-items: center;
   margin: 8px 1vw;
 }
-.org_text input[type=button] {
+.garages .org_text input[type=button] {
   background: #0005;
   color: currentcolor;
   border-color: currentcolor;
 }
-.org_text .mol_text:nth-child(1) h3,
-.org_text .mol_text:nth-child(1) textarea,
-.org_text .mol_text:nth-child(1) input[type=button] {
+.garages .org_text .mol_text:nth-child(1) h3,
+.garages .org_text .mol_text:nth-child(1) textarea,
+.garages .org_text .mol_text:nth-child(1) input[type=button] {
   color: var(--color4);
 }
-.org_text .mol_text:nth-child(2) h3,
-.org_text .mol_text:nth-child(2) textarea,
-.org_text .mol_text:nth-child(2) input[type=button] {
+.garages .org_text .mol_text:nth-child(2) h3,
+.garages .org_text .mol_text:nth-child(2) textarea,
+.garages .org_text .mol_text:nth-child(2) input[type=button] {
   color: var(--color2);
   border-color: var(--color2);
 }
-.org_text .mol_text:nth-child(3) h3,
-.org_text .mol_text:nth-child(3) textarea,
-.org_text .mol_text:nth-child(3) input[type=button] {
+.garages .org_text .mol_text:nth-child(3) h3,
+.garages .org_text .mol_text:nth-child(3) textarea,
+.garages .org_text .mol_text:nth-child(3) input[type=button] {
   color: var(--color3);
   border-color: var(--color3);
 }
-.org_text .mol_text:nth-child(4) h3,
-.org_text .mol_text:nth-child(4) textarea,
-.org_text .mol_text:nth-child(4) input[type=button] {
+.garages .org_text .mol_text:nth-child(4) h3,
+.garages .org_text .mol_text:nth-child(4) textarea,
+.garages .org_text .mol_text:nth-child(4) input[type=button] {
   color: var(--color1);
   border-color: var(--color1);
 }
-
-textarea {
+.garages textarea {
   resize: none;
   overflow: auto;
   padding: 0.5ch;
@@ -247,42 +233,34 @@ textarea {
   border-radius: 8px;
   transition: 0.15s;
 }
-textarea:hover {
+.garages textarea:hover {
   border-color: white !important;
   background-color: rgba(0, 0, 0, 0.2);
 }
-textarea:focus, textarea:focus-visible {
+.garages textarea:focus, .garages textarea:focus-visible {
   border: 2px solid currentcolor !important;
   background-color: rgba(0, 0, 0, 0.5);
 }
   </style>
   <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"></script>
-  <script>// function disableScroll(event) {
-//  event.preventDefault();
-// }
-// // スクロール禁止
-// document.querySelectorAll("body").onclick = function () {
-//  // イベントと関数を紐付け
-//  document.addEventListener("touchmove", disableScroll, { passive: false });
-//  document.addEventListener("mousewheel", disableScroll, { passive: false });
-// };
-
-// $(function () {
-//  $(".mol_text").draggable();
-// });
-// if (localStorage.getItem("stroke" + num )) {};
-
-$(function () {
+  <script>$(function () {
+  // メモ入力欄の設定　LocalStorageの取得
   $(".org_text .mol_text").each(function (i) {
     let num = $(".org_text .mol_text").index(this) + 1;
     $("#stroke" + num).val(localStorage.getItem("stroke" + num));
   });
+  // タイトルの設定　LocalStorageの取得
+  $(".garages input.title").each(function (i) {
+    let num = $(".title").index(this) + 1;
+    $(".stroke-title" + num).val(localStorage.getItem("stroke-title" + num));
+  });
   // テーマの設定
-  $("#stroke-title1").val(localStorage.getItem("stroke-title1"));
-  $("#stroke-title5").val(localStorage.getItem("stroke-title5"));
-  $("#stroke-title3").val(localStorage.getItem("stroke-title3"));
+  // $("#stroke-title1").val(localStorage.getItem("stroke-title1"));
+  // $("#stroke-title5").val(localStorage.getItem("stroke-title5"));
+  // $("#stroke-title3").val(localStorage.getItem("stroke-title3"));
 
+  // 削除機能
   $("input.clear").on("click", function () {
     let i = $("input.clear").index(this) + 1;
     console.log($(this).data("clear") + i + "が押された");
@@ -302,26 +280,21 @@ $(function () {
     localStorage.removeItem("stroke" + i);
   });
 
+  // メモ入力、リアルタイムでLocalStorageに保存
   $("textarea").on("keyup", function () {
     let i = $("textarea").index(this) + 1;
     localStorage.setItem("stroke" + i, $("#stroke" + i).val());
     // console.log($(this).data('stroke') + i + 'が押された');
     $("#message").fadeIn(300).fadeOut(300);
   });
-
-  // テーマの設定
-
-  // $(".title").each(function (i) {
-  //  let num = $(".title").index(this) + 1;
-  //  $("#stroke-title" + num).val(localStorage.getItem("stroke-title" + num));
-  // });
-
-
-  $("input").on("keyup", function () {
-    // let j = $("input").index(this) + 1;
-    localStorage.setItem("stroke-title1", $("#stroke-title1").val());
-    localStorage.setItem("stroke-title5", $("#stroke-title5").val());
-    localStorage.setItem("stroke-title3", $("#stroke-title3").val());
+  
+  // タイトル入力、リアルタイムでLocalStorageに保存
+  $("input.title").on("keyup", function () {
+    let i = $(".title").index(this) + 1;
+    console.log(i)
+    localStorage.setItem("stroke-title" + i, $(".stroke-title" + i).val());
+    console.log($(this).data('stroke') + i + 'が押された');
+    $("#message").fadeIn(300).fadeOut(300);
   });
   //  テーマEnd
 });
@@ -332,33 +305,25 @@ $(function () {
   // window.onwheel = (e) => (e.preventDefault = false);
 
   //コンテンツの横サイズ
-  var cont = $(".garages");
+  var cont = $(".garages-container")
   var contW = $(".garages").outerWidth(true) * $("div", cont).length;
-
   cont.css("width", contW);
   //スクロールスピード
-  var speed = 10;
+  var speed = 4;
   //マウスホイールで横移動
-  $("html").mousewheel(function (event, mov) {
+  $(".garages-container").mousewheel(function (event, mov) {
     //ie firefox
     $(this).scrollLeft($(this).scrollLeft() - mov * speed);
     //webkit
     $("body").scrollLeft($("body").scrollLeft() - mov * speed);
     // return false; //縦スクロール不可
   });
-  // $("a[href^=#]").click(function () {
-  //  var speed = 400; // ミリ秒
-  //  var href = $(this).attr("href");
-  //  var target = $(href == "#" || href == "" ? "html" : href);
-  //  var position = target.offset().left; //targetの位置を取得
-  //  $("html, body").animate({ scrollLeft: position }, speed, "swing");
-  //  return false;
-  // });
 });
 
   </script>
 </head>
-<body></body>
+<body>
+</body>
 <div class="run">
   <div id="message" style="display: none">Save..</div>
 </div>
@@ -369,11 +334,11 @@ $(function () {
 <div class="run_bottom">
   <p id="message2" style="display: none">AutoSave..</p>
 </div>
-<div class="container">
+<div class="garages-container">
   <div class="garages"> 
     <div class="garage">
       <h2>A</h2>
-      <input class="title event" id="stroke-title1" data-stroke="stroke-title1" name="stroke-title1" value="stroke-title1" autocomplete="off" data-i="1">
+      <input class="stroke-title1 title event" data-stroke="stroke-title1" name="stroke-title1" value="stroke-title1" autocomplete="off" data-i="1">
       <div class="org_text">
         <div class="mol_text">
           <h3>Key</h3>
@@ -407,7 +372,7 @@ $(function () {
     </div>
     <div class="garage">
       <h2>B</h2>
-      <input class="title event" id="stroke-title5" data-stroke="stroke-title5" name="stroke-title5" value="stroke-title5" autocomplete="off" data-i="5">
+      <input class="stroke-title2 title event" data-stroke="stroke-title2" name="stroke-title2" value="stroke-title2" autocomplete="off" data-i="5">
       <div class="org_text">
         <div class="mol_text">
           <h3>Key</h3>
@@ -435,6 +400,40 @@ $(function () {
           <textarea class="stroke8 event" id="stroke8" name="stroke8" data-i="8" data-stroke="D"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear8" data-clear="clearD" type="button" value="Delete Key">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="garage">
+      <h2>C</h2>
+      <input class="stroke-title3 title event" data-stroke="stroke-title3" name="stroke-title3" value="stroke-title3" autocomplete="off" data-i="9">
+      <div class="org_text">
+        <div class="mol_text">
+          <h3>Key</h3>
+          <textarea class="stroke9 event" id="stroke9" name="stroke9" data-i="9" data-stroke="A"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear9" data-clear="clearA" type="button" value="Delete Key">
+          </div>
+        </div>
+        <div class="mol_text">
+          <h3>Issue</h3>
+          <textarea class="stroke10 event" id="stroke10" name="stroke10" data-i="10" data-stroke="B"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear10" data-clear="clearB" type="button" value="Delete Key">
+          </div>
+        </div>
+        <div class="mol_text">
+          <h3>Action</h3>
+          <textarea class="stroke11 event" id="stroke11" name="stroke11" data-i="11" data-stroke="C"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear11" data-clear="clearC" type="button" value="Delete Key">
+          </div>
+        </div>
+        <div class="mol_text">
+          <h3>Publish</h3>
+          <textarea class="stroke12 event" id="stroke12" name="stroke12" data-i="12" data-stroke="D"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear12" data-clear="clearD" type="button" value="Delete Key">
           </div>
         </div>
       </div>

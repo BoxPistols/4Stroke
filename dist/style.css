@@ -49,7 +49,8 @@ body {
   font-family: "Kaisei Opti", serif;
   display: flex;
   padding: 1vh;
-  min-height: 100vh;
+  min-height: 90vh;
+  padding-top: 10vh;
   overflow-y: hidden;
   overflow-x: scroll;
 }
@@ -71,20 +72,11 @@ body:before {
   background-size: cover;
   z-index: -1;
 }
-@media only screen and (max-height: 680px) {
-  body {
-    overflow-y: auto;
-  }
-}
 
 p {
   margin: 0.1em 0 0.5em;
   padding: 0;
   line-height: 1.8;
-}
-
-.garages {
-  display: flex;
 }
 
 input.title {
@@ -154,33 +146,29 @@ h3 {
   font-size: 1.5em;
 }
 
-.container {
+.garages-container {
+  width: 98vw;
   overflow: auto;
   -webkit-backdrop-filter: blur(2px);
           backdrop-filter: blur(2px);
   margin: auto 1vw;
   padding: 1vh 1vw 1vh;
-  width: 98vw;
-  min-width: 98vw;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
 }
-@media only screen and (max-height: 780px) {
-  .container {
-    overflow: auto;
-  }
-}
-
-.org_text {
+.garages {
+  width: auto;
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+  padding: 1vh 2vw;
+}
+.garages .org_text {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
   border-radius: 8px;
   overflow: auto;
 }
-
-.org_text .mol_text {
+.garages .org_text .mol_text {
   background: #0004;
   border-radius: 6px;
   padding: 1vh 1vw;
@@ -188,42 +176,40 @@ h3 {
   margin: 4px;
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
-
-.org_text .clear-area {
+.garages .org_text .clear-area {
   display: flex;
   align-items: center;
   margin: 8px 1vw;
 }
-.org_text input[type=button] {
+.garages .org_text input[type=button] {
   background: #0005;
   color: currentcolor;
   border-color: currentcolor;
 }
-.org_text .mol_text:nth-child(1) h3,
-.org_text .mol_text:nth-child(1) textarea,
-.org_text .mol_text:nth-child(1) input[type=button] {
+.garages .org_text .mol_text:nth-child(1) h3,
+.garages .org_text .mol_text:nth-child(1) textarea,
+.garages .org_text .mol_text:nth-child(1) input[type=button] {
   color: var(--color4);
 }
-.org_text .mol_text:nth-child(2) h3,
-.org_text .mol_text:nth-child(2) textarea,
-.org_text .mol_text:nth-child(2) input[type=button] {
+.garages .org_text .mol_text:nth-child(2) h3,
+.garages .org_text .mol_text:nth-child(2) textarea,
+.garages .org_text .mol_text:nth-child(2) input[type=button] {
   color: var(--color2);
   border-color: var(--color2);
 }
-.org_text .mol_text:nth-child(3) h3,
-.org_text .mol_text:nth-child(3) textarea,
-.org_text .mol_text:nth-child(3) input[type=button] {
+.garages .org_text .mol_text:nth-child(3) h3,
+.garages .org_text .mol_text:nth-child(3) textarea,
+.garages .org_text .mol_text:nth-child(3) input[type=button] {
   color: var(--color3);
   border-color: var(--color3);
 }
-.org_text .mol_text:nth-child(4) h3,
-.org_text .mol_text:nth-child(4) textarea,
-.org_text .mol_text:nth-child(4) input[type=button] {
+.garages .org_text .mol_text:nth-child(4) h3,
+.garages .org_text .mol_text:nth-child(4) textarea,
+.garages .org_text .mol_text:nth-child(4) input[type=button] {
   color: var(--color1);
   border-color: var(--color1);
 }
-
-textarea {
+.garages textarea {
   resize: none;
   overflow: auto;
   padding: 0.5ch;
@@ -240,11 +226,11 @@ textarea {
   border-radius: 8px;
   transition: 0.15s;
 }
-textarea:hover {
+.garages textarea:hover {
   border-color: white !important;
   background-color: rgba(0, 0, 0, 0.2);
 }
-textarea:focus, textarea:focus-visible {
+.garages textarea:focus, .garages textarea:focus-visible {
   border: 2px solid currentcolor !important;
   background-color: rgba(0, 0, 0, 0.5);
 }

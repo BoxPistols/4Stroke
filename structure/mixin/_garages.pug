@@ -1,12 +1,12 @@
 include _strokeState.pug
 
-mixin Strokes(_titleName, _num)
+mixin Strokes(_titleName, _num, _titleNum)
   .garage
     h2= _titleName
-    input(id="stroke-title"+_num).title.event(
-      data-stroke="stroke-title" + _num,
-      name="stroke-title" + _num,
-      value="stroke-title" + _num    
+    input(class="stroke-title"+ _titleNum).title.event(
+      data-stroke="stroke-title" +  _titleNum,
+      name="stroke-title" +  _titleNum,
+      value="stroke-title" +  _titleNum    
       autocomplete="off"
       data-i= _num,
     )

@@ -80,17 +80,15 @@ body {
 	}
 
 	display: flex;
-
 	padding: 1vh;
-	min-height: 100vh;
-	// min-width: 300vw;
-	// max-height: 96vh;
+	min-height: 90vh;
+	padding-top: 10vh;
 	overflow-y: hidden;
 	overflow-x: scroll;
 
-	@media only screen and (max-height: 680px) {
-		overflow-y: auto;
-	}
+	// @media only screen and (max-height: 680px) {
+	// 	overflow-y: auto;
+	// }
 }
 
 p {
@@ -99,7 +97,3 @@ p {
 	line-height: 1.8;
 }
 
-.garages {
-	// width: auto;
-	display: flex;	
-}
