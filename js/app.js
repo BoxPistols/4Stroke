@@ -12,9 +12,6 @@ document.addEventListener('DOMContentLoaded', function () {
         index = [].slice.call(elmTexts).indexOf(elm)
         let strokeClass = qaAll('textarea.stroke')
         strokeClass[index].value = localStorage.getItem('stroke' + (index + 1))
-        let storage = localStorage.getItem(idNum)
-        console.log(idNum + '/' + storage)
-        localStorage.getItem(idNum)
     })
 
     // タイトルの設定　LocalStorageの取得
@@ -75,18 +72,3 @@ document.addEventListener('DOMContentLoaded', function () {
 // Scroll
 // https://sterfield.co.jp/designer/横スクロールを可能にできる「jquery-mousewheel」を使用して/
 // window.onwheel = (e) => (e.preventDefault = false);
-
-//コンテンツの横サイズ
-var cont = $('.garages-container')
-var contW = $('.garages').outerWidth(true) * $('div', cont).length
-cont.css('width', contW)
-//スクロールスピード
-var speed = 8
-//マウスホイールで横移動
-$('.garages-container').mousewheel(function (event, mov) {
-    //ie firefox
-    $(this).scrollLeft($(this).scrollLeft() - mov * speed)
-    //webkit
-    $('body').scrollLeft($('body').scrollLeft() - mov * speed)
-    // return false; //縦スクロール不可
-})
