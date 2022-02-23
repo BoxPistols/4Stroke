@@ -243,82 +243,80 @@ h3 {
 }
   </style>
   <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"></script>
-  <script>$(function () {
-  // メモ入力欄の設定　LocalStorageの取得
-  $(".garage-strokes .mol_text").each(function (i) {
-    let num = $(".garage-strokes .mol_text").index(this) + 1;
-    $("#stroke" + num).val(localStorage.getItem("stroke" + num));
-  });
-  // タイトルの設定　LocalStorageの取得
-  $(".garages input.title").each(function (i) {
-    let num = $(".title").index(this) + 1;
-    $(".stroke-title" + num).val(localStorage.getItem("stroke-title" + num));
-  });
-  // テーマの設定
-  // $("#stroke-title1").val(localStorage.getItem("stroke-title1"));
-  // $("#stroke-title5").val(localStorage.getItem("stroke-title5"));
-  // $("#stroke-title3").val(localStorage.getItem("stroke-title3"));
+  <script>document.addEventListener('DOMContentLoaded', function () {
+    /**
+     * 汎用関数
+     * @_x = ターゲットエレメント
+     */
+    let qaAll = (_x) => document.querySelectorAll(_x)
+    let strokeTexts = qaAll('.garage-strokes .mol_text')
 
-  // 削除機能
-  $("input.clear").on("click", function () {
-    let i = $("input.clear").index(this) + 1;
-    console.log($(this).data("clear") + i + "が押された");
+    // メモ入力欄の設定　LocalStorageの取得
+    const elmTexts = strokeTexts
+    elmTexts.forEach((elm) => {
+        index = [].slice.call(elmTexts).indexOf(elm)
+        let strokeClass = qaAll('textarea.stroke')
+        strokeClass[index].value = localStorage.getItem('stroke' + (index + 1))
+    })
 
-    var retVal = confirm("消しマンボ?");
-    if(retVal == true) {
-      alert("闇に葬りマンボ...");
-      $("#stroke" + i).val("");
-      localStorage.removeItem("stroke" + i);
-      $("this").attr("disabled", true);
-      document.querySelector("#stroke" + i).value = "";
-      return true;
-    } else {
-      alert("やっぱやめとくわ");
-      return false;
-    }
-    localStorage.removeItem("stroke" + i);
-  });
+    // タイトルの設定　LocalStorageの取得
+    let strokeTitles = qaAll('.garage .title')
+    strokeTitles.forEach((elm) => {
+        index = [].slice.call(strokeTitles).indexOf(elm)
+        let strokeTitle = qaAll('input.title')
+        strokeTitle[index].value = localStorage.getItem(
+            'stroke-title' + (index + 1)
+        )
+        // $('.stroke-title' + index).val(
+        //     localStorage.getItem('stroke-title' + index)
+        // )
+    })
 
-  // メモ入力、リアルタイムでLocalStorageに保存
-  $("textarea").on("keyup", function () {
-    let i = $("textarea").index(this) + 1;
-    localStorage.setItem("stroke" + i, $("#stroke" + i).val());
-    // console.log($(this).data('stroke') + i + 'が押された');
-    $("#message").fadeIn(300).fadeOut(300);
-  });
-  
-  // タイトル入力、リアルタイムでLocalStorageに保存
-  $("input.title").on("keyup", function () {
-    let i = $(".title").index(this) + 1;
-    console.log(i)
-    localStorage.setItem("stroke-title" + i, $(".stroke-title" + i).val());
-    console.log($(this).data('stroke') + i + 'が押された');
-    $("#message").fadeIn(300).fadeOut(300);
-  });
-  //  テーマEnd
-});
+    // 削除機能
+    /**
+     * FIXME! to Vanilla
+     */
+    $('input.clear').on('click', function () {
+        let i = $('input.clear').index(this) + 1
+        console.log($(this).data('clear') + i + 'が押された')
+
+        var retVal = confirm('消しマンボ?')
+        if (retVal == true) {
+            alert('闇に葬りマンボ...')
+            $('#stroke' + i).val('')
+            localStorage.removeItem('stroke' + i)
+            $('this').attr('disabled', true)
+            document.querySelector('#stroke' + i).value = ''
+            return true
+        } else {
+            alert('やっぱやめとくわ')
+            return false
+        }
+        localStorage.removeItem('stroke' + i)
+    })
+
+    // メモ入力、リアルタイムでLocalStorageに保存
+    $('textarea').on('keyup', function () {
+        let i = $('textarea').index(this) + 1
+        localStorage.setItem('stroke' + i, $('#stroke' + i).val())
+        // console.log($(this).data('stroke') + i + 'が押された');
+        $('#message').fadeIn(300).fadeOut(300)
+    })
+
+    // タイトル入力、リアルタイムでLocalStorageに保存
+    $('input.title').on('keyup', function () {
+        let i = $('.title').index(this) + 1
+        console.log(i)
+        localStorage.setItem('stroke-title' + i, $('.stroke-title' + i).val())
+        console.log($(this).data('stroke') + i + 'が押された')
+        $('#message').fadeIn(300).fadeOut(300)
+    })
+    //  テーマEnd
+})
 
 // Scroll
 // https://sterfield.co.jp/designer/横スクロールを可能にできる「jquery-mousewheel」を使用して/
-$(function () {
-  // window.onwheel = (e) => (e.preventDefault = false);
-
-  //コンテンツの横サイズ
-  var cont = $(".garages-container")
-  var contW = $(".garages").outerWidth(true) * $("div", cont).length;
-  cont.css("width", contW);
-  //スクロールスピード
-  var speed = 4;
-  //マウスホイールで横移動
-  $(".garages-container").mousewheel(function (event, mov) {
-    //ie firefox
-    $(this).scrollLeft($(this).scrollLeft() - mov * speed);
-    //webkit
-    $("body").scrollLeft($("body").scrollLeft() - mov * speed);
-    // return false; //縦スクロール不可
-  });
-});
+// window.onwheel = (e) => (e.preventDefault = false);
 
   </script>
 </head>
@@ -338,32 +336,32 @@ $(function () {
   <div class="garages"> 
     <div class="garage">
       <h2>A</h2>
-      <input class="stroke-title1 title event" data-stroke="stroke-title1" name="stroke-title1" value="stroke-title1" autocomplete="off" data-i="1">
+      <input class="title stroke-title stroke-title1" data-stroke="stroke-title1" name="stroke-title1" value="stroke-title1" autocomplete="off" data-i="1">
       <div class="garage-strokes">
         <div class="mol_text">
           <h3>Key</h3>
-          <textarea class="stroke1 event" id="stroke1" name="stroke1" data-i="1" data-stroke="A"></textarea>
+          <textarea class="stroke stroke1" id="stroke1" name="stroke1" data-i="1" data-stroke="A"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear1" data-clear="clearA" type="button" value="Delete Key">
           </div>
         </div>
         <div class="mol_text">
           <h3>Issue</h3>
-          <textarea class="stroke2 event" id="stroke2" name="stroke2" data-i="2" data-stroke="B"></textarea>
+          <textarea class="stroke stroke2" id="stroke2" name="stroke2" data-i="2" data-stroke="B"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear2" data-clear="clearB" type="button" value="Delete Key">
           </div>
         </div>
         <div class="mol_text">
           <h3>Action</h3>
-          <textarea class="stroke3 event" id="stroke3" name="stroke3" data-i="3" data-stroke="C"></textarea>
+          <textarea class="stroke stroke3" id="stroke3" name="stroke3" data-i="3" data-stroke="C"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear3" data-clear="clearC" type="button" value="Delete Key">
           </div>
         </div>
         <div class="mol_text">
           <h3>Publish</h3>
-          <textarea class="stroke4 event" id="stroke4" name="stroke4" data-i="4" data-stroke="D"></textarea>
+          <textarea class="stroke stroke4" id="stroke4" name="stroke4" data-i="4" data-stroke="D"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear4" data-clear="clearD" type="button" value="Delete Key">
           </div>
@@ -372,32 +370,32 @@ $(function () {
     </div>
     <div class="garage">
       <h2>B</h2>
-      <input class="stroke-title2 title event" data-stroke="stroke-title2" name="stroke-title2" value="stroke-title2" autocomplete="off" data-i="5">
+      <input class="title stroke-title stroke-title2" data-stroke="stroke-title2" name="stroke-title2" value="stroke-title2" autocomplete="off" data-i="5">
       <div class="garage-strokes">
         <div class="mol_text">
           <h3>Key</h3>
-          <textarea class="stroke5 event" id="stroke5" name="stroke5" data-i="5" data-stroke="A"></textarea>
+          <textarea class="stroke stroke5" id="stroke5" name="stroke5" data-i="5" data-stroke="A"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear5" data-clear="clearA" type="button" value="Delete Key">
           </div>
         </div>
         <div class="mol_text">
           <h3>Issue</h3>
-          <textarea class="stroke6 event" id="stroke6" name="stroke6" data-i="6" data-stroke="B"></textarea>
+          <textarea class="stroke stroke6" id="stroke6" name="stroke6" data-i="6" data-stroke="B"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear6" data-clear="clearB" type="button" value="Delete Key">
           </div>
         </div>
         <div class="mol_text">
           <h3>Action</h3>
-          <textarea class="stroke7 event" id="stroke7" name="stroke7" data-i="7" data-stroke="C"></textarea>
+          <textarea class="stroke stroke7" id="stroke7" name="stroke7" data-i="7" data-stroke="C"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear7" data-clear="clearC" type="button" value="Delete Key">
           </div>
         </div>
         <div class="mol_text">
           <h3>Publish</h3>
-          <textarea class="stroke8 event" id="stroke8" name="stroke8" data-i="8" data-stroke="D"></textarea>
+          <textarea class="stroke stroke8" id="stroke8" name="stroke8" data-i="8" data-stroke="D"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear8" data-clear="clearD" type="button" value="Delete Key">
           </div>
@@ -406,32 +404,32 @@ $(function () {
     </div>
     <div class="garage">
       <h2>C</h2>
-      <input class="stroke-title3 title event" data-stroke="stroke-title3" name="stroke-title3" value="stroke-title3" autocomplete="off" data-i="9">
+      <input class="title stroke-title stroke-title3" data-stroke="stroke-title3" name="stroke-title3" value="stroke-title3" autocomplete="off" data-i="9">
       <div class="garage-strokes">
         <div class="mol_text">
           <h3>Key</h3>
-          <textarea class="stroke9 event" id="stroke9" name="stroke9" data-i="9" data-stroke="A"></textarea>
+          <textarea class="stroke stroke9" id="stroke9" name="stroke9" data-i="9" data-stroke="A"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear9" data-clear="clearA" type="button" value="Delete Key">
           </div>
         </div>
         <div class="mol_text">
           <h3>Issue</h3>
-          <textarea class="stroke10 event" id="stroke10" name="stroke10" data-i="10" data-stroke="B"></textarea>
+          <textarea class="stroke stroke10" id="stroke10" name="stroke10" data-i="10" data-stroke="B"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear10" data-clear="clearB" type="button" value="Delete Key">
           </div>
         </div>
         <div class="mol_text">
           <h3>Action</h3>
-          <textarea class="stroke11 event" id="stroke11" name="stroke11" data-i="11" data-stroke="C"></textarea>
+          <textarea class="stroke stroke11" id="stroke11" name="stroke11" data-i="11" data-stroke="C"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear11" data-clear="clearC" type="button" value="Delete Key">
           </div>
         </div>
         <div class="mol_text">
           <h3>Publish</h3>
-          <textarea class="stroke12 event" id="stroke12" name="stroke12" data-i="12" data-stroke="D"></textarea>
+          <textarea class="stroke stroke12" id="stroke12" name="stroke12" data-i="12" data-stroke="D"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear12" data-clear="clearD" type="button" value="Delete Key">
           </div>
@@ -440,32 +438,32 @@ $(function () {
     </div>
     <div class="garage">
       <h2>D</h2>
-      <input class="stroke-title4 title event" data-stroke="stroke-title4" name="stroke-title4" value="stroke-title4" autocomplete="off" data-i="13">
+      <input class="title stroke-title stroke-title4" data-stroke="stroke-title4" name="stroke-title4" value="stroke-title4" autocomplete="off" data-i="13">
       <div class="garage-strokes">
         <div class="mol_text">
           <h3>Key</h3>
-          <textarea class="stroke13 event" id="stroke13" name="stroke13" data-i="13" data-stroke="A"></textarea>
+          <textarea class="stroke stroke13" id="stroke13" name="stroke13" data-i="13" data-stroke="A"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear13" data-clear="clearA" type="button" value="Delete Key">
           </div>
         </div>
         <div class="mol_text">
           <h3>Issue</h3>
-          <textarea class="stroke14 event" id="stroke14" name="stroke14" data-i="14" data-stroke="B"></textarea>
+          <textarea class="stroke stroke14" id="stroke14" name="stroke14" data-i="14" data-stroke="B"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear14" data-clear="clearB" type="button" value="Delete Key">
           </div>
         </div>
         <div class="mol_text">
           <h3>Action</h3>
-          <textarea class="stroke15 event" id="stroke15" name="stroke15" data-i="15" data-stroke="C"></textarea>
+          <textarea class="stroke stroke15" id="stroke15" name="stroke15" data-i="15" data-stroke="C"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear15" data-clear="clearC" type="button" value="Delete Key">
           </div>
         </div>
         <div class="mol_text">
           <h3>Publish</h3>
-          <textarea class="stroke16 event" id="stroke16" name="stroke16" data-i="16" data-stroke="D"></textarea>
+          <textarea class="stroke stroke16" id="stroke16" name="stroke16" data-i="16" data-stroke="D"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear16" data-clear="clearD" type="button" value="Delete Key">
           </div>
