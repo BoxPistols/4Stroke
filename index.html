@@ -257,29 +257,29 @@ h3 {
     elmTexts.forEach((elm) => {
         index = [].slice.call(elmTexts).indexOf(elm)
         let strokeClass = qaAll('textarea.stroke')
-
         strokeClass[index].value = localStorage.getItem('stroke' + (index + 1))
-
-        /* FIXME! to Vanilla
-        // console.log(index)
-        // console.log(strokeClass[index].className)
         let storage = localStorage.getItem(idNum)
         console.log(idNum + '/' + storage)
         localStorage.getItem(idNum)
-        */
     })
 
-    let strokeTitles = qaAll('.garages input.title')
     // タイトルの設定　LocalStorageの取得
+    let strokeTitles = qaAll('.garage .title')
     strokeTitles.forEach((elm) => {
         index = [].slice.call(strokeTitles).indexOf(elm)
-        // console.log(index)
-        $('.stroke-title' + index).val(
-            localStorage.getItem('stroke-title' + index)
+        let strokeTitle = qaAll('input.title')
+        strokeTitle[index].value = localStorage.getItem(
+            'stroke-title' + (index + 1)
         )
+        // $('.stroke-title' + index).val(
+        //     localStorage.getItem('stroke-title' + index)
+        // )
     })
 
     // 削除機能
+    /**
+     * FIXME! to Vanilla
+     */
     $('input.clear').on('click', function () {
         let i = $('input.clear').index(this) + 1
         console.log($(this).data('clear') + i + 'が押された')
@@ -323,19 +323,19 @@ h3 {
 // window.onwheel = (e) => (e.preventDefault = false);
 
 //コンテンツの横サイズ
-// var cont = $('.garages-container')
-// var contW = $('.garages').outerWidth(true) * $('div', cont).length
-// cont.css('width', contW)
-// //スクロールスピード
-// var speed = 8
-// //マウスホイールで横移動
-// $('.garages-container').mousewheel(function (event, mov) {
-//     //ie firefox
-//     $(this).scrollLeft($(this).scrollLeft() - mov * speed)
-//     //webkit
-//     $('body').scrollLeft($('body').scrollLeft() - mov * speed)
-//     // return false; //縦スクロール不可
-// })
+var cont = $('.garages-container')
+var contW = $('.garages').outerWidth(true) * $('div', cont).length
+cont.css('width', contW)
+//スクロールスピード
+var speed = 8
+//マウスホイールで横移動
+$('.garages-container').mousewheel(function (event, mov) {
+    //ie firefox
+    $(this).scrollLeft($(this).scrollLeft() - mov * speed)
+    //webkit
+    $('body').scrollLeft($('body').scrollLeft() - mov * speed)
+    // return false; //縦スクロール不可
+})
 
   </script>
 </head>
@@ -355,7 +355,7 @@ h3 {
   <div class="garages"> 
     <div class="garage">
       <h2>A</h2>
-      <input class="stroke-title1 title event" data-stroke="stroke-title1" name="stroke-title1" value="stroke-title1" autocomplete="off" data-i="1">
+      <input class="title stroke-title stroke-title1" data-stroke="stroke-title1" name="stroke-title1" value="stroke-title1" autocomplete="off" data-i="1">
       <div class="garage-strokes">
         <div class="mol_text">
           <h3>Key</h3>
@@ -389,7 +389,7 @@ h3 {
     </div>
     <div class="garage">
       <h2>B</h2>
-      <input class="stroke-title2 title event" data-stroke="stroke-title2" name="stroke-title2" value="stroke-title2" autocomplete="off" data-i="5">
+      <input class="title stroke-title stroke-title2" data-stroke="stroke-title2" name="stroke-title2" value="stroke-title2" autocomplete="off" data-i="5">
       <div class="garage-strokes">
         <div class="mol_text">
           <h3>Key</h3>
@@ -423,7 +423,7 @@ h3 {
     </div>
     <div class="garage">
       <h2>C</h2>
-      <input class="stroke-title3 title event" data-stroke="stroke-title3" name="stroke-title3" value="stroke-title3" autocomplete="off" data-i="9">
+      <input class="title stroke-title stroke-title3" data-stroke="stroke-title3" name="stroke-title3" value="stroke-title3" autocomplete="off" data-i="9">
       <div class="garage-strokes">
         <div class="mol_text">
           <h3>Key</h3>
@@ -457,7 +457,7 @@ h3 {
     </div>
     <div class="garage">
       <h2>D</h2>
-      <input class="stroke-title4 title event" data-stroke="stroke-title4" name="stroke-title4" value="stroke-title4" autocomplete="off" data-i="13">
+      <input class="title stroke-title stroke-title4" data-stroke="stroke-title4" name="stroke-title4" value="stroke-title4" autocomplete="off" data-i="13">
       <div class="garage-strokes">
         <div class="mol_text">
           <h3>Key</h3>

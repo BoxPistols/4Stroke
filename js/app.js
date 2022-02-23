@@ -11,29 +11,29 @@ document.addEventListener('DOMContentLoaded', function () {
     elmTexts.forEach((elm) => {
         index = [].slice.call(elmTexts).indexOf(elm)
         let strokeClass = qaAll('textarea.stroke')
-
         strokeClass[index].value = localStorage.getItem('stroke' + (index + 1))
-
-        /* FIXME! to Vanilla
-        // console.log(index)
-        // console.log(strokeClass[index].className)
         let storage = localStorage.getItem(idNum)
         console.log(idNum + '/' + storage)
         localStorage.getItem(idNum)
-        */
     })
 
-    let strokeTitles = qaAll('.garages input.title')
     // タイトルの設定　LocalStorageの取得
+    let strokeTitles = qaAll('.garage .title')
     strokeTitles.forEach((elm) => {
         index = [].slice.call(strokeTitles).indexOf(elm)
-        // console.log(index)
-        $('.stroke-title' + index).val(
-            localStorage.getItem('stroke-title' + index)
+        let strokeTitle = qaAll('input.title')
+        strokeTitle[index].value = localStorage.getItem(
+            'stroke-title' + (index + 1)
         )
+        // $('.stroke-title' + index).val(
+        //     localStorage.getItem('stroke-title' + index)
+        // )
     })
 
     // 削除機能
+    /**
+     * FIXME! to Vanilla
+     */
     $('input.clear').on('click', function () {
         let i = $('input.clear').index(this) + 1
         console.log($(this).data('clear') + i + 'が押された')
@@ -77,16 +77,16 @@ document.addEventListener('DOMContentLoaded', function () {
 // window.onwheel = (e) => (e.preventDefault = false);
 
 //コンテンツの横サイズ
-// var cont = $('.garages-container')
-// var contW = $('.garages').outerWidth(true) * $('div', cont).length
-// cont.css('width', contW)
-// //スクロールスピード
-// var speed = 8
-// //マウスホイールで横移動
-// $('.garages-container').mousewheel(function (event, mov) {
-//     //ie firefox
-//     $(this).scrollLeft($(this).scrollLeft() - mov * speed)
-//     //webkit
-//     $('body').scrollLeft($('body').scrollLeft() - mov * speed)
-//     // return false; //縦スクロール不可
-// })
+var cont = $('.garages-container')
+var contW = $('.garages').outerWidth(true) * $('div', cont).length
+cont.css('width', contW)
+//スクロールスピード
+var speed = 8
+//マウスホイールで横移動
+$('.garages-container').mousewheel(function (event, mov) {
+    //ie firefox
+    $(this).scrollLeft($(this).scrollLeft() - mov * speed)
+    //webkit
+    $('body').scrollLeft($('body').scrollLeft() - mov * speed)
+    // return false; //縦スクロール不可
+})
