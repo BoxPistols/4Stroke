@@ -5,6 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>4Stroke</title>
+  <link rel="icon" href="./img/logo.svg" type="image/svg+xml">
   <style>@charset "UTF-8";
 @import "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css";
 @import url("https://fonts.googleapis.com/css2?family=Kaisei+Opti:wght@400;500&display=swap");
@@ -86,6 +87,12 @@ p {
   line-height: 1.8;
 }
 
+/**
+  * ======= Flex Box =======
+  * Example:
+  *   @include flex(center, center)
+  *   @include flex(null, end, column, nowrap)
+*/
 input.title {
   height: 2em;
   background: #fff2;
@@ -102,41 +109,47 @@ input.title {
 }
 
 header.header {
-  padding-left: 1vw;
   position: fixed;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   left: 1vw;
   top: 1vh;
+  color: white;
+  padding-left: 1vw;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: center;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: center;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
 }
-
-h1 {
-  margin: 4px 0 8px;
-  line-height: 1.5;
-  font-size: 2.8em;
+header.header h1.logo-title {
+  font-size: 1.2em;
   font-weight: 400;
-  margin: 0.15em 0.2em;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-  letter-spacing: 0ch;
-  line-height: 1;
-}
-
-.logo-s {
-  font-size: 1.6em;
   letter-spacing: 0.1ch;
-  border-bottom: 1px solid silver;
-  line-height: 1.3;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
-
-#message {
-  left: 13vw;
+header.header .logo-img img {
+  width: 32px;
+  padding: 4px;
+}
+header.header #message {
   font-size: 1em;
-  position: fixed;
-  top: 30px;
-  color: #f8f8f890;
+  margin-left: 8px;
+  text-shadow: 0 0 3px rgba(255, 255, 0, 0.6);
 }
 
 h2,
@@ -243,76 +256,138 @@ h3 {
 }
   </style>
   <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-  <script>document.addEventListener('DOMContentLoaded', function () {
+  <script>/*
+const getCssProps = (_searchElm, _target, _styling) => { // (ボタングループ, 表示のターゲット要素, 取得スタイル)
+    for (let i = 0; i < _searchElm.length; i++) { // for文で回す
+        if (_searchElm[i] = !null) {
+            _searchElm[i].addEventListener('click', function () {
+
+                let tx = this.innerText; // ボタンのテキストを取得
+                let para = document.querySelector(_target); // セレクターでクラスを取得
+
+                let style = para.style[`${_styling}`]; // styleの中身を設定[CSSのプロパティ]
+                style = tx; // ボタンのテキストを値としてセット
+                para.style.setProperty(_styling, tx); // styleの中身を設定[CSSのプロパティ, <- ボタンのテキスト]
+
+                // コードの可視化
+                let codeAll = window.getComputedStyle(container);
+                let codeAllselfElement = window.getComputedStyle(selfElement)
+
+
+                resultCssCode.innerText = getCssResult + getCssResultSelf;
+
+                // Debug
+                let compStyles = window.getComputedStyle(para); // styleの中身を取得
+                let result = compStyles[`${_styling}`]; // 最終styleの中身を取得
+                console.log(style, result); // 当てにいっているスタイル, 最終styleの中身
+            });
+        }
+    }
+};
+
+const getSelectorAll = (x) => {
+    return document.querySelectorAll(`.buttons.${x} > button`);
+};
+
+const resProp = (_searchElm, _target, _styling) => { // (ボタングループ, 表示のターゲット要素, 取得スタイル)
+    _res = getSelectorAll(_searchElm); // ボタングループを取得
+    getCssProps(_res, _target, _styling); // ターゲットに値を当てる
+};
+*/
+
+document.addEventListener("DOMContentLoaded", function () {
     /**
      * 汎用関数
      * @_x = ターゲットエレメント
      */
-    let qaAll = (_x) => document.querySelectorAll(_x)
-    let strokeTexts = qaAll('.garage-strokes .mol_text')
+    let qsAll = (_x) => document.querySelectorAll(_x);
+    // let qs = (_x) => document.querySelector(_x);
 
     // メモ入力欄の設定　LocalStorageの取得
-    const elmTexts = strokeTexts
-    elmTexts.forEach((elm) => {
-        index = [].slice.call(elmTexts).indexOf(elm)
-        let strokeClass = qaAll('textarea.stroke')
-        strokeClass[index].value = localStorage.getItem('stroke' + (index + 1))
-    })
+    let strokeTexts = qsAll(".garage-strokes .mol_text");
+    strokeTexts.forEach((elm) => {
+        index = [].slice.call(strokeTexts).indexOf(elm);
+        let strokeClass = qsAll("textarea.stroke");
+        strokeClass[index].value = localStorage.getItem("stroke" + (index + 1));
+    });
+
 
     // タイトルの設定　LocalStorageの取得
-    let strokeTitles = qaAll('.garage .title')
+    let strokeTitles = qsAll(".garage .title");
     strokeTitles.forEach((elm) => {
-        index = [].slice.call(strokeTitles).indexOf(elm)
-        let strokeTitle = qaAll('input.title')
+        index = [].slice.call(strokeTitles).indexOf(elm);
+        let strokeTitle = qsAll("input.title");
         strokeTitle[index].value = localStorage.getItem(
-            'stroke-title' + (index + 1)
-        )
-        // $('.stroke-title' + index).val(
-        //     localStorage.getItem('stroke-title' + index)
-        // )
-    })
+            "stroke-title" + (index + 1)
+        );
+    });
+
+    // メモ入力、リアルタイムでLocalStorageに保存    
+    let handleTextArea = qsAll("textArea")
+    // // console.log(i)
+    // handleTextArea.forEach((elm) => {
+    //     index = [].slice.call(handleTextArea).indexOf(elm);
+    //     console.log(index)
+    for (let i = 0; i < handleTextArea.length; i++) {
+        handleTextArea[i].addEventListener("keyup", event => {
+            // console.log(("stroke" + (i + 1)))
+            localStorage.setItem("stroke" + (i + 1), event.target.value);
+            $("#message").fadeIn(300).fadeOut(300);
+        });
+    }
+
+    // $("textarea").on("keyup", function () {
+    //     let i = $("textarea").index(this) + 1;
+    //     localStorage.setItem("stroke" + i, $("#stroke" + i).val());
+    //     // console.log($(this).data('stroke') + i + 'が押された');
+    //     $("#message").fadeIn(300).fadeOut(300);
+    // });
+
+    // // タイトル入力、リアルタイムでLocalStorageに保存
+    // $("input.title").on("keyup", function () {
+    //     let i = $(".title").index(this) + 1;
+    //     console.log(i);
+    //     localStorage.setItem("stroke-title" + i, $(".stroke-title" + i).val());
+    //     console.log($(this).data("stroke") + i + "が押された");
+    //     $("#message").fadeIn(300).fadeOut(300);
+    // });
+    //  テーマEnd
 
     // 削除機能
-    /**
-     * FIXME! to Vanilla
-     */
-    $('input.clear').on('click', function () {
-        let i = $('input.clear').index(this) + 1
-        console.log($(this).data('clear') + i + 'が押された')
+    let handleClear = qsAll("input.clear")
+    handleClear.forEach((elm) => {
+        strokeTitles.forEach((elm) => {
+            index = [].slice.call(strokeTitles).indexOf(elm);
+            // let handleClearTarget = qsAll("input.clear")
+            // console.log(index + " / " + elm.dataset)
+            // handleClearTarget[index].value = localStorage.getItem(
+            //     "stroke" + (index + 1)
+            // );
+        });
+    });
 
-        var retVal = confirm('消しマンボ?')
+    /*
+    $("input.clear").on("click", function () {
+        let i = $("input.clear").index(this) + 1;
+        // console.log($(this).data("clear") + i + "が押された");
+ 
+        var retVal = confirm("消しマンボ?");
         if (retVal == true) {
-            alert('闇に葬りマンボ...')
-            $('#stroke' + i).val('')
-            localStorage.removeItem('stroke' + i)
-            $('this').attr('disabled', true)
-            document.querySelector('#stroke' + i).value = ''
-            return true
+            alert("闇に葬りマンボ...");
+            $("#stroke" + i).val("");
+            localStorage.removeItem("stroke" + i);
+            $("this").attr("disabled", true);
+            document.querySelector("#stroke" + i).value = "";
+            return true;
         } else {
-            alert('やっぱやめとくわ')
-            return false
+            alert("やっぱやめとくわ");
+            return false;
         }
-        localStorage.removeItem('stroke' + i)
-    })
+        localStorage.removeItem("stroke" + i);
+    });
+    */
 
-    // メモ入力、リアルタイムでLocalStorageに保存
-    $('textarea').on('keyup', function () {
-        let i = $('textarea').index(this) + 1
-        localStorage.setItem('stroke' + i, $('#stroke' + i).val())
-        // console.log($(this).data('stroke') + i + 'が押された');
-        $('#message').fadeIn(300).fadeOut(300)
-    })
-
-    // タイトル入力、リアルタイムでLocalStorageに保存
-    $('input.title').on('keyup', function () {
-        let i = $('.title').index(this) + 1
-        console.log(i)
-        localStorage.setItem('stroke-title' + i, $('.stroke-title' + i).val())
-        console.log($(this).data('stroke') + i + 'が押された')
-        $('#message').fadeIn(300).fadeOut(300)
-    })
-    //  テーマEnd
-})
+});
 
 // Scroll
 // https://sterfield.co.jp/designer/横スクロールを可能にできる「jquery-mousewheel」を使用して/
@@ -326,12 +401,10 @@ h3 {
   <div id="message" style="display: none">Save..</div>
 </div>
 <header class="header">
-  <h1>4</h1>
-  <div class="logo-s">Stroke</div><span id="message" style="display: none">Save</span>
+  <div class="logo-img"><img src="./img/logo.svg"></div>
+  <h1 class="logo-title">4Stroke    </h1>
+  <div id="message" style="display: none">Auto Save...</div>
 </header>
-<div class="run_bottom">
-  <p id="message2" style="display: none">AutoSave..</p>
-</div>
 <div class="garages-container">
   <div class="garages"> 
     <div class="garage">
