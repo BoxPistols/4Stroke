@@ -155,6 +155,24 @@ h1 {
   position: fixed;
   top: 30px;
   color: #f8f8f890;
+  animation: fadeIn 2s;
+  animation-fill-mode: both;
+}
+@keyframes fadeIn {
+  0% {
+      opacity: 0;
+  }
+  100% {
+      opacity: 1;
+  }
+}
+@keyframes fadeOut {
+  0% {
+      opacity: 1;
+  }
+  100% {
+      opacity: 0;
+  }
 }
 
 h2,
