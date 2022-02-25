@@ -204,7 +204,23 @@ h3 {
 }
 .garages .garage-strokes .clear-area {
   display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
   align-items: center;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
   margin: 8px 1vw;
 }
 .garages .garage-strokes input[type=button] {
@@ -244,8 +260,24 @@ h3 {
   min-height: 8em;
   width: 96%;
   margin: auto;
-  justify-content: center;
   display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: center;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
   background-color: rgba(0, 0, 0, 0.4);
   font-size: 1em;
   border: 2px solid currentcolor !important;
@@ -321,10 +353,8 @@ h3 {
   for (let i = 0; i < handleClear.length; i++) {
     handleClear[i].addEventListener("click", (event) => {
       let confirmRemove = confirm("消しマンボ?");
-
       if (confirmRemove == true) {
         alert("闇に葬りマンボ...");
-        // $("#message").fadeIn(300).fadeOut(300);
         localStorage.removeItem("stroke" + (i + 1));
         let targetRemoveText = qs("textarea.stroke" + (i + 1));
         targetRemoveText.value = "";

@@ -58,10 +58,8 @@ document.addEventListener("DOMContentLoaded", function () {
   for (let i = 0; i < handleClear.length; i++) {
     handleClear[i].addEventListener("click", (event) => {
       let confirmRemove = confirm("消しマンボ?");
-
       if (confirmRemove == true) {
         alert("闇に葬りマンボ...");
-        // $("#message").fadeIn(300).fadeOut(300);
         localStorage.removeItem("stroke" + (i + 1));
         let targetRemoveText = qs("textarea.stroke" + (i + 1));
         targetRemoveText.value = "";
