@@ -79,6 +79,12 @@ p {
   line-height: 1.8;
 }
 
+/**
+  * ======= Flex Box =======
+  * Example:
+  *   @include flex(center, center)
+  *   @include flex(null, end, column, nowrap)
+*/
 input.title {
   height: 2em;
   background: #fff2;
@@ -95,41 +101,47 @@ input.title {
 }
 
 header.header {
-  padding-left: 1vw;
   position: fixed;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   left: 1vw;
   top: 1vh;
+  color: white;
+  padding-left: 1vw;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: center;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: center;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
 }
-
-h1 {
-  margin: 4px 0 8px;
-  line-height: 1.5;
-  font-size: 2.8em;
+header.header h1.logo-title {
+  font-size: 1.2em;
   font-weight: 400;
-  margin: 0.15em 0.2em;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-  letter-spacing: 0ch;
-  line-height: 1;
-}
-
-.logo-s {
-  font-size: 1.6em;
   letter-spacing: 0.1ch;
-  border-bottom: 1px solid silver;
-  line-height: 1.3;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
-
-#message {
-  left: 13vw;
+header.header .logo-img img {
+  width: 32px;
+  padding: 4px;
+}
+header.header #message {
   font-size: 1em;
-  position: fixed;
-  top: 30px;
-  color: #f8f8f890;
+  margin-left: 8px;
+  text-shadow: 0 0 3px rgba(255, 255, 0, 0.6);
 }
 
 h2,
