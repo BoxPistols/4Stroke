@@ -99,6 +99,40 @@ p {
   line-height: 1.8;
 }
 
+nav.garages-nav {
+  position: fixed;
+  top: 1vh;
+  right: 2vw;
+  z-index: 10;
+}
+nav.garages-nav ul {
+  list-style: none;
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: baseline;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+nav.garages-nav ul li {
+  margin: 0 0.5em;
+}
+nav.garages-nav ul li a {
+  color: #000;
+}
+
 input.title {
   height: 2em;
   background: #fff2;

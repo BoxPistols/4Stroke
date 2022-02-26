@@ -1,0 +1,16 @@
+nav.garages-nav {
+  position: fixed;
+  top: 1vh;
+  right: 2vw;
+  z-index: 10;
+  ul {
+    list-style: none;
+    @include flex(null, baseline);
+    li {
+      margin: 0 0.5em;
+      a {
+        color: #000;
+      }
+    }
+  }
+}

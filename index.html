@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>4Stroke</title>
+  <title>4Strokes</title>
   <link rel="icon" href="./img/logo.svg" type="image/svg+xml">
   <style>@charset "UTF-8";
 /**
@@ -105,6 +105,40 @@ p {
   margin: 0.1em 0 0.5em;
   padding: 0;
   line-height: 1.8;
+}
+
+nav.garages-nav {
+  position: fixed;
+  top: 1vh;
+  right: 2vw;
+  z-index: 10;
+}
+nav.garages-nav ul {
+  list-style: none;
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: baseline;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+nav.garages-nav ul li {
+  margin: 0 0.5em;
+}
+nav.garages-nav ul li a {
+  color: #000;
 }
 
 input.title {
@@ -310,22 +344,13 @@ h3 {
   background-color: rgba(0, 0, 0, 0.5);
 }
   </style>
+  <script src="https://bundle.run/css-scroll-snap-polyfill@0.1.2"></script>
   <script>document.addEventListener("DOMContentLoaded", function () {
-//   gsap.registerPlugin(ScrollTrigger);
-//   let sections = gsap.utils.toArray(".garage");
-//   console.log(sections);
-//   gsap.to(sections, {
-//     xPercent: -100 * (sections.length - 1),
-//     ease: "none",
-//     scrollTrigger: {
-//       trigger: "body",
-//       pin: true,
-//       scrub: 1,
-//       snap: 1 / (sections.length - 1),
-//       // base vertical scrolling on how wide the container is so it feels more natural.
-//       end: "+=1000",
-//     },
-//   });
+  // https://tech.arms-soft.co.jp/entry/2020/01/29/090000
+  const init = function(){
+    cssScrollSnapPolyfill()
+  }
+  init();
 
   /**
    * 汎用関数
@@ -408,12 +433,20 @@ h3 {
 </body>
 <header class="header">
   <div class="logo-img"><img src="./img/logo.svg"></div>
-  <h1 class="logo-title">4Stroke    </h1>
+  <h1 class="logo-title">4Strokes    </h1>
   <div class="is-hidden" id="message">Auto Save...</div>
 </header>
+<nav class="garages-nav">
+  <ul>
+    <li><a class="js-smooth-scroll" href="#garageA">garageA</a></li>
+    <li><a class="js-smooth-scroll" href="#garageB">garageB</a></li>
+    <li><a class="js-smooth-scroll" href="#garageC">garageC</a></li>
+    <li><a class="js-smooth-scroll" href="#garageD">garageD</a></li>
+  </ul>
+</nav>
 <div class="garages-container">
   <div class="garages"> 
-    <div class="garage">
+    <div class="garage" id="garageA">
       <h2>A</h2>
       <input class="title stroke-title stroke-title1" data-stroke="stroke-title1" name="stroke-title1" value="stroke-title1" autocomplete="off" data-i="1">
       <div class="garage-strokes">
@@ -447,7 +480,7 @@ h3 {
         </div>
       </div>
     </div>
-    <div class="garage">
+    <div class="garage" id="garageB">
       <h2>B</h2>
       <input class="title stroke-title stroke-title2" data-stroke="stroke-title2" name="stroke-title2" value="stroke-title2" autocomplete="off" data-i="5">
       <div class="garage-strokes">
@@ -481,7 +514,7 @@ h3 {
         </div>
       </div>
     </div>
-    <div class="garage">
+    <div class="garage" id="garageC">
       <h2>C</h2>
       <input class="title stroke-title stroke-title3" data-stroke="stroke-title3" name="stroke-title3" value="stroke-title3" autocomplete="off" data-i="9">
       <div class="garage-strokes">
@@ -515,7 +548,7 @@ h3 {
         </div>
       </div>
     </div>
-    <div class="garage">
+    <div class="garage" id="garageD">
       <h2>D</h2>
       <input class="title stroke-title stroke-title4" data-stroke="stroke-title4" name="stroke-title4" value="stroke-title4" autocomplete="off" data-i="13">
       <div class="garage-strokes">
