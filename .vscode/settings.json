@@ -1,4 +1,5 @@
 {
-  "files.autoSave": "afterDelay",
-  "html.format.wrapAttributes": "preserve"
+  "html.format.wrapAttributes": "preserve",
+  "csscomb.formatOnSave": true,
+  "files.autoSaveDelay": 3000
 }

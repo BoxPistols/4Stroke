@@ -8,76 +8,82 @@
 @import url("https://fonts.googleapis.com/css2?family=Oswald&display=swap");
 
 :root {
-  --color1: #f92672;
-  --color2: #a6e22e;
-  --color3: #fd971f;
-  --color4: #66d9ef;
-  --color5: #ae81ff;
-  --color6: #e6db74;
-  --color7: #75715e;
---color8: #272822;
-
-  --white: whitesmoke;
+  --color1:#f92672;
+  --color2:#a6e22e;
+  --color3:#fd971f;
+  --color4:#66d9ef;
+  --color5:#ae81ff;
+  --color6:#e6db74;
+  --color7:#75715e;
+  --color8:#272822;
+  --white:whitesmoke;
 }
 
 ::-webkit-scrollbar {
-  width: 12px;
-  height: 6px;
+  width:12px;
+  height:6px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: currentColor;
-  border-radius: 8px;
+  border-radius:8px;
+  background:currentColor;
 }
 
 * {
-  outline: none;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+
+  outline:none;
 }
 
 html {
-  box-sizing: border-box;
-  -webkit-font-smoothing: antialiased;
+  box-sizing:border-box;
+  -webkit-font-smoothing:antialiased;
 }
 
 body {
-  font-family: YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans",
-    "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
-  scroll-behavior: smooth;
-  display: flex;
+  display:flex;
   // overflow-x: scroll;
-  overflow: hidden;
-  min-width: 100vw;
-  height: 100vh;
+  overflow:hidden;
+  min-width:100vw;
+  height:100vh;
+
+  font-family:YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans",
+  "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
+
+  scroll-behavior:smooth;
   @include flex(null, center);
   &:before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    display: block;
-    width: 100vw;
-    height: 100vh;
-    background-image: linear-gradient(
-        45deg,
-        rgba(purple, 0.82),
-        rgba(blue, 0.82)
-      ),
-      url("https://picsum.photos/1200/800/?image=133");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    color: white;
-    backdrop-filter: blur(6px);
-    background-size: cover;
-    z-index: -1;
+    position:fixed;
+    z-index:-1;
+    top:0;
+    left:0;
+    display:block;
+    width:100vw;
+    height:100vh;
+
+    content:"";
+
+    color:white;
+    background-image:linear-gradient(
+    45deg,
+    rgba(purple, .82),
+    rgba(blue, .82)
+    ),
+    url("https://picsum.photos/1200/800/?image=133");
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size:cover;
+    background-size:cover;
+
+    backdrop-filter:blur(6px);
   }
 }
 
 p {
-  margin: 0.1em 0 0.5em;
-  padding: 0;
-  line-height: 1.8;
+  margin:.1em 0 .5em;
+  padding:0;
+
+  line-height:1.8;
 }

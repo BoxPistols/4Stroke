@@ -1,127 +1,125 @@
 .garages-container {
-  scroll-behavior: smooth;
-  
-  min-width: 100vw;
-  height: 100%;
-  overflow-x: scroll;
-  backdrop-filter: blur(2px);
-  padding: 8vh 2vw 1vh;
-  border: 1px solid rgba(#fff, 0.2);
-  background-color: rgba(#fff, 0.05);
-  border-radius: 8px;
+  overflow-x:scroll;
+  min-width:100vw;
+  height:100%;
+  padding:8vh 2vw 1vh;
+
+  border:1px solid rgba(#fff, .2);
+  border-radius:8px;
+  background-color:rgba(#fff, .05);
+
+  scroll-behavior:smooth;
+  backdrop-filter:blur(2px);
   // 横スクロールプラグイン対応
-  scroll-snap-type: y mandatory;
-  scroll-snap-type: mandatory;
-  scroll-snap-points-y: repeat(100vw);
-  scroll-snap-type: x mandatory;
+  scroll-snap-type:y mandatory;
+  scroll-snap-type:mandatory;
+  scroll-snap-points-y:repeat(100vw);
+  scroll-snap-type:x mandatory;
   @media only screen and (max-height: 780px) {
-    // overflow-y: auto;
-    // overflow: auto;
   }
 }
 
 .garages {
-  width: auto;
-  display: flex;
-  padding: 1vh 2vw;
-  
+  display:flex;
+  width:auto;
+  padding:1vh 2vw;
+
+  $c4:var(--color4);
+
   .garage {
-    padding: 0 2vw;
+    padding:0 2vw;
     // 横スクロールプラグイン対応
-    scroll-snap-align: start;
+
+    scroll-snap-align:start;
   }
 
   .garage-strokes {
-    display: grid;
-    grid-template-columns: repeat(2, auto);
-    border-radius: 8px;
-    overflow: auto;
-    margin: 1vw;
+    display:grid;
+    overflow:auto;
+    grid-template-columns:repeat(2, auto);
+    margin:1vw;
+
+    border-radius:8px;
   }
 
   //===== Input Text
   .garage-strokes .garage-stroke-box {
-    background: #0004;
-    border-radius: 6px;
-    padding: 1vh 1vw;
-    width: calc(100vw / 2 - 8vw);
-    margin: 4px;
-    border: 1px solid rgba(#fff, 0.4);
-  }
+    width:calc(100vw / 2 - 8vw);
+    margin:4px;
+    padding:1vh 1vw;
 
-  $c4: var(--color4);
+    border:1px solid rgba(#fff, .4);
+    border-radius:6px;
+    background:#0004;
+  }
 
   .garage-strokes {
     // Delete Button
     .clear-area {
+      margin:8px 1vw;
+
       @include flex(null, center);
-      margin: 8px 1vw;
     }
     input[type="button"] {
-      background: #0005;
-      color: currentcolor;
-      border-color: currentcolor;
+      color:currentcolor;
+      border-color:currentcolor;
+      background:#0005;
     }
     .garage-stroke-box:nth-child(1) {
-      h3,
-      textarea,
-      input[type="button"] {
-        color: $c4;
+      h3, textarea, input[type="button"] {
+        color:$c4;
         // border-color: $c4;
       }
     }
     .garage-stroke-box:nth-child(2) {
-      h3,
-      textarea,
-      input[type="button"] {
-        color: var(--color2);
-        border-color: var(--color2);
+      h3, textarea, input[type="button"] {
+        color:var(--color2);
+        border-color:var(--color2);
       }
     }
     .garage-stroke-box:nth-child(3) {
-      h3,
-      textarea,
-      input[type="button"] {
-        color: var(--color3);
-        border-color: var(--color3);
+      h3, textarea, input[type="button"] {
+        color:var(--color3);
+        border-color:var(--color3);
       }
     }
     .garage-stroke-box:nth-child(4) {
-      h3,
-      textarea,
-      input[type="button"] {
-        color: var(--color1);
-        border-color: var(--color1);
+      h3, textarea, input[type="button"] {
+        color:var(--color1);
+        border-color:var(--color1);
       }
     }
   }
 
   //===== input area
   textarea {
-    font-family: YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans",
-      "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
-    resize: none;
-    overflow: auto;
-    padding: 0.5ch 1ch;
-    font-size: 0.8em;
-    min-height: 8em;
-    width: 96%;
-    margin: auto;
+    overflow:auto;
+    width:96%;
+    min-height:8em;
+    margin:auto;
+    padding:.5ch 1ch;
+
+    resize:none;
+    transition:.15s;
+
+    border:2px solid currentcolor !important;
+    border-radius:8px;
+    background-color:rgba(#000, .4);
+
+    font-family:YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans",
+    "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
+    font-size:.8em;
+    font-size:1em;
+
     @include flex(center);
-    background-color: rgba(#000, 0.4);
-    font-size: 1em;
-    border: 2px solid currentcolor !important;
-    border-radius: 8px;
-    transition: 0.15s;
     &:hover {
-      border-color: white !important;
+      border-color:white !important;
       // box-shadow: 0 0 2px #ccc;
-      background-color: rgba(#000, 0.2);
+      background-color:rgba(#000, .2);
     }
-    &:focus,
-    &:focus-visible {
-      border: 2px solid currentcolor !important;
-      background-color: rgba(#000, 0.5);
+    &:focus, &:focus-visible {
+      border:2px solid currentcolor !important;
+      background-color:rgba(#000, .5);
       // box-shadow: 0 0 4px #ccc;
     }
   }
@@ -129,7 +127,6 @@
 // ===== Media
 // @media only screen and (max-width: 640px) {
 //  .garage-strokes .garage-stroke-box {
-//   flex-wrap: wrap;
-//   width: 94%;
+// TODO: Mobile
 //  }
 // }
