@@ -57,9 +57,12 @@ html {
 
 body {
 	scroll-behavior: smooth;
+	@include flex(null, center);
+	min-width: 100vw;
+	height: 100vh;
+	
 	font-family: "Kaisei Opti", serif;
 	// background-image: url(https://picsum.photos/1200/800/?image=133);
-
 	&:before {
 		content: "";
 		position: fixed;
@@ -79,16 +82,6 @@ body {
 		z-index: -1;
 	}
 
-	display: flex;
-	padding: 1vh;
-	min-height: 90vh;
-	padding-top: 10vh;
-	overflow-y: hidden;
-	overflow-x: scroll;
-
-	// @media only screen and (max-height: 680px) {
-	// 	overflow-y: auto;
-	// }
 }
 
 p {

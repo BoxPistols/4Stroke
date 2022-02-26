@@ -13,7 +13,7 @@ mixin Strokes(_titleName, _num, _titleNum)
 
         .garage-strokes
             //- Loop State
-            + StrokeState("Key", _num, "A")
+            + StrokeState("Key", parseInt(_num), "A")
             + StrokeState("Issue", parseInt(_num + 1) , "B")
             + StrokeState("Action", parseInt(_num + 2), "C")
             + StrokeState("Publish", parseInt(_num + 3), "D")

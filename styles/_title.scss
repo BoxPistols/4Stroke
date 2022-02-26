@@ -23,6 +23,7 @@ header.header {
 
   display: grid;
   grid-template-columns: auto auto auto;
+  z-index: 10;
   @include flex(center, center);
 
   .logo-img {
