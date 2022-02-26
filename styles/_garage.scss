@@ -4,12 +4,7 @@
   height:100%;
   padding:8vh 2vw 1vh;
 
-  border:1px solid rgba(#fff, .2);
-  border-radius:8px;
-  background-color:rgba(#fff, .05);
-
   scroll-behavior:smooth;
-  backdrop-filter:blur(2px);
   // 横スクロールプラグイン対応
   scroll-snap-type:y mandatory;
   scroll-snap-type:mandatory;
@@ -27,9 +22,14 @@
   $c4:var(--color4);
 
   .garage {
-    padding:0 2vw;
-    // 横スクロールプラグイン対応
+    margin:0 12px;
+    padding:8px 8px 16px;
 
+    border:1px solid rgba(#fff, .2);
+    border-radius:8px;
+    background-color:rgba(#fff, .05);
+
+    backdrop-filter:blur(2px);
     scroll-snap-align:start;
   }
 
@@ -37,7 +37,7 @@
     display:grid;
     overflow:auto;
     grid-template-columns:repeat(2, auto);
-    margin:1vw;
+    margin:0 1vw;
 
     border-radius:8px;
   }
@@ -56,9 +56,9 @@
   .garage-strokes {
     // Delete Button
     .clear-area {
-      margin:8px 1vw;
+      margin:8px 0;
 
-      @include flex(null, center);
+      @include flex(end, center);
     }
     input[type="button"] {
       color:currentcolor;
@@ -94,7 +94,8 @@
   //===== input area
   textarea {
     overflow:auto;
-    width:96%;
+    width:100%;
+    height:15vh;
     min-height:8em;
     margin:auto;
     padding:.5ch 1ch;

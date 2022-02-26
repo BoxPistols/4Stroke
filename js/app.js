@@ -5,6 +5,25 @@ document.addEventListener("DOMContentLoaded", function () {
   };
   init();
 
+  // キーボード反応
+  /*
+  window.onload = function () {
+    window.addEventListener("keydown", keydownfunc, true);
+  };
+
+  const keydownfunc = function (event) {
+    const code = event.keyCode;
+    switch (code) {
+      case 37: // ←
+      case 38: // ↑
+      case 39: // →
+      case 40: // ↓
+        event.preventDefault();
+        console.log(code);
+    }
+  };
+  */
+
   /**
    * 汎用関数
    * @_x = ターゲットエレメント
@@ -30,16 +49,6 @@ document.addEventListener("DOMContentLoaded", function () {
     strokeClass[index].value = localStorage.getItem("stroke" + (index + 1));
   });
 
-  // タイトルの設定　LocalStorageの取得
-  let strokeTitles = qsAll(".garage .title");
-  strokeTitles.forEach((elm) => {
-    index = [].slice.call(strokeTitles).indexOf(elm);
-    let strokeTitle = qsAll("input.title");
-    strokeTitle[index].value = localStorage.getItem(
-      "stroke-title" + (index + 1)
-    );
-  });
-
   // メモ入力、リアルタイムでLocalStorageに保存
   let handleTextArea = qsAll("textArea");
   for (let i = 0; i < handleTextArea.length; i++) {
@@ -48,6 +57,16 @@ document.addEventListener("DOMContentLoaded", function () {
       autoSave();
     });
   }
+
+  // タイトルの設定　LocalStorageの取得
+  let strokeTitles = qsAll(".stroke-title");
+  strokeTitles.forEach((elm) => {
+    index = [].slice.call(strokeTitles).indexOf(elm);
+    let strokeTitle = qsAll(".stroke-title");
+    strokeTitle[index].value = localStorage.getItem(
+      "stroke-title" + (index + 1)
+    );
+  });
 
   // タイトル入力、リアルタイムでLocalStorageに保存
   let handleTitle = qsAll(".stroke-title");
@@ -80,25 +99,27 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Garage 削除機能
-  /**
-   let handleClear = qsAll("input.clear");
-   
-   for (let i = 0; i < handleClear.length; i++) {
-     handleClear[i].addEventListener("click", (event) => {
-       let confirmRemove = confirm("消しマンボ?");
-      if (confirmRemove == true) {
-        alert("闇に葬りマンボ...");
+
+  let garageClearA = qs("#clearA");
+  garageClearA.addEventListener("click", (event) => {
+    let confirmRemove = confirm(
+      event.target.value.replace("Delete /", "GARAGE-") + " を消しマンボ?"
+    );
+    if (confirmRemove == true) {
+      alert("闇に葬りマンボ...");
+
+      for (let i = 0; i < 4; i++) {
         localStorage.removeItem("stroke" + (i + 1));
         let targetRemoveText = qs("textarea.stroke" + (i + 1));
         targetRemoveText.value = "";
-        // handleClear[i].setAttribute("disabled", true);
         autoSave();
-        return true;
-      } else {
-        alert("やっぱやめとくわ");
-        return false;
       }
-    });
-  }
-  */
+      return true;
+    } else {
+      alert("やっぱやめとくわ");
+      return false;
+    }
+  });
+
+  // Finished
 });

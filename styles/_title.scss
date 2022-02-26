@@ -1,20 +1,4 @@
 // TODO:
-input.title {
-  display:flex;
-  min-width:30vw;
-  height:2em;
-  margin:auto 0;
-  padding:.2em .8em;
-
-  color:#fff;
-  border:none;
-  border:1px solid #f8f8ff;
-  border-radius:1em;
-  outline:none;
-  background:#fff2;
-
-  font-size:1em;
-}
 
 header.header {
   position:fixed;
@@ -29,11 +13,12 @@ header.header {
 
   font-family:"Oswald", sans-serif;
 
+  filter:drop-shadow(2px 4px 6px black);
   @include flex(center, center);
 
   .logo-img {
     img {
-      width:42px;
+      width:3VW;
       padding:4px;
     }
   }
@@ -44,7 +29,7 @@ header.header {
     letter-spacing:.05ch;
 
     text-shadow:1px 1px 2px rgba(#000, .2);
-    font-size:32px;
+    font-size:2VW;
     font-weight:400;
   }
 
@@ -78,4 +63,46 @@ h3 {
 .is-hidden {
   visibility:hidden;
   // visibility: visible;
+}
+
+// garage-head
+h2.garage-title {
+  margin:0 calc(1vw + 4px) 8px;
+
+  font-size:2.4VW;
+}
+.garage-head {
+  margin:0 calc(1vw + 4px) 4px;
+}
+
+input.stroke-title {
+  display:flex;
+  width:16em;
+  max-width:50vw;
+  height:2em;
+  margin:0;
+  padding:.1em .8em;
+
+  text-align:center;
+
+  color:#fff;
+  border:none;
+  border:1px solid #f8f8ff;
+  border-radius:1em;
+  outline:none;
+  background:#fff2;
+
+  font-size:1.3em;
+}
+
+.clear-garage-box >input[type="button"] {
+  // color:tomato;
+  border:none;
+  // border:1px solid tomato;
+  outline:none;
+  background:#fff2;
+
+  font-size:1em;
+
+  @include flex(center, center);
 }

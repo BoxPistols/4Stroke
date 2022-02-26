@@ -5,13 +5,313 @@
   *   @include flex(center, center)
   *   @include flex(null, end, column, nowrap)
 */
+@import "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css";
+@import url("https://fonts.googleapis.com/css2?family=Oswald&display=swap");
+.fx {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+
+.fx-c {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: center;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+
+.fx-c-c {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: center;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: center;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+
+.fx-c-b {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: center;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: baseline;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+
+.fx-c-e {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: center;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: flex-end;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+
+.fx-n-c {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: center;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+
+.fx-e {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: flex-end;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+
+.fx-n-e {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: flex-end;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+
+.fx-b {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: space-between;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+
+.fx-b-c {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: space-between;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: center;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+
+.fx-b-e {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: space-between;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: flex-end;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+
+.fx-s {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: space-around;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+
+.fx-a-c {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: space-around;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: center;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+
+.fx-a-e {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: space-around;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: flex-end;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+
 /**
  * font-jp https://yakuhanjp.qranoko.jp/
  * font-en https://fonts.google.com/specimen/Oswald
  * 横スクロール https://bagelee.com/design/css/scroll_snap_with_css/
  */
-@import "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css";
-@import url("https://fonts.googleapis.com/css2?family=Oswald&display=swap");
 :root {
   --color1:#f92672;
   --color2:#a6e22e;
@@ -51,6 +351,7 @@ body {
   overflow: hidden;
   min-width: 100vw;
   height: 100vh;
+  padding: 4px 12px;
   font-family: YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
   scroll-behavior: smooth;
   display: flex;
@@ -97,6 +398,10 @@ p {
   line-height: 1.8;
 }
 
+input[type=button] {
+  margin: 0;
+}
+
 nav.garages-nav {
   position: fixed;
   z-index: 10;
@@ -132,21 +437,6 @@ nav.garages-nav ul li a {
   color: white;
 }
 
-input.title {
-  display: flex;
-  min-width: 30vw;
-  height: 2em;
-  margin: auto 0;
-  padding: 0.2em 0.8em;
-  color: #fff;
-  border: none;
-  border: 1px solid #f8f8ff;
-  border-radius: 1em;
-  outline: none;
-  background: #fff2;
-  font-size: 1em;
-}
-
 header.header {
   position: fixed;
   z-index: 10;
@@ -157,6 +447,7 @@ header.header {
   padding-left: 1vw;
   color: white;
   font-family: "Oswald", sans-serif;
+  filter: drop-shadow(2px 4px 6px black);
   display: flex;
   /**
     * justify-content / Horizontal ===（1st Argument）
@@ -178,14 +469,14 @@ header.header {
   */
 }
 header.header .logo-img img {
-  width: 42px;
+  width: 3VW;
   padding: 4px;
 }
 header.header h1.logo-title {
   margin: 0 0 8px 4px;
   letter-spacing: 0.05ch;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-  font-size: 32px;
+  font-size: 2VW;
   font-weight: 400;
 }
 header.header #message {
@@ -212,17 +503,64 @@ h3 {
   visibility: hidden;
 }
 
+h2.garage-title {
+  margin: 0 calc(1vw + 4px) 8px;
+  font-size: 2.4VW;
+}
+
+.garage-head {
+  margin: 0 calc(1vw + 4px) 4px;
+}
+
+input.stroke-title {
+  display: flex;
+  width: 16em;
+  max-width: 50vw;
+  height: 2em;
+  margin: 0;
+  padding: 0.1em 0.8em;
+  text-align: center;
+  color: #fff;
+  border: none;
+  border: 1px solid #f8f8ff;
+  border-radius: 1em;
+  outline: none;
+  background: #fff2;
+  font-size: 1.3em;
+}
+
+.clear-garage-box > input[type=button] {
+  border: none;
+  outline: none;
+  background: #fff2;
+  font-size: 1em;
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: center;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: center;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+}
+
 .garages-container {
   overflow-x: scroll;
   min-width: 100vw;
   height: 100%;
   padding: 8vh 2vw 1vh;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.05);
   scroll-behavior: smooth;
-  -webkit-backdrop-filter: blur(2px);
-          backdrop-filter: blur(2px);
   scroll-snap-type: y mandatory;
   scroll-snap-type: mandatory;
   scroll-snap-points-y: repeat(100vw);
@@ -234,14 +572,20 @@ h3 {
   padding: 1vh 2vw;
 }
 .garages .garage {
-  padding: 0 2vw;
+  margin: 0 12px;
+  padding: 8px 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(2px);
+          backdrop-filter: blur(2px);
   scroll-snap-align: start;
 }
 .garages .garage-strokes {
   display: grid;
   overflow: auto;
   grid-template-columns: repeat(2, auto);
-  margin: 1vw;
+  margin: 0 1vw;
   border-radius: 8px;
 }
 .garages .garage-strokes .garage-stroke-box {
@@ -253,12 +597,13 @@ h3 {
   background: #0004;
 }
 .garages .garage-strokes .clear-area {
-  margin: 8px 1vw;
+  margin: 8px 0;
   display: flex;
   /**
     * justify-content / Horizontal ===（1st Argument）
     * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
   */
+  justify-content: flex-end;
   /**
     * align-items / Vertical |||（2nd Argument）
     * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
@@ -295,7 +640,8 @@ h3 {
 }
 .garages textarea {
   overflow: auto;
-  width: 96%;
+  width: 100%;
+  height: 15vh;
   min-height: 8em;
   margin: auto;
   padding: 0.5ch 1ch;

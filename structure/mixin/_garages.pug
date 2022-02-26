@@ -2,15 +2,18 @@ include _strokeState.pug
 
 mixin Strokes(_titleName, _num, _titleNum)
     .garage(id="garage" + _titleName)
-        h2= _titleName
-        input(class="title stroke-title stroke-title"+ _titleNum,
-            data-stroke="stroke-title" +  _titleNum,
-            name="stroke-title" +  _titleNum,
-            value="stroke-title" +  _titleNum
-            autocomplete="off"
-            data-i= _num,
-        )
-
+        h2.garage-title(class="garage-title" + _titleName)= "GARAGE" + "-" + _titleName
+        div.fx-b.garage-head(class="garage-head" + _titleName)
+            input(class="stroke-title stroke-title"+ _titleNum,
+                data-stroke="stroke-title" +  _titleNum,
+                name="stroke-title" +  _titleNum,
+                value="stroke-title" +  _titleNum
+                autocomplete="off"
+                data-i= _num,
+            )
+            div.clear-garage-box
+                input(id="clear"+_titleName data-clear="clear"+_titleName, type="button" value="Delete" + " / " + _titleName)
+        
         .garage-strokes
             //- Loop State
             + StrokeState("Key", parseInt(_num), "A")

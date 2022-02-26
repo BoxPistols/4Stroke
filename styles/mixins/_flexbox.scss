@@ -5,30 +5,30 @@
   *   @include flex(center, center)
   *   @include flex(null, end, column, nowrap)
 */
-@mixin flex($justify: null, $align: null, $column: null, $wrap: null) {
-  display: flex;
+@mixin flex($justify:null, $align:null, $column:null, $wrap:null) {
+  display:flex;
   /**
     * justify-content / Horizontal ===（1st Argument）
     * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
   */
   @if $justify==start {
     // Left align |||--- default
-    justify-content: flex-start;
+    justify-content:flex-start;
   } @else if $justify==end {
     // Align right ---|||
-    justify-content: flex-end;
+    justify-content:flex-end;
   } @else if $justify==center {
     // Centering -|||-
-    justify-content: center;
+    justify-content:center;
   } @else if $justify==between {
     // Both ends |-|-|
-    justify-content: space-between;
+    justify-content:space-between;
   } @else if $justify==around {
     // Elements Equivalent -|-|-|-
-    justify-content: space-around;
+    justify-content:space-around;
   } @else if $justify==evenly {
     // Spacing Equivalent -|-|-|-
-    justify-content: space-evenly;
+    justify-content:space-evenly;
   } @else {
     // null = write: null
   }
@@ -38,19 +38,19 @@
   */
   @if $align==start {
     // Upper Align ⁻⁻⁻ default
-    align-items: flex-start;
+    align-items:flex-start;
   } @else if $align==end {
     // BottomAlign ___
-    align-items: flex-end;
+    align-items:flex-end;
   } @else if $align==center {
     // Centering ---
-    align-items: center;
+    align-items:center;
   } @else if $align==baseline {
     // Base Line -=-
-    align-items: baseline;
+    align-items:baseline;
   } @else if $align==stretch {
     // Expand Height |||
-    align-items: stretch;
+    align-items:stretch;
   } @else if $align==null {
     // empty
   }
@@ -60,13 +60,13 @@
   */
   @if $column==row {
     // Horizontal Column === default
-    flex-direction: row;
+    flex-direction:row;
   } @else if $column==column {
     // Vertical Column |||
-    flex-direction: column;
+    flex-direction:column;
   } @else if $column==reverse {
     // ToUp ↑↑↑
-    flex-direction: column-reverse;
+    flex-direction:column-reverse;
   } @else if $column==null {
     // empty
   }
@@ -76,14 +76,58 @@
   */
   @if $wrap==wrap {
     // Do Wrap --|↓
-    flex-wrap: wrap;
+    flex-wrap:wrap;
   } @else if $wrap==nowrap {
     // Not Wrap --|--> *default
-    flex-wrap: nowrap;
+    flex-wrap:nowrap;
   } @else if $wrap==reverse {
     // Upper From Bottom ↑↑↑
-    flex-wrap: wrap-reverse;
+    flex-wrap:wrap-reverse;
   } @else if $wrap==null {
     // empty
   }
+}
+
+// Utility FlexBox
+.fx {
+  @include flex;
+}
+.fx-c {
+  @include flex(center);
+}
+.fx-c-c {
+  @include flex(center, center);
+}
+.fx-c-b {
+  @include flex(center, baseline);
+}
+.fx-c-e {
+  @include flex(center, end);
+}
+.fx-n-c {
+  @include flex(null, center);
+}
+.fx-e {
+  @include flex(end);
+}
+.fx-n-e {
+  @include flex(null, end);
+}
+.fx-b {
+  @include flex(between);
+}
+.fx-b-c {
+  @include flex(between, center);
+}
+.fx-b-e {
+  @include flex(between, end);
+}
+.fx-s {
+  @include flex(around);
+}
+.fx-a-c {
+  @include flex(around, center);
+}
+.fx-a-e {
+  @include flex(around, end);
 }
