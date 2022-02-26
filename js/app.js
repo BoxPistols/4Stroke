@@ -98,28 +98,37 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Garage 削除機能
+  // Garageグループ 削除機能
+  const handleGarageClear = (_qs, _numMin, _numTitle) => {
+    let el = qs(_qs);
+    el.addEventListener("click", (event) => {
+      let confirmRemove = confirm(
+        event.target.value.replace("Delete /", "GARAGE-") + "を消しマンボ?"
+      );
+      if (confirmRemove == true) {
+        alert("闇に葬りマンボ...");
 
-  let garageClearA = qs("#clearA");
-  garageClearA.addEventListener("click", (event) => {
-    let confirmRemove = confirm(
-      event.target.value.replace("Delete /", "GARAGE-") + " を消しマンボ?"
-    );
-    if (confirmRemove == true) {
-      alert("闇に葬りマンボ...");
-
-      for (let i = 0; i < 4; i++) {
-        localStorage.removeItem("stroke" + (i + 1));
-        let targetRemoveText = qs("textarea.stroke" + (i + 1));
-        targetRemoveText.value = "";
+        for (let i = _numMin; i < _numMin + 4; i++) {
+          localStorage.removeItem("stroke" + (i + 1));
+          let targetRemoveText = qs("textarea.stroke" + (i + 1));
+          targetRemoveText.value = "";
+        }
+        // タイトルも消す
+        localStorage.removeItem("stroke-title" + _numTitle);
+        let targetRemoveTitle = qs(".stroke-title" + _numTitle);
+        targetRemoveTitle.value = "";
         autoSave();
+        return true;
+      } else {
+        alert("やっぱやめとくわ");
+        return false;
       }
-      return true;
-    } else {
-      alert("やっぱやめとくわ");
-      return false;
-    }
-  });
+    });
+  };
+  handleGarageClear("#clearA", 0, 1);
+  handleGarageClear("#clearB", 4, 2);
+  handleGarageClear("#clearC", 8, 3);
+  handleGarageClear("#clearD", 12, 4);
 
   // Finished
 });
