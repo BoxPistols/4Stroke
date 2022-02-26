@@ -1,7 +1,8 @@
 nav.garages-nav {
+  font-family: 'Oswald', sans-serif;
   position: fixed;
   top: 1vh;
-  right: 2vw;
+  right: 1vw;
   z-index: 10;
   ul {
     list-style: none;
@@ -9,7 +10,7 @@ nav.garages-nav {
     li {
       margin: 0 0.5em;
       a {
-        color: #000;
+        color: white;
       }
     }
   }

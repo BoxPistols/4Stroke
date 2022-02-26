@@ -1,92 +1,83 @@
-// background-image: linear-gradient(45deg, rgba(purple, 0.82), rgba(red, 0.82)),
-//   url("https://images.unsplash.com/photo-1510083961724-29929f16cd79?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjE0NTg5fQ");
-// background-size: cover;
-// background-position: center;
-// color: white;
+/**
+ * font-jp https://yakuhanjp.qranoko.jp/
+ * font-en https://fonts.google.com/specimen/Oswald
+ * 横スクロール https://bagelee.com/design/css/scroll_snap_with_css/
+ */
 
 @import "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css";
+@import url("https://fonts.googleapis.com/css2?family=Oswald&display=swap");
 
-// start
 :root {
-	--color1: #f92672;
-	--color2: #a6e22e;
-	--color3: #fd971f;
-	--color4: #66d9ef;
-	--color5: #ae81ff;
-	--color6: #e6db74;
-	--color7: #75715e;
-	--color8: #272822;
+  --color1: #f92672;
+  --color2: #a6e22e;
+  --color3: #fd971f;
+  --color4: #66d9ef;
+  --color5: #ae81ff;
+  --color6: #e6db74;
+  --color7: #75715e;
+--color8: #272822;
 
-	--white: whitesmoke;
+  --white: whitesmoke;
 }
 
 ::-webkit-scrollbar {
-	width: 12px;
-	height: 6px;
+  width: 12px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-	background: currentColor;
-	border-radius: 8px;
+  background: currentColor;
+  border-radius: 8px;
 }
 
-/*
-TODO:
-- 背景画像、半透明に https://codepen.io/TurkAysenur/pen/ZEpxeYm
-- logo
-- font
-- js化
-- React/Next
-- 各タイトルにスクロール
-*/
-
-// @import url('https://fonts.googleapis.com/css2?family=Kaisei+Opti&display=swap');
-@import url("https://fonts.googleapis.com/css2?family=Kaisei+Opti:wght@400;500&display=swap");
-
 * {
-	outline: none;
-	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
+  outline: none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
-	box-sizing: border-box;
-	-webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
-	scroll-behavior: smooth;
-	@include flex(null, center);
-	min-width: 100vw;
-	height: 100vh;
-	
-	font-family: "Kaisei Opti", serif;
-	// background-image: url(https://picsum.photos/1200/800/?image=133);
-	&:before {
-		content: "";
-		position: fixed;
-		top: 0;
-		left: 0;
-		display: block;
-		width: 100vw;
-		height: 100vh;
-		background-image: linear-gradient(45deg, rgba(purple, 0.82), rgba(blue, 0.82)),
-			url("https://picsum.photos/1200/800/?image=133");
-		background-size: cover;
-		background-position: center;
-		background-repeat: no-repeat;
-		color: white;
-		backdrop-filter: blur(6px);
-		background-size: cover;
-		z-index: -1;
-	}
-
+  font-family: YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans",
+    "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
+  scroll-behavior: smooth;
+  display: flex;
+  // overflow-x: scroll;
+  overflow: hidden;
+  min-width: 100vw;
+  height: 100vh;
+  @include flex(null, center);
+  &:before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    background-image: linear-gradient(
+        45deg,
+        rgba(purple, 0.82),
+        rgba(blue, 0.82)
+      ),
+      url("https://picsum.photos/1200/800/?image=133");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+    backdrop-filter: blur(6px);
+    background-size: cover;
+    z-index: -1;
+  }
 }
 
 p {
-	margin: 0.1em 0 0.5em;
-	padding: 0;
-	line-height: 1.8;
+  margin: 0.1em 0 0.5em;
+  padding: 0;
+  line-height: 1.8;
 }
-

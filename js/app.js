@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
   // https://tech.arms-soft.co.jp/entry/2020/01/29/090000
-  const init = function(){
-    cssScrollSnapPolyfill()
-  }
+  const init = function () {
+    cssScrollSnapPolyfill();
+  };
   init();
 
   /**
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   // メモ入力欄の設定　LocalStorageの取得
-  let strokeTexts = qsAll(".garage-strokes .mol_text");
+  let strokeTexts = qsAll(".garage-strokes .garage-stroke-box");
   strokeTexts.forEach((elm) => {
     index = [].slice.call(strokeTexts).indexOf(elm);
     let strokeClass = qsAll("textarea.stroke");
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // 削除機能
+  // 個別 削除機能
   let handleClear = qsAll("input.clear");
 
   for (let i = 0; i < handleClear.length; i++) {
@@ -78,4 +78,27 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+
+  // Garage 削除機能
+  /**
+   let handleClear = qsAll("input.clear");
+   
+   for (let i = 0; i < handleClear.length; i++) {
+     handleClear[i].addEventListener("click", (event) => {
+       let confirmRemove = confirm("消しマンボ?");
+      if (confirmRemove == true) {
+        alert("闇に葬りマンボ...");
+        localStorage.removeItem("stroke" + (i + 1));
+        let targetRemoveText = qs("textarea.stroke" + (i + 1));
+        targetRemoveText.value = "";
+        // handleClear[i].setAttribute("disabled", true);
+        autoSave();
+        return true;
+      } else {
+        alert("やっぱやめとくわ");
+        return false;
+      }
+    });
+  }
+  */
 });

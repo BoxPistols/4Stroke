@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>4Strokes</title>
+  <title>4STROKES</title>
   <link rel="icon" href="./img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yakuhanjp@3.4.1/dist/css/yakuhanrp.min.css">
   <style>@charset "UTF-8";
 /**
   * ======= Flex Box =======
@@ -13,8 +14,13 @@
   *   @include flex(center, center)
   *   @include flex(null, end, column, nowrap)
 */
+/**
+ * font-jp https://yakuhanjp.qranoko.jp/
+ * font-en https://fonts.google.com/specimen/Oswald
+ * 横スクロール https://bagelee.com/design/css/scroll_snap_with_css/
+ */
 @import "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css";
-@import url("https://fonts.googleapis.com/css2?family=Kaisei+Opti:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Oswald&display=swap");
 :root {
   --color1: #f92672;
   --color2: #a6e22e;
@@ -37,15 +43,6 @@
   border-radius: 8px;
 }
 
-/*
-TODO:
-- 背景画像、半透明に https://codepen.io/TurkAysenur/pen/ZEpxeYm
-- logo
-- font
-- js化
-- React/Next
-- 各タイトルにスクロール
-*/
 * {
   outline: none;
   box-sizing: border-box;
@@ -59,7 +56,12 @@ html {
 }
 
 body {
+  font-family: YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
   scroll-behavior: smooth;
+  display: flex;
+  overflow: hidden;
+  min-width: 100vw;
+  height: 100vh;
   display: flex;
   /**
     * justify-content / Horizontal ===（1st Argument）
@@ -78,9 +80,6 @@ body {
     * Wrap = Fold at the edge -|（4th Argument）
     * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
   */
-  min-width: 100vw;
-  height: 100vh;
-  font-family: "Kaisei Opti", serif;
 }
 body:before {
   content: "";
@@ -108,9 +107,10 @@ p {
 }
 
 nav.garages-nav {
+  font-family: "Oswald", sans-serif;
   position: fixed;
   top: 1vh;
-  right: 2vw;
+  right: 1vw;
   z-index: 10;
 }
 nav.garages-nav ul {
@@ -138,7 +138,7 @@ nav.garages-nav ul li {
   margin: 0 0.5em;
 }
 nav.garages-nav ul li a {
-  color: #000;
+  color: white;
 }
 
 input.title {
@@ -157,6 +157,7 @@ input.title {
 }
 
 header.header {
+  font-family: "Oswald", sans-serif;
   position: fixed;
   left: 1vw;
   top: 1vh;
@@ -205,7 +206,7 @@ header.header #message {
 
 h2,
 h3 {
-  font-weight: 400;
+  font-family: "Oswald", sans-serif;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
   color: var(--white);
   margin: 0.2em 0.2em;
@@ -232,11 +233,19 @@ h3 {
   border: 1px solid rgba(255, 255, 255, 0.2);
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
+  scroll-snap-type: y mandatory;
+  scroll-snap-type: mandatory;
+  scroll-snap-points-y: repeat(100vw);
+  scroll-snap-type: x mandatory;
 }
 .garages {
   width: auto;
   display: flex;
   padding: 1vh 2vw;
+}
+.garages .garage {
+  padding: 0 2vw;
+  scroll-snap-align: start;
 }
 .garages .garage-strokes {
   display: grid;
@@ -245,7 +254,7 @@ h3 {
   overflow: auto;
   margin: 1vw;
 }
-.garages .garage-strokes .mol_text {
+.garages .garage-strokes .garage-stroke-box {
   background: #0004;
   border-radius: 6px;
   padding: 1vh 1vw;
@@ -279,35 +288,35 @@ h3 {
   color: currentcolor;
   border-color: currentcolor;
 }
-.garages .garage-strokes .mol_text:nth-child(1) h3,
-.garages .garage-strokes .mol_text:nth-child(1) textarea,
-.garages .garage-strokes .mol_text:nth-child(1) input[type=button] {
+.garages .garage-strokes .garage-stroke-box:nth-child(1) h3,
+.garages .garage-strokes .garage-stroke-box:nth-child(1) textarea,
+.garages .garage-strokes .garage-stroke-box:nth-child(1) input[type=button] {
   color: var(--color4);
 }
-.garages .garage-strokes .mol_text:nth-child(2) h3,
-.garages .garage-strokes .mol_text:nth-child(2) textarea,
-.garages .garage-strokes .mol_text:nth-child(2) input[type=button] {
+.garages .garage-strokes .garage-stroke-box:nth-child(2) h3,
+.garages .garage-strokes .garage-stroke-box:nth-child(2) textarea,
+.garages .garage-strokes .garage-stroke-box:nth-child(2) input[type=button] {
   color: var(--color2);
   border-color: var(--color2);
 }
-.garages .garage-strokes .mol_text:nth-child(3) h3,
-.garages .garage-strokes .mol_text:nth-child(3) textarea,
-.garages .garage-strokes .mol_text:nth-child(3) input[type=button] {
+.garages .garage-strokes .garage-stroke-box:nth-child(3) h3,
+.garages .garage-strokes .garage-stroke-box:nth-child(3) textarea,
+.garages .garage-strokes .garage-stroke-box:nth-child(3) input[type=button] {
   color: var(--color3);
   border-color: var(--color3);
 }
-.garages .garage-strokes .mol_text:nth-child(4) h3,
-.garages .garage-strokes .mol_text:nth-child(4) textarea,
-.garages .garage-strokes .mol_text:nth-child(4) input[type=button] {
+.garages .garage-strokes .garage-stroke-box:nth-child(4) h3,
+.garages .garage-strokes .garage-stroke-box:nth-child(4) textarea,
+.garages .garage-strokes .garage-stroke-box:nth-child(4) input[type=button] {
   color: var(--color1);
   border-color: var(--color1);
 }
 .garages textarea {
+  font-family: YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
   resize: none;
   overflow: auto;
-  padding: 0.5ch;
+  padding: 0.5ch 1ch;
   font-size: 0.8em;
-  font-family: "Kaisei Opti", serif;
   min-height: 8em;
   width: 96%;
   margin: auto;
@@ -347,9 +356,9 @@ h3 {
   <script src="https://bundle.run/css-scroll-snap-polyfill@0.1.2"></script>
   <script>document.addEventListener("DOMContentLoaded", function () {
   // https://tech.arms-soft.co.jp/entry/2020/01/29/090000
-  const init = function(){
-    cssScrollSnapPolyfill()
-  }
+  const init = function () {
+    cssScrollSnapPolyfill();
+  };
   init();
 
   /**
@@ -370,7 +379,7 @@ h3 {
   };
 
   // メモ入力欄の設定　LocalStorageの取得
-  let strokeTexts = qsAll(".garage-strokes .mol_text");
+  let strokeTexts = qsAll(".garage-strokes .garage-stroke-box");
   strokeTexts.forEach((elm) => {
     index = [].slice.call(strokeTexts).indexOf(elm);
     let strokeClass = qsAll("textarea.stroke");
@@ -405,7 +414,7 @@ h3 {
     });
   }
 
-  // 削除機能
+  // 個別 削除機能
   let handleClear = qsAll("input.clear");
 
   for (let i = 0; i < handleClear.length; i++) {
@@ -425,23 +434,46 @@ h3 {
       }
     });
   }
+
+  // Garage 削除機能
+  /**
+   let handleClear = qsAll("input.clear");
+   
+   for (let i = 0; i < handleClear.length; i++) {
+     handleClear[i].addEventListener("click", (event) => {
+       let confirmRemove = confirm("消しマンボ?");
+      if (confirmRemove == true) {
+        alert("闇に葬りマンボ...");
+        localStorage.removeItem("stroke" + (i + 1));
+        let targetRemoveText = qs("textarea.stroke" + (i + 1));
+        targetRemoveText.value = "";
+        // handleClear[i].setAttribute("disabled", true);
+        autoSave();
+        return true;
+      } else {
+        alert("やっぱやめとくわ");
+        return false;
+      }
+    });
+  }
+  */
 });
 
   </script>
 </head>
 <body>
-</body>
-<header class="header">
-  <div class="logo-img"><img src="./img/logo.svg"></div>
-  <h1 class="logo-title">4Strokes    </h1>
-  <div class="is-hidden" id="message">Auto Save...</div>
-</header>
+</body><a class="js-smooth-scroll" href="#garageA">
+  <header class="header">
+    <div class="logo-img"><img src="./img/logo.svg"></div>
+    <h1 class="logo-title">4STROKES    </h1>
+    <div class="is-hidden" id="message">Auto Save...</div>
+  </header></a>
 <nav class="garages-nav">
   <ul>
-    <li><a class="js-smooth-scroll" href="#garageA">garageA</a></li>
-    <li><a class="js-smooth-scroll" href="#garageB">garageB</a></li>
-    <li><a class="js-smooth-scroll" href="#garageC">garageC</a></li>
-    <li><a class="js-smooth-scroll" href="#garageD">garageD</a></li>
+    <li><a class="js-smooth-scroll" href="#garageA">GARAGE-A</a></li>
+    <li><a class="js-smooth-scroll" href="#garageB">GARAGE-B</a></li>
+    <li><a class="js-smooth-scroll" href="#garageC">GARAGE-C</a></li>
+    <li><a class="js-smooth-scroll" href="#garageD">GARAGE-D</a></li>
   </ul>
 </nav>
 <div class="garages-container">
@@ -450,28 +482,28 @@ h3 {
       <h2>A</h2>
       <input class="title stroke-title stroke-title1" data-stroke="stroke-title1" name="stroke-title1" value="stroke-title1" autocomplete="off" data-i="1">
       <div class="garage-strokes">
-        <div class="mol_text">
+        <div class="garage-stroke-box">
           <h3>Key</h3>
           <textarea class="stroke stroke1" id="stroke1" name="stroke1" data-i="1" data-stroke="A"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear1" data-clear="clearA" type="button" value="Delete Key">
           </div>
         </div>
-        <div class="mol_text">
+        <div class="garage-stroke-box">
           <h3>Issue</h3>
           <textarea class="stroke stroke2" id="stroke2" name="stroke2" data-i="2" data-stroke="B"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear2" data-clear="clearB" type="button" value="Delete Key">
           </div>
         </div>
-        <div class="mol_text">
+        <div class="garage-stroke-box">
           <h3>Action</h3>
           <textarea class="stroke stroke3" id="stroke3" name="stroke3" data-i="3" data-stroke="C"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear3" data-clear="clearC" type="button" value="Delete Key">
           </div>
         </div>
-        <div class="mol_text">
+        <div class="garage-stroke-box">
           <h3>Publish</h3>
           <textarea class="stroke stroke4" id="stroke4" name="stroke4" data-i="4" data-stroke="D"></textarea>
           <div class="clear-area">
@@ -484,28 +516,28 @@ h3 {
       <h2>B</h2>
       <input class="title stroke-title stroke-title2" data-stroke="stroke-title2" name="stroke-title2" value="stroke-title2" autocomplete="off" data-i="5">
       <div class="garage-strokes">
-        <div class="mol_text">
+        <div class="garage-stroke-box">
           <h3>Key</h3>
           <textarea class="stroke stroke5" id="stroke5" name="stroke5" data-i="5" data-stroke="A"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear5" data-clear="clearA" type="button" value="Delete Key">
           </div>
         </div>
-        <div class="mol_text">
+        <div class="garage-stroke-box">
           <h3>Issue</h3>
           <textarea class="stroke stroke6" id="stroke6" name="stroke6" data-i="6" data-stroke="B"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear6" data-clear="clearB" type="button" value="Delete Key">
           </div>
         </div>
-        <div class="mol_text">
+        <div class="garage-stroke-box">
           <h3>Action</h3>
           <textarea class="stroke stroke7" id="stroke7" name="stroke7" data-i="7" data-stroke="C"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear7" data-clear="clearC" type="button" value="Delete Key">
           </div>
         </div>
-        <div class="mol_text">
+        <div class="garage-stroke-box">
           <h3>Publish</h3>
           <textarea class="stroke stroke8" id="stroke8" name="stroke8" data-i="8" data-stroke="D"></textarea>
           <div class="clear-area">
@@ -518,28 +550,28 @@ h3 {
       <h2>C</h2>
       <input class="title stroke-title stroke-title3" data-stroke="stroke-title3" name="stroke-title3" value="stroke-title3" autocomplete="off" data-i="9">
       <div class="garage-strokes">
-        <div class="mol_text">
+        <div class="garage-stroke-box">
           <h3>Key</h3>
           <textarea class="stroke stroke9" id="stroke9" name="stroke9" data-i="9" data-stroke="A"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear9" data-clear="clearA" type="button" value="Delete Key">
           </div>
         </div>
-        <div class="mol_text">
+        <div class="garage-stroke-box">
           <h3>Issue</h3>
           <textarea class="stroke stroke10" id="stroke10" name="stroke10" data-i="10" data-stroke="B"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear10" data-clear="clearB" type="button" value="Delete Key">
           </div>
         </div>
-        <div class="mol_text">
+        <div class="garage-stroke-box">
           <h3>Action</h3>
           <textarea class="stroke stroke11" id="stroke11" name="stroke11" data-i="11" data-stroke="C"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear11" data-clear="clearC" type="button" value="Delete Key">
           </div>
         </div>
-        <div class="mol_text">
+        <div class="garage-stroke-box">
           <h3>Publish</h3>
           <textarea class="stroke stroke12" id="stroke12" name="stroke12" data-i="12" data-stroke="D"></textarea>
           <div class="clear-area">
@@ -552,28 +584,28 @@ h3 {
       <h2>D</h2>
       <input class="title stroke-title stroke-title4" data-stroke="stroke-title4" name="stroke-title4" value="stroke-title4" autocomplete="off" data-i="13">
       <div class="garage-strokes">
-        <div class="mol_text">
+        <div class="garage-stroke-box">
           <h3>Key</h3>
           <textarea class="stroke stroke13" id="stroke13" name="stroke13" data-i="13" data-stroke="A"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear13" data-clear="clearA" type="button" value="Delete Key">
           </div>
         </div>
-        <div class="mol_text">
+        <div class="garage-stroke-box">
           <h3>Issue</h3>
           <textarea class="stroke stroke14" id="stroke14" name="stroke14" data-i="14" data-stroke="B"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear14" data-clear="clearB" type="button" value="Delete Key">
           </div>
         </div>
-        <div class="mol_text">
+        <div class="garage-stroke-box">
           <h3>Action</h3>
           <textarea class="stroke stroke15" id="stroke15" name="stroke15" data-i="15" data-stroke="C"></textarea>
           <div class="clear-area">
             <input class="clear" id="clear15" data-clear="clearC" type="button" value="Delete Key">
           </div>
         </div>
-        <div class="mol_text">
+        <div class="garage-stroke-box">
           <h3>Publish</h3>
           <textarea class="stroke stroke16" id="stroke16" name="stroke16" data-i="16" data-stroke="D"></textarea>
           <div class="clear-area">
