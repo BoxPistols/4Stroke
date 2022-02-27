@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
     message.classList.remove("is-hidden");
     setTimeout(function () {
       message.classList.add("is-hidden");
-    }, 400);
+    }, 800);
   };
 
   // メモ入力欄の設定　LocalStorageの取得
@@ -77,18 +77,55 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // 個別 削除機能
+  // 個別 テキストエリア削除機能
   let handleClear = qsAll("input.clear");
 
   for (let i = 0; i < handleClear.length; i++) {
     handleClear[i].addEventListener("click", (event) => {
-      let confirmRemove = confirm("消しマンボ?");
+      let targetRemoveText = qs("textarea.stroke" + (i + 1));
+
+      if (targetRemoveText.value === "") {
+        alert("何も入力されてないわ");
+        return false;
+      } else {
+        let confirmRemove = confirm("消しマンボ?");
+
+        if (confirmRemove == true) {
+          localStorage.removeItem("stroke" + (i + 1));
+          targetRemoveText.value = "";
+          // handleClear[i].setAttribute("disabled", true);
+          alert("闇に葬りマンボ...");
+          autoSave();
+          return true;
+        } else {
+          alert("やっぱやめとくわ");
+          return false;
+        }
+      }
+    });
+  }
+
+  // 個別 タイトル削除機能
+  let handleTitleClear = qsAll(".title-delete");
+
+  for (let i = 0; i < handleTitleClear.length; i++) {
+    handleTitleClear[i].addEventListener("click", (event) => {
+     
+      if (handleTitleClear[i].previousElementSibling.value == "") {
+        alert("何も入力されてないわ");
+        return false;
+      }
+
+      let confirmRemove = confirm(
+        handleTitleClear[i].previousElementSibling.value + "を消しマンボ?"
+      );
+
       if (confirmRemove == true) {
+        localStorage.removeItem("stroke-title" + (i + 1));
+        let targetRemoveTitle = qs(".stroke-title" + (i + 1));
+        targetRemoveTitle.value = "";
+
         alert("闇に葬りマンボ...");
-        localStorage.removeItem("stroke" + (i + 1));
-        let targetRemoveText = qs("textarea.stroke" + (i + 1));
-        targetRemoveText.value = "";
-        // handleClear[i].setAttribute("disabled", true);
         autoSave();
         return true;
       } else {
@@ -114,9 +151,11 @@ document.addEventListener("DOMContentLoaded", function () {
           targetRemoveText.value = "";
         }
         // タイトルも消す
+        /*
         localStorage.removeItem("stroke-title" + _numTitle);
         let targetRemoveTitle = qs(".stroke-title" + _numTitle);
         targetRemoveTitle.value = "";
+        */
         autoSave();
         return true;
       } else {

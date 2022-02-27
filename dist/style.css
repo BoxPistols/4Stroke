@@ -405,8 +405,8 @@ input[type=button] {
 nav.garages-nav {
   position: fixed;
   z-index: 10;
-  top: 1vh;
-  right: 1vw;
+  top: 1.5vh;
+  right: 1.5vw;
   font-family: "Oswald", sans-serif;
 }
 nav.garages-nav ul {
@@ -469,14 +469,14 @@ header.header {
   */
 }
 header.header .logo-img img {
-  width: 3VW;
+  width: 3vw;
   padding: 4px;
 }
 header.header h1.logo-title {
   margin: 0 0 8px 4px;
   letter-spacing: 0.05ch;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-  font-size: 2VW;
+  font-size: 2vw;
   font-weight: 400;
 }
 header.header #message {
@@ -505,7 +505,7 @@ h3 {
 
 h2.garage-title {
   margin: 0 calc(1vw + 4px) 8px;
-  font-size: 2.4VW;
+  font-size: 2.4vw;
 }
 
 .garage-head {
@@ -529,6 +529,17 @@ input.stroke-title {
   font-size: 1.3em;
 }
 
+.title-delete {
+  margin-left: 2px;
+  cursor: pointer;
+  transform: scale(1.1, 0.9);
+  color: #f8f8f8a9;
+  font-size: 24px;
+}
+
+.clear-garage-box {
+  margin-left: auto;
+}
 .clear-garage-box > input[type=button] {
   border: none;
   outline: none;

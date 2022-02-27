@@ -18,7 +18,7 @@ header.header {
 
   .logo-img {
     img {
-      width:3VW;
+      width:3vw;
       padding:4px;
     }
   }
@@ -29,7 +29,7 @@ header.header {
     letter-spacing:.05ch;
 
     text-shadow:1px 1px 2px rgba(#000, .2);
-    font-size:2VW;
+    font-size:2vw;
     font-weight:400;
   }
 
@@ -69,7 +69,7 @@ h3 {
 h2.garage-title {
   margin:0 calc(1vw + 4px) 8px;
 
-  font-size:2.4VW;
+  font-size:2.4vw;
 }
 .garage-head {
   margin:0 calc(1vw + 4px) 4px;
@@ -94,15 +94,28 @@ input.stroke-title {
 
   font-size:1.3em;
 }
+.title-delete {
+  margin-left:2px;
 
-.clear-garage-box >input[type="button"] {
-  // color:tomato;
-  border:none;
-  // border:1px solid tomato;
-  outline:none;
-  background:#fff2;
+  cursor:pointer;
+  transform:scale(1.1, .9);
 
-  font-size:1em;
+  color:#f8f8f8a9;
 
-  @include flex(center, center);
+  font-size:24px;
+}
+
+.clear-garage-box {
+  margin-left:auto;
+  >input[type="button"] {
+    // color:tomato;
+    border:none;
+    // border:1px solid tomato;
+    outline:none;
+    background:#fff2;
+
+    font-size:1em;
+
+    @include flex(center, center);
+  }
 }

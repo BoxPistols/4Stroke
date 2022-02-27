@@ -414,8 +414,8 @@ input[type=button] {
 nav.garages-nav {
   position: fixed;
   z-index: 10;
-  top: 1vh;
-  right: 1vw;
+  top: 1.5vh;
+  right: 1.5vw;
   font-family: "Oswald", sans-serif;
 }
 nav.garages-nav ul {
@@ -478,14 +478,14 @@ header.header {
   */
 }
 header.header .logo-img img {
-  width: 3VW;
+  width: 3vw;
   padding: 4px;
 }
 header.header h1.logo-title {
   margin: 0 0 8px 4px;
   letter-spacing: 0.05ch;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-  font-size: 2VW;
+  font-size: 2vw;
   font-weight: 400;
 }
 header.header #message {
@@ -514,7 +514,7 @@ h3 {
 
 h2.garage-title {
   margin: 0 calc(1vw + 4px) 8px;
-  font-size: 2.4VW;
+  font-size: 2.4vw;
 }
 
 .garage-head {
@@ -538,6 +538,17 @@ input.stroke-title {
   font-size: 1.3em;
 }
 
+.title-delete {
+  margin-left: 2px;
+  cursor: pointer;
+  transform: scale(1.1, 0.9);
+  color: #f8f8f8a9;
+  font-size: 24px;
+}
+
+.clear-garage-box {
+  margin-left: auto;
+}
 .clear-garage-box > input[type=button] {
   border: none;
   outline: none;
@@ -731,7 +742,7 @@ input.stroke-title {
     message.classList.remove("is-hidden");
     setTimeout(function () {
       message.classList.add("is-hidden");
-    }, 400);
+    }, 800);
   };
 
   // メモ入力欄の設定　LocalStorageの取得
@@ -770,18 +781,55 @@ input.stroke-title {
     });
   }
 
-  // 個別 削除機能
+  // 個別 テキストエリア削除機能
   let handleClear = qsAll("input.clear");
 
   for (let i = 0; i < handleClear.length; i++) {
     handleClear[i].addEventListener("click", (event) => {
-      let confirmRemove = confirm("消しマンボ?");
+      let targetRemoveText = qs("textarea.stroke" + (i + 1));
+
+      if (targetRemoveText.value === "") {
+        alert("何も入力されてないわ");
+        return false;
+      } else {
+        let confirmRemove = confirm("消しマンボ?");
+
+        if (confirmRemove == true) {
+          localStorage.removeItem("stroke" + (i + 1));
+          targetRemoveText.value = "";
+          // handleClear[i].setAttribute("disabled", true);
+          alert("闇に葬りマンボ...");
+          autoSave();
+          return true;
+        } else {
+          alert("やっぱやめとくわ");
+          return false;
+        }
+      }
+    });
+  }
+
+  // 個別 タイトル削除機能
+  let handleTitleClear = qsAll(".title-delete");
+
+  for (let i = 0; i < handleTitleClear.length; i++) {
+    handleTitleClear[i].addEventListener("click", (event) => {
+     
+      if (handleTitleClear[i].previousElementSibling.value == "") {
+        alert("何も入力されてないわ");
+        return false;
+      }
+
+      let confirmRemove = confirm(
+        handleTitleClear[i].previousElementSibling.value + "を消しマンボ?"
+      );
+
       if (confirmRemove == true) {
+        localStorage.removeItem("stroke-title" + (i + 1));
+        let targetRemoveTitle = qs(".stroke-title" + (i + 1));
+        targetRemoveTitle.value = "";
+
         alert("闇に葬りマンボ...");
-        localStorage.removeItem("stroke" + (i + 1));
-        let targetRemoveText = qs("textarea.stroke" + (i + 1));
-        targetRemoveText.value = "";
-        // handleClear[i].setAttribute("disabled", true);
         autoSave();
         return true;
       } else {
@@ -807,9 +855,11 @@ input.stroke-title {
           targetRemoveText.value = "";
         }
         // タイトルも消す
+        /*
         localStorage.removeItem("stroke-title" + _numTitle);
         let targetRemoveTitle = qs(".stroke-title" + _numTitle);
         targetRemoveTitle.value = "";
+        */
         autoSave();
         return true;
       } else {
@@ -847,10 +897,11 @@ input.stroke-title {
   <div class="garages"> 
     <div class="garage" id="garageA">
       <h2 class="garage-title garage-titleA">GARAGE-A</h2>
-      <div class="fx-b garage-head garage-headA">
+      <div class="fx garage-head garage-headA">
         <input class="stroke-title stroke-title1" data-stroke="stroke-title1" name="stroke-title1" value="stroke-title1" autocomplete="off" data-i="1">
+        <div class="title-delete title-delete1">x</div>
         <div class="clear-garage-box">
-          <input id="clearA" data-clear="clearA" type="button" value="Delete / A">
+          <input id="clearA" data-clear="clearA" type="button" value="Delete / GARAGE-A">
         </div>
       </div>
       <div class="garage-strokes">
@@ -886,10 +937,11 @@ input.stroke-title {
     </div>
     <div class="garage" id="garageB">
       <h2 class="garage-title garage-titleB">GARAGE-B</h2>
-      <div class="fx-b garage-head garage-headB">
+      <div class="fx garage-head garage-headB">
         <input class="stroke-title stroke-title2" data-stroke="stroke-title2" name="stroke-title2" value="stroke-title2" autocomplete="off" data-i="5">
+        <div class="title-delete title-delete2">x</div>
         <div class="clear-garage-box">
-          <input id="clearB" data-clear="clearB" type="button" value="Delete / B">
+          <input id="clearB" data-clear="clearB" type="button" value="Delete / GARAGE-B">
         </div>
       </div>
       <div class="garage-strokes">
@@ -925,10 +977,11 @@ input.stroke-title {
     </div>
     <div class="garage" id="garageC">
       <h2 class="garage-title garage-titleC">GARAGE-C</h2>
-      <div class="fx-b garage-head garage-headC">
+      <div class="fx garage-head garage-headC">
         <input class="stroke-title stroke-title3" data-stroke="stroke-title3" name="stroke-title3" value="stroke-title3" autocomplete="off" data-i="9">
+        <div class="title-delete title-delete3">x</div>
         <div class="clear-garage-box">
-          <input id="clearC" data-clear="clearC" type="button" value="Delete / C">
+          <input id="clearC" data-clear="clearC" type="button" value="Delete / GARAGE-C">
         </div>
       </div>
       <div class="garage-strokes">
@@ -964,10 +1017,11 @@ input.stroke-title {
     </div>
     <div class="garage" id="garageD">
       <h2 class="garage-title garage-titleD">GARAGE-D</h2>
-      <div class="fx-b garage-head garage-headD">
+      <div class="fx garage-head garage-headD">
         <input class="stroke-title stroke-title4" data-stroke="stroke-title4" name="stroke-title4" value="stroke-title4" autocomplete="off" data-i="13">
+        <div class="title-delete title-delete4">x</div>
         <div class="clear-garage-box">
-          <input id="clearD" data-clear="clearD" type="button" value="Delete / D">
+          <input id="clearD" data-clear="clearD" type="button" value="Delete / GARAGE-D">
         </div>
       </div>
       <div class="garage-strokes">

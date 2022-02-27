@@ -3,7 +3,7 @@ include _strokeState.pug
 mixin Strokes(_titleName, _num, _titleNum)
     .garage(id="garage" + _titleName)
         h2.garage-title(class="garage-title" + _titleName)= "GARAGE" + "-" + _titleName
-        div.fx-b.garage-head(class="garage-head" + _titleName)
+        div.fx.garage-head(class="garage-head" + _titleName)
             input(class="stroke-title stroke-title"+ _titleNum,
                 data-stroke="stroke-title" +  _titleNum,
                 name="stroke-title" +  _titleNum,
@@ -11,8 +11,9 @@ mixin Strokes(_titleName, _num, _titleNum)
                 autocomplete="off"
                 data-i= _num,
             )
+            div.title-delete(class="title-delete" + _titleNum) x
             div.clear-garage-box
-                input(id="clear"+_titleName data-clear="clear"+_titleName, type="button" value="Delete" + " / " + _titleName)
+                input(id="clear"+_titleName data-clear="clear"+_titleName, type="button" value="Delete" + " / GARAGE-" + _titleName)
         
         .garage-strokes
             //- Loop State
