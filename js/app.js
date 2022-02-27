@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let el = qs(_qs);
     el.addEventListener("click", (event) => {
       let confirmRemove = confirm(
-        event.target.value.replace("Delete /", "GARAGE-") + "を消しマンボ?"
+        event.target.value.replace("Delete /", "") + "を消しマンボ?"
       );
       if (confirmRemove == true) {
         alert("闇に葬りマンボ...");
