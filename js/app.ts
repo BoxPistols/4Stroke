@@ -1,9 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   // https://tech.arms-soft.co.jp/entry/2020/01/29/090000
-  const init = function () {
-    cssScrollSnapPolyfill();
-  };
-  init();
+
 
   // キーボード反応
   /*
@@ -44,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // メモ入力欄の設定　LocalStorageの取得
   let strokeTexts = qsAll(".garage-strokes .garage-stroke-box");
   strokeTexts.forEach((elm) => {
-    index = [].slice.call(strokeTexts).indexOf(elm);
+    const index = [].slice.call(strokeTexts).indexOf(elm);
     let strokeClass = qsAll("textarea.stroke");
     strokeClass[index].value = localStorage.getItem("stroke" + (index + 1));
   });
@@ -61,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // タイトルの設定　LocalStorageの取得
   let strokeTitles = qsAll(".stroke-title");
   strokeTitles.forEach((elm) => {
-    index = [].slice.call(strokeTitles).indexOf(elm);
+    const index = [].slice.call(strokeTitles).indexOf(elm);
     let strokeTitle = qsAll(".stroke-title");
     strokeTitle[index].value = localStorage.getItem(
       "stroke-title" + (index + 1)

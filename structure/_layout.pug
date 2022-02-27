@@ -11,6 +11,11 @@ head
         include ../dist/style.css
     script(src='https://bundle.run/css-scroll-snap-polyfill@0.1.2')
     script
-        include ../js/app.js
+        include ../dist/js/app.js
+    script
+        | const init = function () {
+        |    cssScrollSnapPolyfill();
+        | };
+        | init();    
 body
     block content
