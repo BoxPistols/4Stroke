@@ -2,7 +2,7 @@
   overflow-x:scroll;
   min-width:100vw;
   height:100%;
-  padding:8vh 2vw 1vh;
+  padding:4vh 2vw 1vh;
 
   scroll-behavior:smooth;
   // 横スクロールプラグイン対応
@@ -17,6 +17,7 @@
 .garages {
   display:flex;
   width:auto;
+  height:100%;
   padding:1vh 2vw;
 
   $c4:var(--color4);
@@ -37,6 +38,7 @@
     display:grid;
     overflow:auto;
     grid-template-columns:repeat(2, auto);
+    height:calc(100% - 10vh);
     margin:0 1vw;
 
     border-radius:8px;
@@ -44,7 +46,7 @@
 
   //===== Input Text
   .garage-strokes .garage-stroke-box {
-    width:calc(100vw / 2 - 8vw);
+    width:calc(100vw / 2 - 5vw);
     margin:4px;
     padding:1vh 1vw;
 
@@ -95,8 +97,8 @@
   textarea {
     overflow:auto;
     width:100%;
-    height:15vh;
-    min-height:8em;
+    height:auto;
+    min-height:60%;
     margin:auto;
     padding:.5ch 1ch;
 
@@ -105,13 +107,13 @@
 
     border:2px solid currentcolor !important;
     border-radius:8px;
-    // background-color:rgba(#000, .4);
-    background-color:rgba(currentColor, .4);
+    background-color:rgba(#000, .35);
+    // background-color:rgba(currentColor, .4);
 
     font-family:YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans",
     "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
-    font-size:.8em;
-    font-size:1em;
+    font-size:.9em;
+    // font-size:1em;
     // filter:drop-shadow(1px 2px 1px currentColor);
 
     filter:drop-shadow(1px 1px 0px black);
