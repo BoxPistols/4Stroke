@@ -408,27 +408,17 @@ export async function loadAllGarages(userId) {
 export async function saveStroke(userId, garageId, strokeKey, value) {
   try {
     const docRef = getUserDocRef(userId, garageId);
-    await updateDoc(docRef, {
+    // { merge: true } を使うと、ドキュメントが存在しない場合は作成し、
+    // 存在する場合は他のフィールドを上書きせずに更新します。
+    // これにより、try/catchでの分岐が不要になります。
+    await setDoc(docRef, {
       [strokeKey]: value,
-      updatedAt: new Date()
-    });
+      updatedAt: new Date() // ベストプラクティスは serverTimestamp() の使用です
+    }, { merge: true });
     console.log('保存成功:', garageId, strokeKey);
   } catch (error) {
-    // ドキュメントが存在しない場合は新規作成
-    if (error.code === 'not-found') {
-      await setDoc(docRef, {
-        title: '',
-        stroke1: '',
-        stroke2: '',
-        stroke3: '',
-        stroke4: '',
-        [strokeKey]: value,
-        updatedAt: new Date()
-      });
-    } else {
-      console.error('保存失敗:', error);
-      throw error;
-    }
+    console.error('保存失敗:', error);
+    throw error;
   }
 }
 
