@@ -29,6 +29,8 @@ cd 4Stroke
 cp js/firebase-config.example.js js/firebase-config.js
 ```
 
+**参考**: `.env.example` ファイルも用意していますが、Vanilla JavaScriptではビルドプロセスがないため直接使用できません。Netlifyなどのデプロイ環境での設定の参考としてご利用ください。
+
 ### 3. Firebase設定を編集
 
 `js/firebase-config.js` を開いて、Firebaseコンソールから取得した設定情報を貼り付けます：
@@ -70,27 +72,37 @@ http://localhost:8000/
 
 ## 🌐 本番環境デプロイ（Netlify）
 
-### 1. Netlify環境変数の設定（オプション）
+**詳細なデプロイ手順は [Netlifyデプロイガイド](./docs/NETLIFY_DEPLOY.md) を参照してください。**
 
-Netlify ダッシュボードで環境変数を設定できますが、Firebase APIキーは公開されても安全なので、**直接コミット**しても問題ありません。
+### クイックスタート
 
-### 2. Firebaseで承認済みドメインを追加
+1. **Netlifyでサイトを作成**
+   - リポジトリを接続
+   - ビルド設定: なし
+   - 公開ディレクトリ: `.`（ルート）
 
-1. [Firebaseコンソール](https://console.firebase.google.com/) を開く
-2. Authentication → Settings → Authorized domains
-3. 「ドメインを追加」をクリック
-4. Netlifyドメインを追加:
+2. **Firebaseで承認済みドメインを追加**
+   - [Firebaseコンソール](https://console.firebase.google.com/) を開く
+   - Authentication → Settings → Authorized domains
+   - Netlifyドメイン（`your-app-name.netlify.app`）を追加
+
+3. **デプロイ**
+   ```bash
+   git push origin main
    ```
-   your-app-name.netlify.app
-   ```
 
-### 3. デプロイ
+### 環境変数の扱い
 
-```bash
-git push origin main
-```
+**推奨方法**: `firebase-config.js` を直接コミット
 
-Netlifyが自動的にデプロイします。
+理由:
+- Firebase APIキーは公開されても安全
+- シンプルで管理しやすい
+- ビルドプロセス不要
+
+**代替方法**: Netlify環境変数を使用（高度）
+
+詳細は [Netlifyデプロイガイド](./docs/NETLIFY_DEPLOY.md) を参照してください。
 
 ---
 

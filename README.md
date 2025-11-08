@@ -37,6 +37,7 @@ python3 -m http.server 8000
 
 - [セットアップガイド](./SETUP.md) - ローカル開発とデプロイ手順
 - [Firebase完全ガイド](./docs/FIREBASE_SETUP_GUIDE.md) - ゼロからのFirebaseセットアップ
+- [Netlifyデプロイガイド](./docs/NETLIFY_DEPLOY.md) - 本番環境へのデプロイ手順
 
 ## Dev from
 
