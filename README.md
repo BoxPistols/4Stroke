@@ -1,6 +1,42 @@
-# 4Stroke
+# 🔥 4STROKES
 
-- issue by Note App
+4段階思考プロセス（Key → Issue → Action → Publish）に基づいたメモアプリ
+
+**Firebase Authentication + Firestore対応版**
+
+## ✨ Features
+
+- 🔐 **認証機能**: Googleログイン、メール/パスワードログイン
+- 💾 **オンラインストレージ**: Firestoreでデータを保存
+- 🔄 **複数デバイス同期**: どこからでも同じデータにアクセス
+- 🎨 **モダンUI**: レスポンシブデザイン
+- ⚡ **自動保存**: リアルタイムで自動保存
+
+## 🚀 クイックスタート
+
+詳細なセットアップ手順は [SETUP.md](./SETUP.md) を参照してください。
+
+```bash
+# 1. リポジトリをクローン
+git clone <repository-url>
+cd 4Stroke
+
+# 2. Firebase設定ファイルを作成
+cp js/firebase-config.example.js js/firebase-config.js
+
+# 3. firebase-config.js を編集（Firebaseコンソールから設定をコピー）
+
+# 4. ローカルサーバーを起動
+python3 -m http.server 8000
+
+# 5. ブラウザで開く
+# http://localhost:8000/
+```
+
+## 📚 ドキュメント
+
+- [セットアップガイド](./SETUP.md) - ローカル開発とデプロイ手順
+- [Firebase完全ガイド](./docs/FIREBASE_SETUP_GUIDE.md) - ゼロからのFirebaseセットアップ
 
 ## Dev from
 

@@ -1,1 +1,8 @@
 node_modules
+
+# Firebase configuration (contains API keys)
+js/firebase-config.js
+
+# Environment variables
+.env
+.env.local

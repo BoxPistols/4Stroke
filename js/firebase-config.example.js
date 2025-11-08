@@ -5,13 +5,14 @@ import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 // Firebase設定情報（Firebaseコンソールから取得）
+// このファイルをコピーして firebase-config.js を作成してください
 const firebaseConfig = {
-  apiKey: "AIzaSyC1vcbD5ov1pgQvdb6CAIBFT4zi2mCwFxc",
-  authDomain: "strokes-a0b62.firebaseapp.com",
-  projectId: "strokes-a0b62",
-  storageBucket: "strokes-a0b62.firebasestorage.app",
-  messagingSenderId: "13565861697",
-  appId: "1:13565861697:web:54b8064f372730d3458bc0"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
 // Firebaseアプリを初期化
