@@ -5,6 +5,7 @@ import {
   setDoc,
   getDoc,
   updateDoc,
+  deleteDoc,
   collection,
   writeBatch
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
@@ -52,21 +53,26 @@ export async function loadGarageData(userId, garageId) {
 }
 
 /**
- * 全ガレージデータを読み込み（4つ）
+ * 全ガレージデータを読み込み（4つ）- 並列処理で高速化
  * @param {string} userId - ユーザーID
  * @returns {Promise<Object>} 全ガレージデータ
  */
 export async function loadAllGarages(userId) {
   console.log('📖 全ガレージデータ読み込み開始...');
-  const garages = {};
 
   try {
-    for (let i = 1; i <= 4; i++) {
-      const garageId = `garage${i}`;
-      garages[garageId] = await loadGarageData(userId, garageId);
-    }
+    // Promise.allで並列読み込み（高速化）
+    const garagePromises = [
+      loadGarageData(userId, 'garage1'),
+      loadGarageData(userId, 'garage2'),
+      loadGarageData(userId, 'garage3'),
+      loadGarageData(userId, 'garage4'),
+    ];
+
+    const [garage1, garage2, garage3, garage4] = await Promise.all(garagePromises);
+
     console.log('✅ 全ガレージ読み込み完了');
-    return garages;
+    return { garage1, garage2, garage3, garage4 };
   } catch (error) {
     console.error('❌ 全ガレージ読み込み失敗:', error);
     throw error;
@@ -75,6 +81,7 @@ export async function loadAllGarages(userId) {
 
 /**
  * ストロークまたはタイトルを保存
+ * { merge: true } で既存フィールドを保護しつつ更新
  * @param {string} userId - ユーザーID
  * @param {string} garageId - ガレージID
  * @param {string} fieldKey - フィールド名 (title, stroke1, stroke2, stroke3, stroke4)
@@ -85,27 +92,12 @@ export async function saveStroke(userId, garageId, fieldKey, value) {
   try {
     const docRef = getUserDocRef(userId, garageId);
 
-    // ドキュメントが存在するか確認
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      // 既存ドキュメントを更新
-      await updateDoc(docRef, {
-        [fieldKey]: value,
-        updatedAt: new Date()
-      });
-    } else {
-      // 新規ドキュメントを作成
-      await setDoc(docRef, {
-        title: '',
-        stroke1: '',
-        stroke2: '',
-        stroke3: '',
-        stroke4: '',
-        [fieldKey]: value,
-        updatedAt: new Date()
-      });
-    }
+    // { merge: true } を使うと、ドキュメントが存在しない場合は作成し、
+    // 存在する場合は他のフィールドを上書きせずに更新します
+    await setDoc(docRef, {
+      [fieldKey]: value,
+      updatedAt: new Date()
+    }, { merge: true });
 
     console.log(`💾 ${garageId}.${fieldKey} 保存成功`);
   } catch (error) {
@@ -143,7 +135,7 @@ export async function deleteStroke(userId, garageId, fieldKey) {
 }
 
 /**
- * ガレージ全体を削除（全フィールドを空文字列で上書き）
+ * ガレージ全体を削除（Firestoreからドキュメントを完全削除）
  * @param {string} userId - ユーザーID
  * @param {string} garageId - ガレージID
  * @returns {Promise<void>}
@@ -151,23 +143,22 @@ export async function deleteStroke(userId, garageId, fieldKey) {
 export async function deleteGarage(userId, garageId) {
   try {
     const docRef = getUserDocRef(userId, garageId);
-    await setDoc(docRef, {
-      title: '',
-      stroke1: '',
-      stroke2: '',
-      stroke3: '',
-      stroke4: '',
-      updatedAt: new Date()
-    });
+    await deleteDoc(docRef);
     console.log(`🗑️ ${garageId} 削除成功`);
   } catch (error) {
-    console.error(`❌ ${garageId} 削除失敗:`, error);
-    throw error;
+    // ドキュメントが存在しない場合はエラーにならないようにする
+    if (error.code === 'not-found') {
+      console.log(`ℹ️ ${garageId} はすでに削除されています`);
+    } else {
+      console.error(`❌ ${garageId} 削除失敗:`, error);
+      throw error;
+    }
   }
 }
 
 /**
  * localStorage → Firestore へ移行（初回ログイン時のみ実行）
+ * writeBatchを使用してアトミックに実行
  * @param {string} userId - ユーザーID
  * @returns {Promise<void>}
  */
@@ -183,6 +174,7 @@ export async function migrateFromLocalStorage(userId) {
   console.log('🔄 localStorageからFirestoreへ移行開始...');
 
   try {
+    const batch = writeBatch(db);
     let hasData = false;
 
     // 4つのガレージをループ
@@ -197,7 +189,7 @@ export async function migrateFromLocalStorage(userId) {
       const stroke3 = localStorage.getItem(`stroke${(garageNum - 1) * 4 + 3}`) || '';
       const stroke4 = localStorage.getItem(`stroke${(garageNum - 1) * 4 + 4}`) || '';
 
-      // データがある場合のみFirestoreに保存
+      // データがある場合のみバッチに追加
       if (title || stroke1 || stroke2 || stroke3 || stroke4) {
         hasData = true;
 
@@ -210,13 +202,16 @@ export async function migrateFromLocalStorage(userId) {
           updatedAt: new Date()
         };
 
+        // バッチに書き込み操作を追加
         const docRef = getUserDocRef(userId, garageId);
-        await setDoc(docRef, garageData);
-        console.log(`✅ ${garageId} 移行完了`);
+        batch.set(docRef, garageData);
+        console.log(`📝 ${garageId} をバッチに追加`);
       }
     }
 
+    // バッチをコミット（アトミックに実行）
     if (hasData) {
+      await batch.commit();
       console.log('✅ localStorage → Firestore 移行完了！');
     } else {
       console.log('ℹ️ 移行するデータがありませんでした');
