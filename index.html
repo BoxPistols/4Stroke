@@ -710,189 +710,71 @@ input.stroke-title {
 }
   </style>
   <script src="https://bundle.run/css-scroll-snap-polyfill@0.1.2"></script>
-  <script>document.addEventListener("DOMContentLoaded", function () {
-  // https://tech.arms-soft.co.jp/entry/2020/01/29/090000
-  const init = function () {
-    cssScrollSnapPolyfill();
-  };
-  init();
-
-  // キーボード反応
-  /*
-  window.onload = function () {
-    window.addEventListener("keydown", keydownfunc, true);
-  };
-
-  const keydownfunc = function (event) {
-    const code = event.keyCode;
-    switch (code) {
-      case 37: // ←
-      case 38: // ↑
-      case 39: // →
-      case 40: // ↓
-        event.preventDefault();
-        console.log(code);
+  <!-- Firebase App -->
+  <script type="module" src="js/app.js"></script>
+  <style>
+    /* ユーザー情報エリアのスタイル */
+    .user-info {
+      position: fixed;
+      top: 5vh;
+      right: 1.5vw;
+      z-index: 11;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      color: white;
+      font-family: 'Oswald', sans-serif;
+      filter: drop-shadow(1px 1px 2px black);
     }
-  };
-  */
 
-  /**
-   * 汎用関数
-   * @_x = ターゲットエレメント
-   */
-  let qsAll = (_x) => document.querySelectorAll(_x);
-  let qs = (_x) => document.querySelector(_x);
+    .user-info #user-email {
+      font-size: 14px;
+      opacity: 0.9;
+    }
 
-  // auto save view
-  let message = qs("#message");
+    .user-info #logout-btn {
+      padding: 6px 16px;
+      background: rgba(249, 38, 114, 0.8);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: 'Oswald', sans-serif;
+      transition: all 0.2s;
+      filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+    }
 
-  const autoSave = () => {
-    message.classList.remove("is-hidden");
-    setTimeout(function () {
-      message.classList.add("is-hidden");
-    }, 800);
-  };
+    .user-info #logout-btn:hover {
+      background: rgba(249, 38, 114, 1);
+      transform: translateY(-1px);
+      filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.5));
+    }
 
-  // メモ入力欄の設定　LocalStorageの取得
-  let strokeTexts = qsAll(".garage-strokes .garage-stroke-box");
-  strokeTexts.forEach((elm) => {
-    index = [].slice.call(strokeTexts).indexOf(elm);
-    let strokeClass = qsAll("textarea.stroke");
-    strokeClass[index].value = localStorage.getItem("stroke" + (index + 1));
-  });
+    .user-info #logout-btn:active {
+      transform: translateY(0);
+    }
+  </style>
 
-  // メモ入力、リアルタイムでLocalStorageに保存
-  let handleTextArea = qsAll("textArea");
-  for (let i = 0; i < handleTextArea.length; i++) {
-    handleTextArea[i].addEventListener("keyup", (event) => {
-      localStorage.setItem("stroke" + (i + 1), event.target.value);
-      autoSave();
-    });
-  }
-
-  // タイトルの設定　LocalStorageの取得
-  let strokeTitles = qsAll(".stroke-title");
-  strokeTitles.forEach((elm) => {
-    index = [].slice.call(strokeTitles).indexOf(elm);
-    let strokeTitle = qsAll(".stroke-title");
-    strokeTitle[index].value = localStorage.getItem(
-      "stroke-title" + (index + 1)
-    );
-  });
-
-  // タイトル入力、リアルタイムでLocalStorageに保存
-  let handleTitle = qsAll(".stroke-title");
-  for (let i = 0; i < handleTitle.length; i++) {
-    handleTitle[i].addEventListener("keyup", (event) => {
-      localStorage.setItem("stroke-title" + (i + 1), event.target.value);
-      autoSave();
-    });
-  }
-
-  // 個別 テキストエリア削除機能
-  let handleClear = qsAll("input.clear");
-
-  for (let i = 0; i < handleClear.length; i++) {
-    handleClear[i].addEventListener("click", (event) => {
-      let targetRemoveText = qs("textarea.stroke" + (i + 1));
-
-      if (targetRemoveText.value === "") {
-        alert("何も入力されてないわ");
-        return false;
-      } else {
-        let confirmRemove = confirm("消しマンボ?");
-
-        if (confirmRemove == true) {
-          localStorage.removeItem("stroke" + (i + 1));
-          targetRemoveText.value = "";
-          // handleClear[i].setAttribute("disabled", true);
-          alert("闇に葬りマンボ...");
-          autoSave();
-          return true;
-        } else {
-          alert("やっぱやめとくわ");
-          return false;
-        }
-      }
-    });
-  }
-
-  // 個別 タイトル削除機能
-  let handleTitleClear = qsAll(".title-delete");
-
-  for (let i = 0; i < handleTitleClear.length; i++) {
-    handleTitleClear[i].addEventListener("click", (event) => {
-     
-      if (handleTitleClear[i].previousElementSibling.value == "") {
-        alert("何も入力されてないわ");
-        return false;
-      }
-
-      let confirmRemove = confirm(
-        handleTitleClear[i].previousElementSibling.value + "を消しマンボ?"
-      );
-
-      if (confirmRemove == true) {
-        localStorage.removeItem("stroke-title" + (i + 1));
-        let targetRemoveTitle = qs(".stroke-title" + (i + 1));
-        targetRemoveTitle.value = "";
-
-        alert("闇に葬りマンボ...");
-        autoSave();
-        return true;
-      } else {
-        alert("やっぱやめとくわ");
-        return false;
-      }
-    });
-  }
-
-  // Garageグループ 削除機能
-  const handleGarageClear = (_qs, _numMin, _numTitle) => {
-    let el = qs(_qs);
-    el.addEventListener("click", (event) => {
-      let confirmRemove = confirm(
-        event.target.value.replace("Delete /", "") + "を消しマンボ?"
-      );
-      if (confirmRemove == true) {
-        alert("闇に葬りマンボ...");
-
-        for (let i = _numMin; i < _numMin + 4; i++) {
-          localStorage.removeItem("stroke" + (i + 1));
-          let targetRemoveText = qs("textarea.stroke" + (i + 1));
-          targetRemoveText.value = "";
-        }
-        // タイトルも消す
-        /*
-        localStorage.removeItem("stroke-title" + _numTitle);
-        let targetRemoveTitle = qs(".stroke-title" + _numTitle);
-        targetRemoveTitle.value = "";
-        */
-        autoSave();
-        return true;
-      } else {
-        alert("やっぱやめとくわ");
-        return false;
-      }
-    });
-  };
-  handleGarageClear("#clearA", 0, 1);
-  handleGarageClear("#clearB", 4, 2);
-  handleGarageClear("#clearC", 8, 3);
-  handleGarageClear("#clearD", 12, 4);
-
-  // Finished
-});
-
-  </script>
 </head>
 <body>
-</body><a class="js-smooth-scroll" href="#garageA">
+<!-- ユーザー情報エリア -->
+<div class="user-info">
+  <span id="user-email">読み込み中...</span>
+  <button id="logout-btn">LOGOUT</button>
+</div>
+
+<a class="js-smooth-scroll" href="#garageA">
   <header class="header">
     <div class="logo-img"><img src="./img/logo.svg"></div>
-    <h1 class="logo-title">4STROKES    </h1>
+    <h1 class="logo-title">4STROKES</h1>
     <div class="is-hidden" id="message">Auto Save...</div>
-  </header></a>
+  </header>
+</a>
 <nav class="garages-nav">
   <ul>
     <li><a class="js-smooth-scroll" href="#garageA">GARAGE-A</a></li>
