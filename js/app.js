@@ -1,28 +1,50 @@
+// Firebase関連のインポート
+import { onAuthChange, getCurrentUser, logout } from './auth.js';
+import {
+  loadAllGarages,
+  saveStroke,
+  saveTitle,
+  deleteStroke,
+  deleteGarage,
+  migrateFromLocalStorage
+} from './firestore-crud.js';
+
+// デバウンス用のタイマー
+let saveTimer = null;
+const DEBOUNCE_DELAY = 500; // 500ms待ってから保存
+
 document.addEventListener("DOMContentLoaded", function () {
-  // https://tech.arms-soft.co.jp/entry/2020/01/29/090000
+  // 認証状態チェック - ログインしていない場合はログイン画面へ
+  onAuthChange(async (user) => {
+    if (!user) {
+      // 未ログインの場合はログイン画面へリダイレクト
+      window.location.href = '/login.html';
+      return;
+    }
+
+    console.log('✅ ログイン中:', user.email);
+
+    // ユーザー情報を表示
+    const userEmailElement = document.getElementById('user-email');
+    if (userEmailElement) {
+      userEmailElement.textContent = user.email;
+    }
+
+    // localStorage → Firestore 移行（初回のみ）
+    await migrateFromLocalStorage(user.uid);
+
+    // Firestoreからデータ読み込み
+    await loadDataFromFirestore(user.uid);
+
+    // イベントリスナーを設定
+    setupEventListeners(user.uid);
+  });
+
+  // CSS Scroll Snap Polyfill
   const init = function () {
     cssScrollSnapPolyfill();
   };
   init();
-
-  // キーボード反応
-  /*
-  window.onload = function () {
-    window.addEventListener("keydown", keydownfunc, true);
-  };
-
-  const keydownfunc = function (event) {
-    const code = event.keyCode;
-    switch (code) {
-      case 37: // ←
-      case 38: // ↑
-      case 39: // →
-      case 40: // ↓
-        event.preventDefault();
-        console.log(code);
-    }
-  };
-  */
 
   /**
    * 汎用関数
@@ -41,133 +63,216 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 800);
   };
 
-  // メモ入力欄の設定　LocalStorageの取得
-  let strokeTexts = qsAll(".garage-strokes .garage-stroke-box");
-  strokeTexts.forEach((elm) => {
-    index = [].slice.call(strokeTexts).indexOf(elm);
-    let strokeClass = qsAll("textarea.stroke");
-    strokeClass[index].value = localStorage.getItem("stroke" + (index + 1));
-  });
+  /**
+   * Firestoreからデータを読み込んで画面に表示
+   */
+  async function loadDataFromFirestore(userId) {
+    try {
+      console.log('📖 Firestoreからデータ読み込み中...');
+      const garages = await loadAllGarages(userId);
 
-  // メモ入力、リアルタイムでLocalStorageに保存
-  let handleTextArea = qsAll("textArea");
-  for (let i = 0; i < handleTextArea.length; i++) {
-    handleTextArea[i].addEventListener("keyup", (event) => {
-      localStorage.setItem("stroke" + (i + 1), event.target.value);
-      autoSave();
-    });
+      // 4つのガレージをループ
+      for (let i = 1; i <= 4; i++) {
+        const garage = garages[`garage${i}`];
+
+        // タイトルを設定
+        const titleInput = qs(`.stroke-title${i}`);
+        if (titleInput) {
+          titleInput.value = garage.title || '';
+        }
+
+        // ストローク（4つ）を設定
+        for (let j = 1; j <= 4; j++) {
+          const strokeIndex = (i - 1) * 4 + j;
+          const textarea = qs(`textarea.stroke${strokeIndex}`);
+          if (textarea) {
+            textarea.value = garage[`stroke${j}`] || '';
+          }
+        }
+      }
+
+      console.log('✅ データ読み込み完了');
+    } catch (error) {
+      console.error('❌ データ読み込みエラー:', error);
+      alert('データの読み込みに失敗しました。ページを再読み込みしてください。');
+    }
   }
 
-  // タイトルの設定　LocalStorageの取得
-  let strokeTitles = qsAll(".stroke-title");
-  strokeTitles.forEach((elm) => {
-    index = [].slice.call(strokeTitles).indexOf(elm);
-    let strokeTitle = qsAll(".stroke-title");
-    strokeTitle[index].value = localStorage.getItem(
-      "stroke-title" + (index + 1)
-    );
-  });
+  /**
+   * 全てのイベントリスナーを設定
+   */
+  function setupEventListeners(userId) {
+    // テキストエリアの入力イベント
+    let handleTextArea = qsAll("textArea");
+    for (let i = 0; i < handleTextArea.length; i++) {
+      handleTextArea[i].addEventListener("keyup", (event) => {
+        // デバウンス処理（連続入力時に500ms待ってから保存）
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(async () => {
+          const garageNum = Math.floor(i / 4) + 1;
+          const strokeNum = (i % 4) + 1;
+          const garageId = `garage${garageNum}`;
+          const strokeKey = `stroke${strokeNum}`;
 
-  // タイトル入力、リアルタイムでLocalStorageに保存
-  let handleTitle = qsAll(".stroke-title");
-  for (let i = 0; i < handleTitle.length; i++) {
-    handleTitle[i].addEventListener("keyup", (event) => {
-      localStorage.setItem("stroke-title" + (i + 1), event.target.value);
-      autoSave();
-    });
-  }
+          try {
+            await saveStroke(userId, garageId, strokeKey, event.target.value);
+            autoSave();
+          } catch (error) {
+            console.error('❌ 保存エラー:', error);
+          }
+        }, DEBOUNCE_DELAY);
+      });
+    }
 
-  // 個別 テキストエリア削除機能
-  let handleClear = qsAll("input.clear");
+    // タイトルの入力イベント
+    let handleTitle = qsAll(".stroke-title");
+    for (let i = 0; i < handleTitle.length; i++) {
+      handleTitle[i].addEventListener("keyup", (event) => {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(async () => {
+          const garageId = `garage${i + 1}`;
 
-  for (let i = 0; i < handleClear.length; i++) {
-    handleClear[i].addEventListener("click", (event) => {
-      let targetRemoveText = qs("textarea.stroke" + (i + 1));
+          try {
+            await saveTitle(userId, garageId, event.target.value);
+            autoSave();
+          } catch (error) {
+            console.error('❌ タイトル保存エラー:', error);
+          }
+        }, DEBOUNCE_DELAY);
+      });
+    }
 
-      if (targetRemoveText.value === "") {
-        alert("何も入力されてないわ");
-        return false;
-      } else {
-        let confirmRemove = confirm("消しマンボ?");
+    // 個別テキストエリア削除機能
+    let handleClear = qsAll("input.clear");
+    for (let i = 0; i < handleClear.length; i++) {
+      handleClear[i].addEventListener("click", async (event) => {
+        let targetRemoveText = qs("textarea.stroke" + (i + 1));
+
+        if (targetRemoveText.value === "") {
+          alert("何も入力されてないわ");
+          return false;
+        } else {
+          let confirmRemove = confirm("消しマンボ?");
+
+          if (confirmRemove == true) {
+            const garageNum = Math.floor(i / 4) + 1;
+            const strokeNum = (i % 4) + 1;
+            const garageId = `garage${garageNum}`;
+            const strokeKey = `stroke${strokeNum}`;
+
+            try {
+              await deleteStroke(userId, garageId, strokeKey);
+              targetRemoveText.value = "";
+              alert("闇に葬りマンボ...");
+              autoSave();
+              return true;
+            } catch (error) {
+              console.error('❌ 削除エラー:', error);
+              alert('削除に失敗しました');
+              return false;
+            }
+          } else {
+            alert("やっぱやめとくわ");
+            return false;
+          }
+        }
+      });
+    }
+
+    // 個別タイトル削除機能
+    let handleTitleClear = qsAll(".title-delete");
+    for (let i = 0; i < handleTitleClear.length; i++) {
+      handleTitleClear[i].addEventListener("click", async (event) => {
+        if (handleTitleClear[i].previousElementSibling.value == "") {
+          alert("何も入力されてないわ");
+          return false;
+        }
+
+        let confirmRemove = confirm(
+          handleTitleClear[i].previousElementSibling.value + "を消しマンボ?"
+        );
 
         if (confirmRemove == true) {
-          localStorage.removeItem("stroke" + (i + 1));
-          targetRemoveText.value = "";
-          // handleClear[i].setAttribute("disabled", true);
-          alert("闇に葬りマンボ...");
-          autoSave();
-          return true;
+          const garageId = `garage${i + 1}`;
+
+          try {
+            await saveTitle(userId, garageId, '');
+            let targetRemoveTitle = qs(".stroke-title" + (i + 1));
+            targetRemoveTitle.value = "";
+            alert("闇に葬りマンボ...");
+            autoSave();
+            return true;
+          } catch (error) {
+            console.error('❌ タイトル削除エラー:', error);
+            alert('削除に失敗しました');
+            return false;
+          }
         } else {
           alert("やっぱやめとくわ");
           return false;
         }
-      }
-    });
-  }
+      });
+    }
 
-  // 個別 タイトル削除機能
-  let handleTitleClear = qsAll(".title-delete");
+    // Garageグループ削除機能
+    const handleGarageClear = (_qs, _garageNum) => {
+      let el = qs(_qs);
+      el.addEventListener("click", async (event) => {
+        let confirmRemove = confirm(
+          event.target.value.replace("Delete /", "") + "を消しマンボ?"
+        );
 
-  for (let i = 0; i < handleTitleClear.length; i++) {
-    handleTitleClear[i].addEventListener("click", (event) => {
-     
-      if (handleTitleClear[i].previousElementSibling.value == "") {
-        alert("何も入力されてないわ");
-        return false;
-      }
+        if (confirmRemove == true) {
+          const garageId = `garage${_garageNum}`;
 
-      let confirmRemove = confirm(
-        handleTitleClear[i].previousElementSibling.value + "を消しマンボ?"
-      );
+          try {
+            await deleteGarage(userId, garageId);
 
-      if (confirmRemove == true) {
-        localStorage.removeItem("stroke-title" + (i + 1));
-        let targetRemoveTitle = qs(".stroke-title" + (i + 1));
-        targetRemoveTitle.value = "";
+            // 画面もクリア
+            const startIndex = (_garageNum - 1) * 4;
+            for (let i = startIndex; i < startIndex + 4; i++) {
+              let targetRemoveText = qs("textarea.stroke" + (i + 1));
+              if (targetRemoveText) {
+                targetRemoveText.value = "";
+              }
+            }
 
-        alert("闇に葬りマンボ...");
-        autoSave();
-        return true;
-      } else {
-        alert("やっぱやめとくわ");
-        return false;
-      }
-    });
-  }
-
-  // Garageグループ 削除機能
-  const handleGarageClear = (_qs, _numMin, _numTitle) => {
-    let el = qs(_qs);
-    el.addEventListener("click", (event) => {
-      let confirmRemove = confirm(
-        event.target.value.replace("Delete /", "") + "を消しマンボ?"
-      );
-      if (confirmRemove == true) {
-        alert("闇に葬りマンボ...");
-
-        for (let i = _numMin; i < _numMin + 4; i++) {
-          localStorage.removeItem("stroke" + (i + 1));
-          let targetRemoveText = qs("textarea.stroke" + (i + 1));
-          targetRemoveText.value = "";
+            alert("闇に葬りマンボ...");
+            autoSave();
+            return true;
+          } catch (error) {
+            console.error('❌ ガレージ削除エラー:', error);
+            alert('削除に失敗しました');
+            return false;
+          }
+        } else {
+          alert("やっぱやめとくわ");
+          return false;
         }
-        // タイトルも消す
-        /*
-        localStorage.removeItem("stroke-title" + _numTitle);
-        let targetRemoveTitle = qs(".stroke-title" + _numTitle);
-        targetRemoveTitle.value = "";
-        */
-        autoSave();
-        return true;
-      } else {
-        alert("やっぱやめとくわ");
-        return false;
-      }
-    });
-  };
-  handleGarageClear("#clearA", 0, 1);
-  handleGarageClear("#clearB", 4, 2);
-  handleGarageClear("#clearC", 8, 3);
-  handleGarageClear("#clearD", 12, 4);
+      });
+    };
+
+    handleGarageClear("#clearA", 1);
+    handleGarageClear("#clearB", 2);
+    handleGarageClear("#clearC", 3);
+    handleGarageClear("#clearD", 4);
+
+    // ログアウトボタン
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async () => {
+        if (confirm('ログアウトしますか？')) {
+          try {
+            await logout();
+            window.location.href = '/login.html';
+          } catch (error) {
+            console.error('❌ ログアウトエラー:', error);
+            alert('ログアウトに失敗しました');
+          }
+        }
+      });
+    }
+  }
 
   // Finished
 });
