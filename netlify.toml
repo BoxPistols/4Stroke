@@ -1,0 +1,52 @@
+[build]
+  # Build command
+  command = "sass styles/style.scss dist/style.css --no-source-map"
+
+  # Publish directory
+  publish = "."
+
+  # Functions directory (if needed)
+  # functions = "netlify/functions"
+
+# Production branch configuration
+[context.production]
+  command = "sass styles/style.scss dist/style.css --no-source-map"
+  publish = "."
+
+# Deploy only from main/master branches
+[context.production.environment]
+  NODE_VERSION = "20"
+
+# Branch deploy settings - disable all branch deploys except main/master
+[context.branch-deploy]
+  command = "echo 'Branch deploys disabled. Only main/master branches are deployed.'"
+
+# Deploy preview settings - disable deploy previews
+[context.deploy-preview]
+  command = "echo 'Deploy previews disabled. Only main/master branches are deployed.'"
+
+# Redirect rules
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+
+# Headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Headers for CSS and JS files
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

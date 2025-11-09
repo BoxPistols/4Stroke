@@ -1,0 +1,81 @@
+name: Run Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+  push:
+    branches:
+      - develop
+      - 'claude/**'
+
+jobs:
+  test:
+    name: Unit and Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Build SCSS
+        run: sass styles/style.scss dist/style.css --no-source-map
+
+  lint:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check file sizes
+        run: |
+          echo "Checking for files over 1000 lines..."
+          find . -name "*.html" -o -name "*.js" -o -name "*.css" | while read file; do
+            lines=$(wc -l < "$file")
+            if [ "$lines" -gt 1000 ]; then
+              echo "❌ WARNING: $file has $lines lines (max 1000)"
+              exit 1
+            else
+              echo "✅ $file: $lines lines"
+            fi
+          done
+
+      - name: Check for inline styles
+        run: |
+          echo "Checking for inline styles..."
+          if grep -r "style=\"" --include="*.html" .; then
+            echo "❌ WARNING: Inline styles found"
+            exit 1
+          else
+            echo "✅ No inline styles found"
+          fi
+
+      - name: Check for magic numbers
+        run: |
+          echo "Checking for common magic numbers..."
+          if grep -r -E "[^a-zA-Z](768|1024|480|44|5000)[^a-zA-Z]" --include="*.js" --include="*.html" . | grep -v "node_modules" | grep -v "test"; then
+            echo "⚠️ WARNING: Potential magic numbers found (informational only)"
+          else
+            echo "✅ No obvious magic numbers found"
+          fi
