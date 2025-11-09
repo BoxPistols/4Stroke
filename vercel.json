@@ -11,9 +11,9 @@
     "silent": true,
     "autoJobCancelation": true
   },
-  "buildCommand": "sass styles/style.scss dist/style.css --no-source-map",
+  "buildCommand": "npm run build",
   "outputDirectory": ".",
-  "installCommand": "npm install",
+  "installCommand": "npm ci",
   "framework": null,
   "rewrites": [
     {
