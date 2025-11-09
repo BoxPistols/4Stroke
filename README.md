@@ -1,4 +1,4 @@
-# 🔥 4STROKES
+# 4 STROKES
 
 4段階思考プロセス（Key → Issue → Action → Publish）に基づいたメモアプリ
 
