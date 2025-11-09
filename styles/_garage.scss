@@ -130,9 +130,77 @@
     }
   }
 }
-// ===== Media
-// @media only screen and (max-width: 640px) {
-//  .garage-strokes .garage-stroke-box {
-// TODO: Mobile
-//  }
-// }
+// ===== Mobile Responsive
+@media only screen and (max-width: 1024px) {
+  .garages-container {
+    padding:6vh 1vw 2vh;
+  }
+
+  .garage-strokes {
+    grid-template-columns:repeat(2, 1fr) !important;
+  }
+
+  .garage-strokes .garage-stroke-box {
+    width:auto !important;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .garages-container {
+    overflow-y:auto;
+    overflow-x:hidden;
+    padding:10vh 2vw 2vh;
+  }
+
+  .garages {
+    flex-direction:column;
+    width:100%;
+    padding:2vh 1vw;
+  }
+
+  .garage {
+    margin:0 0 20px 0 !important;
+    width:100% !important;
+  }
+
+  .garage-strokes {
+    grid-template-columns:1fr !important;
+    height:auto !important;
+    min-height:auto !important;
+  }
+
+  .garage-strokes .garage-stroke-box {
+    width:100% !important;
+    margin:8px 0 !important;
+    padding:2vh 3vw !important;
+  }
+
+  textarea {
+    min-height:120px !important;
+    font-size:1rem !important;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .garages-container {
+    padding:12vh 1vw 2vh;
+  }
+
+  .garage {
+    padding:8px 4px 12px !important;
+  }
+
+  .garage-strokes .garage-stroke-box {
+    padding:1.5vh 3vw !important;
+  }
+
+  textarea {
+    min-height:100px !important;
+    padding:.8ch 1ch !important;
+  }
+
+  input[type="button"] {
+    font-size:0.85rem !important;
+    padding:6px 12px !important;
+  }
+}

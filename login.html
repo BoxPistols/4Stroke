@@ -3,10 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ログイン - 4STROKES</title>
+  <title>LOGIN - 4STROKES</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald:200,300,400,500,600,700">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yakuhanjp@3.4.1/dist/css/yakuhanrp.min.css">
   <style>
-    /* リセット */
+    :root {
+      --color-key: #66d9ef;
+      --color-issue: #a6e22e;
+      --color-action: #fd971f;
+      --color-publish: #f92672;
+      --color-purple: #ae81ff;
+      --color-dark: #272822;
+      --color-white: whitesmoke;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -14,51 +24,102 @@
     }
 
     body {
-      font-family: 'Oswald', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: YakuHanRP, 'Oswald', 'M PLUS Rounded 1c', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      position: fixed;
+      z-index: -1;
+      top: 0;
+      left: 0;
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      content: "";
+      background-image:
+        linear-gradient(45deg, rgba(128, 0, 128, 0.82), rgba(0, 0, 255, 0.82)),
+        url("https://picsum.photos/1200/800/?image=133");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+      backdrop-filter: blur(6px);
     }
 
     .login-container {
-      background: white;
-      padding: 3rem;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       width: 100%;
-      max-width: 420px;
-      animation: fadeIn 0.5s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      max-width: 480px;
+      padding: 2.5rem;
+      background: rgba(201, 181, 213, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 
     .login-title {
       text-align: center;
-      margin-bottom: 2rem;
-      color: #333;
-      font-size: 2.5rem;
-      font-weight: 600;
-      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+      color: var(--color-white);
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-shadow:
+        2px 2px 4px rgba(0, 0, 0, 0.5),
+        0 0 10px rgba(174, 129, 255, 0.3);
+      filter: drop-shadow(1px 1px 2px black);
     }
 
     .login-subtitle {
       text-align: center;
       margin-bottom: 2rem;
-      color: #666;
-      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
       font-weight: 300;
+      letter-spacing: 0.05em;
+      filter: drop-shadow(1px 1px 1px black);
+    }
+
+    .error-message {
+      background: rgba(249, 38, 114, 0.2);
+      color: var(--color-white);
+      padding: 0.9rem;
+      border-radius: 8px;
+      border-left: 4px solid var(--color-publish);
+      margin-bottom: 1.5rem;
+      display: none;
+      font-size: 0.9rem;
+      filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+    }
+
+    .error-message.show {
+      display: block;
+      animation: shake 0.5s, fadeIn 0.3s;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .form-group {
@@ -68,25 +129,40 @@
     .form-group label {
       display: block;
       margin-bottom: 0.5rem;
-      color: #555;
+      color: var(--color-white);
       font-weight: 400;
-      font-size: 0.95rem;
+      font-size: clamp(0.85rem, 2vw, 0.95rem);
+      letter-spacing: 0.05em;
+      filter: drop-shadow(1px 1px 1px black);
     }
 
     .form-group input {
       width: 100%;
       padding: 0.9rem;
-      border: 2px solid #e0e0e0;
+      background: rgba(0, 0, 0, 0.35);
+      border: 2px solid rgba(255, 255, 255, 0.3);
       border-radius: 8px;
-      font-size: 1rem;
-      transition: all 0.3s;
+      color: var(--color-white);
+      font-size: clamp(0.9rem, 2vw, 1rem);
       font-family: inherit;
+      transition: all 0.3s;
+      filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+    }
+
+    .form-group input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .form-group input:hover {
+      background: rgba(0, 0, 0, 0.25);
+      border-color: rgba(255, 255, 255, 0.5);
     }
 
     .form-group input:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      background: rgba(0, 0, 0, 0.5);
+      border-color: var(--color-purple);
+      box-shadow: 0 0 0 3px rgba(174, 129, 255, 0.2);
     }
 
     .btn {
@@ -94,60 +170,72 @@
       padding: 0.9rem;
       border: none;
       border-radius: 8px;
-      font-size: 1rem;
+      font-size: clamp(0.9rem, 2vw, 1rem);
       font-weight: 500;
+      font-family: 'Oswald', sans-serif;
+      letter-spacing: 0.1em;
       cursor: pointer;
       transition: all 0.3s;
-      font-family: inherit;
-      letter-spacing: 0.5px;
+      filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.4));
+      text-transform: uppercase;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+      filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4));
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, var(--color-purple) 0%, var(--color-publish) 100%);
       color: white;
       margin-bottom: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-    }
-
-    .btn-primary:active {
-      transform: translateY(0);
+      filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
+      box-shadow: 0 0 20px rgba(174, 129, 255, 0.4);
     }
 
     .btn-secondary {
-      background: #f3f4f6;
-      color: #333;
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--color-white);
       margin-bottom: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
     .btn-secondary:hover {
-      background: #e5e7eb;
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+      filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
     }
 
     .btn-google {
-      background: #4285f4;
+      background: rgba(66, 133, 244, 0.9);
       color: white;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .btn-google:hover {
-      background: #357ae8;
+      background: rgba(66, 133, 244, 1);
       transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(66, 133, 244, 0.4);
+      filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
+      box-shadow: 0 0 20px rgba(66, 133, 244, 0.4);
     }
 
     .divider {
       text-align: center;
       margin: 1.5rem 0;
-      color: #999;
+      color: rgba(255, 255, 255, 0.7);
       position: relative;
-      font-size: 0.9rem;
+      font-size: clamp(0.85rem, 2vw, 0.95rem);
+      letter-spacing: 0.1em;
+      filter: drop-shadow(1px 1px 1px black);
     }
 
     .divider::before,
@@ -155,9 +243,9 @@
       content: '';
       position: absolute;
       top: 50%;
-      width: 42%;
+      width: 40%;
       height: 1px;
-      background: #ddd;
+      background: rgba(255, 255, 255, 0.3);
     }
 
     .divider::before {
@@ -168,42 +256,15 @@
       right: 0;
     }
 
-    .error-message {
-      background: #fee;
-      color: #c33;
-      padding: 0.9rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      display: none;
-      font-size: 0.9rem;
-      border-left: 4px solid #c33;
-    }
-
-    .error-message.show {
-      display: block;
-      animation: shake 0.5s;
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-10px); }
-      75% { transform: translateX(10px); }
-    }
-
     .form-hidden {
       display: none;
-    }
-
-    .loading {
-      opacity: 0.6;
-      pointer-events: none;
     }
 
     .spinner {
       display: inline-block;
       width: 16px;
       height: 16px;
-      border: 2px solid rgba(255,255,255,.3);
+      border: 2px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
       border-top-color: white;
       animation: spin 0.6s linear infinite;
@@ -212,44 +273,78 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    /* Mobile responsive */
+    @media (max-width: 600px) {
+      body {
+        padding: 15px;
+      }
+
+      .login-container {
+        padding: 2rem 1.5rem;
+      }
+
+      .form-group input,
+      .btn {
+        padding: 0.8rem;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .login-container {
+        padding: 1.5rem 1rem;
+      }
+
+      .login-title {
+        margin-bottom: 0.3rem;
+      }
+
+      .login-subtitle {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.2rem;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="login-container">
-    <h1 class="login-title">🔥 4STROKES</h1>
-    <p class="login-subtitle">ログインして始めましょう</p>
+    <h1 class="login-title">4STROKES</h1>
+    <p class="login-subtitle">Authentication Required</p>
 
     <div id="error-message" class="error-message"></div>
 
-    <!-- ログインフォーム -->
+    <!-- Login Form -->
     <form id="login-form">
       <div class="form-group">
-        <label for="login-email">📧 メールアドレス</label>
+        <label for="login-email">Email Address</label>
         <input type="email" id="login-email" required autocomplete="email" placeholder="your@email.com">
       </div>
       <div class="form-group">
-        <label for="login-password">🔒 パスワード</label>
-        <input type="password" id="login-password" required autocomplete="current-password" placeholder="6文字以上">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" required autocomplete="current-password" placeholder="6+ characters">
       </div>
-      <button type="submit" class="btn btn-primary" id="login-btn">ログイン</button>
-      <button type="button" id="show-register" class="btn btn-secondary">新規登録</button>
+      <button type="submit" class="btn btn-primary" id="login-btn">Login</button>
+      <button type="button" id="show-register" class="btn btn-secondary">Create Account</button>
     </form>
 
-    <!-- 新規登録フォーム（初期非表示） -->
+    <!-- Register Form (initially hidden) -->
     <form id="register-form" class="form-hidden">
       <div class="form-group">
-        <label for="register-email">📧 メールアドレス</label>
+        <label for="register-email">Email Address</label>
         <input type="email" id="register-email" required autocomplete="email" placeholder="your@email.com">
       </div>
       <div class="form-group">
-        <label for="register-password">🔒 パスワード（6文字以上）</label>
-        <input type="password" id="register-password" required minlength="6" autocomplete="new-password" placeholder="6文字以上">
+        <label for="register-password">Password (6+ characters)</label>
+        <input type="password" id="register-password" required minlength="6" autocomplete="new-password" placeholder="6+ characters">
       </div>
-      <button type="submit" class="btn btn-primary" id="register-btn">登録</button>
-      <button type="button" id="show-login" class="btn btn-secondary">ログインに戻る</button>
+      <button type="submit" class="btn btn-primary" id="register-btn">Register</button>
+      <button type="button" id="show-login" class="btn btn-secondary">Back to Login</button>
     </form>
 
-    <div class="divider">または</div>
+    <div class="divider">OR</div>
 
     <button id="google-login" class="btn btn-google">
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -258,7 +353,7 @@
         <path d="M3.964 10.712c-.18-.54-.282-1.117-.282-1.71 0-.593.102-1.17.282-1.71V4.96H.957C.347 6.175 0 7.55 0 9.002c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
         <path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.426 0 9.003 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335"/>
       </svg>
-      Googleでログイン
+      Sign in with Google
     </button>
   </div>
 
@@ -272,7 +367,7 @@
     const showRegisterBtn = document.getElementById('show-register');
     const showLoginBtn = document.getElementById('show-login');
 
-    // エラー表示
+    // Show error message
     function showError(message) {
       errorMessage.textContent = message;
       errorMessage.classList.add('show');
@@ -281,23 +376,23 @@
       }, 5000);
     }
 
-    // ログイン成功時
+    // On login success
     function onLoginSuccess() {
       window.location.href = '/index.html';
     }
 
-    // ローディング状態の切り替え
+    // Toggle loading state
     function setLoading(button, isLoading) {
       if (isLoading) {
         button.disabled = true;
-        button.innerHTML = '<span class="spinner"></span> 処理中...';
+        button.innerHTML = '<span class="spinner"></span> Processing...';
       } else {
         button.disabled = false;
         button.innerHTML = button.dataset.originalText;
       }
     }
 
-    // Googleログイン
+    // Google login
     googleLoginBtn.addEventListener('click', async () => {
       googleLoginBtn.dataset.originalText = googleLoginBtn.innerHTML;
       setLoading(googleLoginBtn, true);
@@ -311,7 +406,7 @@
       }
     });
 
-    // メールログイン
+    // Email login
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('login-email').value;
@@ -330,7 +425,7 @@
       }
     });
 
-    // 新規登録
+    // Register
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('register-email').value;
@@ -349,7 +444,7 @@
       }
     });
 
-    // フォーム切り替え
+    // Toggle forms
     showRegisterBtn.addEventListener('click', () => {
       loginForm.classList.add('form-hidden');
       registerForm.classList.remove('form-hidden');

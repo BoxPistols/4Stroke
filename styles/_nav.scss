@@ -19,3 +19,45 @@ nav.garages-nav {
     }
   }
 }
+
+// Mobile responsive
+@media only screen and (max-width: 768px) {
+  nav.garages-nav {
+    top:auto;
+    bottom:2vh;
+    right:2vw;
+    left:2vw;
+    background:rgba(0, 0, 0, 0.5);
+    padding:8px;
+    border-radius:8px;
+    backdrop-filter:blur(10px);
+
+    ul {
+      justify-content:space-around;
+      flex-wrap:wrap;
+
+      li {
+        margin:4px;
+
+        a {
+          font-size:0.9rem;
+          padding:4px 8px;
+          display:block;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  nav.garages-nav {
+    ul {
+      li {
+        a {
+          font-size:0.8rem;
+          padding:2px 6px;
+        }
+      }
+    }
+  }
+}

@@ -388,8 +388,7 @@ body:before {
   background-position: center;
   background-size: cover;
   background-size: cover;
-  -webkit-backdrop-filter: blur(6px);
-          backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
 }
 
 p {
@@ -439,6 +438,36 @@ nav.garages-nav ul li a {
   filter: drop-shadow(1px 1px 0px black);
 }
 
+@media only screen and (max-width: 768px) {
+  nav.garages-nav {
+    top: auto;
+    bottom: 2vh;
+    right: 2vw;
+    left: 2vw;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+  }
+  nav.garages-nav ul {
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+  nav.garages-nav ul li {
+    margin: 4px;
+  }
+  nav.garages-nav ul li a {
+    font-size: 0.9rem;
+    padding: 4px 8px;
+    display: block;
+  }
+}
+@media only screen and (max-width: 480px) {
+  nav.garages-nav ul li a {
+    font-size: 0.8rem;
+    padding: 2px 6px;
+  }
+}
 header.header {
   position: fixed;
   z-index: 10;
@@ -529,7 +558,7 @@ input.stroke-title {
   border: 1px solid #f8f8ff;
   border-radius: 1em;
   outline: none;
-  background: #fff2;
+  background: rgba(255, 255, 255, 0.1333333333);
   font-size: 1.3em;
   filter: drop-shadow(1px 1px 0px black);
 }
@@ -538,7 +567,7 @@ input.stroke-title {
   margin-left: 2px;
   cursor: pointer;
   transform: scale(1.1, 0.9);
-  color: #f8f8f8a9;
+  color: rgba(248, 248, 248, 0.662745098);
   font-size: 24px;
   filter: drop-shadow(1px 1px 0px black);
 }
@@ -549,7 +578,7 @@ input.stroke-title {
 .clear-garage-box > input[type=button] {
   border: none;
   outline: none;
-  background: #fff2;
+  background: rgba(255, 255, 255, 0.1333333333);
   font-size: 1em;
   display: flex;
   /**
@@ -572,6 +601,63 @@ input.stroke-title {
   */
 }
 
+@media only screen and (max-width: 768px) {
+  header.header {
+    top: 2vh;
+    left: 2vw;
+    flex-wrap: wrap;
+  }
+  header.header .logo-img img {
+    width: 28px;
+  }
+  header.header h1.logo-title {
+    font-size: 24px;
+    margin: 0 0 4px 4px;
+  }
+  header.header #message {
+    font-size: 18px;
+    margin: 0 0 4px 4px;
+  }
+  h2.garage-title {
+    font-size: 5vw;
+    margin: 0 8px 8px;
+  }
+  .garage-head {
+    margin: 0 8px 8px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  input.stroke-title {
+    width: 100%;
+    max-width: 100%;
+    font-size: 1.1em;
+  }
+  .title-delete {
+    font-size: 20px;
+  }
+  .clear-garage-box {
+    width: 100%;
+    margin-left: 0;
+  }
+  .clear-garage-box > input[type=button] {
+    width: 100%;
+    font-size: 0.9em;
+  }
+}
+@media only screen and (max-width: 480px) {
+  header.header h1.logo-title {
+    font-size: 20px;
+  }
+  header.header #message {
+    font-size: 14px;
+  }
+  h2.garage-title {
+    font-size: 6vw;
+  }
+  input.stroke-title {
+    font-size: 1em;
+  }
+}
 .garages-container {
   overflow-x: scroll;
   min-width: 100vw;
@@ -595,8 +681,7 @@ input.stroke-title {
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   background-color: rgba(201, 181, 213, 0.2);
-  -webkit-backdrop-filter: blur(4px);
-          backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   scroll-snap-align: start;
 }
 .garages .garage-strokes {
@@ -608,12 +693,12 @@ input.stroke-title {
   border-radius: 8px;
 }
 .garages .garage-strokes .garage-stroke-box {
-  width: calc(100vw / 2 - 5vw);
+  width: 45vw;
   margin: 4px;
   padding: 1vh 1vw;
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 6px;
-  background: #0004;
+  background: rgba(0, 0, 0, 0.2666666667);
 }
 .garages .garage-strokes .clear-area {
   margin: 8px 0;
@@ -640,7 +725,7 @@ input.stroke-title {
 .garages .garage-strokes input[type=button] {
   color: currentcolor;
   border-color: currentcolor;
-  background: #0005;
+  background: rgba(0, 0, 0, 0.3333333333);
 }
 .garages .garage-strokes .garage-stroke-box:nth-child(1) h3, .garages .garage-strokes .garage-stroke-box:nth-child(1) textarea, .garages .garage-strokes .garage-stroke-box:nth-child(1) input[type=button] {
   color: var(--color4);
@@ -698,4 +783,65 @@ input.stroke-title {
 .garages textarea:focus, .garages textarea:focus-visible {
   border: 2px solid currentcolor !important;
   background-color: rgba(0, 0, 0, 0.5);
+}
+
+@media only screen and (max-width: 1024px) {
+  .garages-container {
+    padding: 6vh 1vw 2vh;
+  }
+  .garage-strokes {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .garage-strokes .garage-stroke-box {
+    width: auto !important;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .garages-container {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10vh 2vw 2vh;
+  }
+  .garages {
+    flex-direction: column;
+    width: 100%;
+    padding: 2vh 1vw;
+  }
+  .garage {
+    margin: 0 0 20px 0 !important;
+    width: 100% !important;
+  }
+  .garage-strokes {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    min-height: auto !important;
+  }
+  .garage-strokes .garage-stroke-box {
+    width: 100% !important;
+    margin: 8px 0 !important;
+    padding: 2vh 3vw !important;
+  }
+  textarea {
+    min-height: 120px !important;
+    font-size: 1rem !important;
+  }
+}
+@media only screen and (max-width: 480px) {
+  .garages-container {
+    padding: 12vh 1vw 2vh;
+  }
+  .garage {
+    padding: 8px 4px 12px !important;
+  }
+  .garage-strokes .garage-stroke-box {
+    padding: 1.5vh 3vw !important;
+  }
+  textarea {
+    min-height: 100px !important;
+    padding: 0.8ch 1ch !important;
+  }
+  input[type=button] {
+    font-size: 0.85rem !important;
+    padding: 6px 12px !important;
+  }
 }

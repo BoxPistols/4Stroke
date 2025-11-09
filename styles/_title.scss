@@ -126,3 +126,77 @@ input.stroke-title {
     @include flex(center, center);
   }
 }
+
+// Mobile responsive
+@media only screen and (max-width: 768px) {
+  header.header {
+    top:2vh;
+    left:2vw;
+    flex-wrap:wrap;
+
+    .logo-img img {
+      width:28px;
+    }
+
+    h1.logo-title {
+      font-size:24px;
+      margin:0 0 4px 4px;
+    }
+
+    #message {
+      font-size:18px;
+      margin:0 0 4px 4px;
+    }
+  }
+
+  h2.garage-title {
+    font-size:5vw;
+    margin:0 8px 8px;
+  }
+
+  .garage-head {
+    margin:0 8px 8px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  input.stroke-title {
+    width:100%;
+    max-width:100%;
+    font-size:1.1em;
+  }
+
+  .title-delete {
+    font-size:20px;
+  }
+
+  .clear-garage-box {
+    width:100%;
+    margin-left:0;
+
+    >input[type="button"] {
+      width:100%;
+      font-size:0.9em;
+    }
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  header.header {
+    h1.logo-title {
+      font-size:20px;
+    }
+
+    #message {
+      font-size:14px;
+    }
+  }
+
+  h2.garage-title {
+    font-size:6vw;
+  }
+
+  input.stroke-title {
+    font-size:1em;
+  }
+}
