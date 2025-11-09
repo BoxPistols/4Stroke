@@ -497,8 +497,8 @@ input[type=button] {
 nav.garages-nav {
   position: fixed;
   z-index: 10;
-  top: 1.5vh;
-  right: 1.5vw;
+  top: 16px;
+  right: 16px;
   font-family: "Oswald", sans-serif;
 }
 nav.garages-nav ul {
@@ -533,9 +533,9 @@ nav.garages-nav ul li a {
 @media only screen and (max-width: 768px) {
   nav.garages-nav {
     top: auto;
-    bottom: 10vh;
-    right: 1vw;
-    left: 1vw;
+    bottom: 70px;
+    right: 12px;
+    left: 12px;
     background: rgba(0, 0, 0, 0.6);
     padding: 6px 4px;
     border-radius: 12px;
@@ -595,11 +595,11 @@ nav.garages-nav ul li a {
 header.header {
   position: fixed;
   z-index: 10;
-  top: 1vh;
-  left: 1vw;
+  top: 12px;
+  left: 12px;
   display: grid;
   grid-template-columns: auto auto auto;
-  padding-left: 1vw;
+  padding-left: 12px;
   color: white;
   font-family: "Oswald", sans-serif;
   filter: drop-shadow(1px 1px 0px black);
@@ -661,12 +661,12 @@ h3 {
 }
 
 h2.garage-title {
-  margin: 0 calc(1vw + 4px) 8px;
-  font-size: 2.4vw;
+  margin: 0 16px 8px;
+  font-size: 28px;
 }
 
 .garage-head {
-  margin: 0 calc(1vw + 4px) 4px;
+  margin: 0 16px 4px;
 }
 
 input.stroke-title {
@@ -727,8 +727,8 @@ input.stroke-title {
 
 @media only screen and (max-width: 768px) {
   header.header {
-    top: 1vh;
-    left: 1vw;
+    top: 12px;
+    left: 12px;
     flex-wrap: nowrap;
   }
   header.header .logo-img img {
@@ -738,11 +738,11 @@ input.stroke-title {
     display: none;
   }
   header.header #message {
-    font-size: 14px;
+    font-size: 12px;
     margin: 0 0 0 8px;
   }
   h2.garage-title {
-    font-size: 6vw;
+    font-size: 22px;
     margin: 0 16px 12px;
   }
   .garage-head {
@@ -769,17 +769,25 @@ input.stroke-title {
   }
 }
 @media only screen and (max-width: 480px) {
+  header.header {
+    top: 10px;
+    left: 10px;
+  }
+  header.header .logo-img img {
+    width: 28px;
+  }
   header.header h1.logo-title {
-    font-size: 20px;
+    display: none;
   }
   header.header #message {
-    font-size: 14px;
+    font-size: 11px;
+    margin: 0 0 0 6px;
   }
   h2.garage-title {
-    font-size: 6vw;
+    font-size: 20px;
   }
   input.stroke-title {
-    font-size: 1em;
+    font-size: 0.95em;
   }
 }
 .garages-container {
@@ -916,15 +924,17 @@ input.stroke-title {
 
 @media only screen and (max-width: 1024px) {
   .garages-container {
-    padding: 6vh 1vw 2vh;
+    padding: 80px 12px 24px;
   }
   .garage-strokes {
     grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px;
     width: 100%;
   }
   .garage-strokes .garage-stroke-box {
     width: 100% !important;
     max-width: 100%;
+    padding: 12px;
     box-sizing: border-box;
   }
 }
@@ -932,7 +942,7 @@ input.stroke-title {
   .garages-container {
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 8vh 0 15vh;
+    padding: 80px 0 120px;
   }
   .garages {
     flex-direction: column;
@@ -940,15 +950,17 @@ input.stroke-title {
     padding: 0;
   }
   .garage {
-    margin: 0 0 24px 0 !important;
+    margin: 0 0 20px 0 !important;
     width: 100% !important;
-    padding: 12px 0 !important;
+    padding: 16px 12px !important;
     border-left: none !important;
     border-right: none !important;
     border-radius: 0 !important;
   }
   .garage-strokes {
+    display: grid !important;
     grid-template-columns: 1fr !important;
+    gap: 12px !important;
     height: auto !important;
     min-height: auto !important;
     margin: 0 !important;
@@ -957,35 +969,41 @@ input.stroke-title {
   .garage-strokes .garage-stroke-box {
     width: 100% !important;
     max-width: 100%;
-    margin: 0 0 12px 0 !important;
+    margin: 0 !important;
     padding: 16px !important;
-    border-radius: 0 !important;
+    border-radius: 8px !important;
     box-sizing: border-box;
   }
   textarea {
-    min-height: 100px !important;
+    min-height: 120px !important;
     font-size: 1rem !important;
     width: 100% !important;
     max-width: 100%;
+    padding: 8px 12px !important;
     box-sizing: border-box;
   }
 }
 @media only screen and (max-width: 480px) {
   .garages-container {
-    padding: 12vh 1vw 2vh;
+    padding: 80px 0 120px;
   }
   .garage {
-    padding: 8px 4px 12px !important;
+    padding: 12px 8px !important;
+    margin: 0 0 16px 0 !important;
+  }
+  .garage-strokes {
+    gap: 12px !important;
   }
   .garage-strokes .garage-stroke-box {
-    padding: 1.5vh 3vw !important;
+    padding: 12px !important;
+    border-radius: 6px !important;
     width: 100% !important;
     max-width: 100%;
     box-sizing: border-box;
   }
   textarea {
     min-height: 100px !important;
-    padding: 0.8ch 1ch !important;
+    padding: 8px 10px !important;
     width: 100% !important;
     max-width: 100%;
     box-sizing: border-box;
@@ -997,13 +1015,13 @@ input.stroke-title {
 }
 .user-info {
   position: fixed;
-  bottom: var(--spacing-vh-md);
-  left: var(--spacing-vw-sm);
+  bottom: 16px;
+  left: 12px;
   z-index: var(--z-header);
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-sm) var(--spacing-lg);
+  gap: 8px;
+  padding: 6px 12px;
   background: var(--bg-glass-dark);
   border-radius: var(--radius-xl);
   backdrop-filter: var(--blur-strong);
@@ -1012,17 +1030,17 @@ input.stroke-title {
   filter: var(--shadow-text);
 }
 .user-info #user-email {
-  font-size: 14px;
+  font-size: 12px;
   opacity: 0.9;
 }
 .user-info #logout-btn {
-  padding: 6px var(--spacing-lg);
+  padding: 5px 12px;
   background: var(--btn-primary-bg);
   color: var(--color-white);
   border: none;
   border-radius: var(--radius-lg);
   cursor: pointer;
-  font-size: 13px;
+  font-size: 11px;
   font-family: var(--font-primary);
   transition: all var(--transition-normal);
   filter: var(--shadow-button-normal);
@@ -1031,7 +1049,7 @@ input.stroke-title {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
 }
 .user-info #logout-btn .gear-icon {
   display: none;
@@ -1051,10 +1069,10 @@ input.stroke-title {
   .user-info {
     top: auto;
     right: auto;
-    left: var(--spacing-vw-sm);
-    bottom: var(--spacing-vh-md);
-    width: var(--container-width-mobile);
-    height: var(--container-width-mobile);
+    left: 12px;
+    bottom: 16px;
+    width: 40px;
+    height: 40px;
     padding: 0;
     gap: 0;
     border-radius: var(--radius-full);
@@ -1077,9 +1095,10 @@ input.stroke-title {
     position: relative;
   }
   .user-info #logout-btn .gear-icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     flex-shrink: 0;
+    display: block;
   }
   .user-info #logout-btn .logout-text {
     display: none;
@@ -1088,14 +1107,14 @@ input.stroke-title {
     width: auto;
     height: auto;
     border-radius: var(--radius-xl);
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: 8px 12px;
     flex-direction: column;
     align-items: stretch;
-    min-width: var(--container-width-expanded);
+    min-width: 150px;
   }
   .user-info.expanded #user-email {
     display: block;
-    font-size: 11px;
+    font-size: 10px;
     text-align: center;
     margin-bottom: 6px;
   }
@@ -1103,23 +1122,373 @@ input.stroke-title {
     width: 100%;
     height: auto;
     border-radius: var(--radius-md);
-    padding: 6px var(--spacing-md);
+    padding: 6px 10px;
   }
   .user-info.expanded #logout-btn .gear-icon {
     display: none;
   }
   .user-info.expanded #logout-btn .logout-text {
     display: inline;
-    font-size: 11px;
+    font-size: 10px;
   }
 }
 @media only screen and (max-width: 480px) {
   .user-info {
-    width: var(--container-width-mobile-sm);
-    height: var(--container-width-mobile-sm);
+    width: 36px;
+    height: 36px;
+    left: 10px;
+    bottom: 14px;
   }
   .user-info #logout-btn .gear-icon {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
+  }
+  .user-info.expanded {
+    min-width: 140px;
+    padding: 6px 10px;
+  }
+  .user-info.expanded #user-email {
+    font-size: 9px;
+  }
+  .user-info.expanded #logout-btn {
+    padding: 5px 8px;
+  }
+  .user-info.expanded #logout-btn .logout-text {
+    font-size: 9px;
+  }
+}
+
+.settings-btn {
+  background: rgba(174, 129, 255, 0.8);
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 6px 12px;
+  transition: all var(--transition-normal);
+  filter: var(--shadow-button-normal);
+}
+.settings-btn:hover {
+  background: rgb(174, 129, 255);
+  transform: translateY(-1px);
+  filter: var(--shadow-button-hover);
+}
+.settings-btn:active {
+  transform: translateY(0);
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: var(--z-modal);
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}
+.modal.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: linear-gradient(135deg, rgba(128, 0, 128, 0.95), rgba(0, 0, 255, 0.95));
+  border-radius: var(--radius-xl);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  max-width: 600px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.modal-header h2 {
+  margin: 0;
+  color: white;
+  font-family: var(--font-primary);
+  font-size: 24px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.modal-header .modal-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+.modal-header .modal-close:hover {
+  transform: rotate(90deg);
+  color: var(--color-danger);
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.settings-section {
+  margin-bottom: 32px;
+}
+.settings-section h3 {
+  color: white;
+  font-family: var(--font-primary);
+  font-size: 18px;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.settings-section .settings-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.shortcut-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.shortcut-item {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+.shortcut-item > label {
+  display: block;
+  color: white;
+  font-family: var(--font-primary);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.shortcut-config {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.shortcut-config .key-input {
+  width: 50px;
+  height: 36px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-sm);
+  color: #333;
+  text-transform: uppercase;
+}
+.shortcut-config .key-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(174, 129, 255, 0.3);
+}
+.shortcut-config label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+.shortcut-config label input[type=checkbox] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.garage-order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.garage-order-item {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: move;
+  transition: all var(--transition-fast);
+}
+.garage-order-item:hover {
+  background: rgba(0, 0, 0, 0.4);
+  transform: translateX(4px);
+}
+.garage-order-item.dragging {
+  opacity: 0.5;
+  transform: rotate(2deg);
+}
+.garage-order-item .drag-handle {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 20px;
+  cursor: grab;
+}
+.garage-order-item .drag-handle:active {
+  cursor: grabbing;
+}
+.garage-order-item .garage-label {
+  flex: 1;
+  color: white;
+  font-family: var(--font-primary);
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.garage-order-item .order-buttons {
+  display: flex;
+  gap: 4px;
+}
+.garage-order-item .order-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: white;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+.garage-order-item .order-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+}
+.garage-order-item .order-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  letter-spacing: 0.05em;
+}
+.btn.btn-primary {
+  background: var(--btn-primary-bg);
+  color: white;
+}
+.btn.btn-primary:hover {
+  background: var(--btn-primary-bg-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(249, 38, 114, 0.4);
+}
+.btn.btn-secondary {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+.btn.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+.btn.btn-tertiary {
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+}
+.btn.btn-tertiary:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+@media only screen and (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    max-height: 90vh;
+  }
+  .modal-header {
+    padding: 16px 20px;
+  }
+  .modal-header h2 {
+    font-size: 20px;
+  }
+  .modal-body {
+    padding: 20px;
+  }
+  .shortcut-config {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .shortcut-config .key-input {
+    width: 100%;
+  }
+  .shortcut-config label {
+    width: 100%;
+  }
+  .modal-actions {
+    flex-direction: column;
+  }
+  .modal-actions .btn {
+    width: 100%;
+  }
+  .settings-btn {
+    font-size: 16px;
+    padding: 4px 10px;
+  }
+}
+@media only screen and (max-width: 480px) {
+  .modal-header h2 {
+    font-size: 18px;
+  }
+  .settings-section h3 {
+    font-size: 16px;
+  }
+  .garage-order-item {
+    padding: 10px 12px;
+  }
+  .garage-order-item .garage-label {
+    font-size: 14px;
   }
 }

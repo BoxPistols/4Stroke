@@ -739,6 +739,7 @@ input.stroke-title {
     <li><a class="js-smooth-scroll" href="#garageB">GARAGE-B</a></li>
     <li><a class="js-smooth-scroll" href="#garageC">GARAGE-C</a></li>
     <li><a class="js-smooth-scroll" href="#garageD">GARAGE-D</a></li>
+    <li><button id="settings-btn" class="settings-btn" title="Settings">⚙️</button></li>
   </ul>
 </nav>
 <div class="garages-container">
@@ -901,6 +902,81 @@ input.stroke-title {
             <input class="clear" id="clear16" data-clear="clearD" type="button" value="Delete / Publish">
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settings-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Settings</h2>
+      <button class="modal-close" id="modal-close-btn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <!-- Garage Shortcuts -->
+      <section class="settings-section">
+        <h3>Garage Shortcuts</h3>
+        <p class="settings-description">Configure keyboard shortcuts to quickly navigate to each garage.</p>
+
+        <div class="shortcut-grid">
+          <div class="shortcut-item">
+            <label>GARAGE-A</label>
+            <div class="shortcut-config">
+              <input type="text" id="garageA-key" maxlength="1" placeholder="1" class="key-input">
+              <label><input type="checkbox" id="garageA-ctrl" checked> Ctrl</label>
+              <label><input type="checkbox" id="garageA-alt"> Alt</label>
+              <label><input type="checkbox" id="garageA-shift"> Shift</label>
+            </div>
+          </div>
+
+          <div class="shortcut-item">
+            <label>GARAGE-B</label>
+            <div class="shortcut-config">
+              <input type="text" id="garageB-key" maxlength="1" placeholder="2" class="key-input">
+              <label><input type="checkbox" id="garageB-ctrl" checked> Ctrl</label>
+              <label><input type="checkbox" id="garageB-alt"> Alt</label>
+              <label><input type="checkbox" id="garageB-shift"> Shift</label>
+            </div>
+          </div>
+
+          <div class="shortcut-item">
+            <label>GARAGE-C</label>
+            <div class="shortcut-config">
+              <input type="text" id="garageC-key" maxlength="1" placeholder="3" class="key-input">
+              <label><input type="checkbox" id="garageC-ctrl" checked> Ctrl</label>
+              <label><input type="checkbox" id="garageC-alt"> Alt</label>
+              <label><input type="checkbox" id="garageC-shift"> Shift</label>
+            </div>
+          </div>
+
+          <div class="shortcut-item">
+            <label>GARAGE-D</label>
+            <div class="shortcut-config">
+              <input type="text" id="garageD-key" maxlength="1" placeholder="4" class="key-input">
+              <label><input type="checkbox" id="garageD-ctrl" checked> Ctrl</label>
+              <label><input type="checkbox" id="garageD-alt"> Alt</label>
+              <label><input type="checkbox" id="garageD-shift"> Shift</label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Garage Order -->
+      <section class="settings-section">
+        <h3>Garage Order</h3>
+        <p class="settings-description">Drag and drop to reorder garages. Changes apply after page refresh.</p>
+
+        <div id="garage-order-list" class="garage-order-list">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </section>
+
+      <div class="modal-actions">
+        <button type="button" id="save-settings-btn" class="btn btn-primary">Save Settings</button>
+        <button type="button" id="reset-settings-btn" class="btn btn-secondary">Reset to Defaults</button>
+        <button type="button" id="cancel-settings-btn" class="btn btn-tertiary">Cancel</button>
       </div>
     </div>
   </div>

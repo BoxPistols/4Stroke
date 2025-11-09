@@ -4,6 +4,15 @@ import { getStorageMode, isLocalMode, isOnlineMode, Storage } from './storage-se
 // URL converter import
 import { processPastedText, processPastedTextSync } from './url-converter.js';
 
+// Settings import
+import {
+  initializeSettings,
+  openSettingsModal,
+  closeSettingsModal,
+  saveSettingsFromForm,
+  resetSettings
+} from './settings.js';
+
 // Constants
 const DEBOUNCE_DELAY = 500;
 const MOBILE_BREAKPOINT = 768;
@@ -88,6 +97,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     cssScrollSnapPolyfill();
   };
   init();
+
+  // Initialize settings (garage order and shortcuts)
+  initializeSettings();
+
+  // Keyboard navigation for garages
+  setupKeyboardNavigation();
+
+  // Setup settings modal
+  setupSettingsModal();
 
   /**
    * Utility function
@@ -399,5 +417,138 @@ document.addEventListener("DOMContentLoaded", async function () {
     } else {
       console.error('[ERROR] Logout button or user-info not found!');
     }
+  }
+
+  /**
+   * Setup keyboard navigation for garages
+   */
+  function setupKeyboardNavigation() {
+    const garages = ['garageA', 'garageB', 'garageC', 'garageD'];
+    let currentGarageIndex = 0;
+
+    // Get current garage index based on scroll position
+    function getCurrentGarageIndex() {
+      const garageElements = garages.map(id => document.getElementById(id));
+      const scrollContainer = document.querySelector('.garages-container');
+
+      if (!scrollContainer) return 0;
+
+      const scrollTop = scrollContainer.scrollTop;
+      const scrollLeft = scrollContainer.scrollLeft;
+
+      // Find which garage is currently visible
+      for (let i = 0; i < garageElements.length; i++) {
+        const garage = garageElements[i];
+        if (garage) {
+          const rect = garage.getBoundingClientRect();
+          const containerRect = scrollContainer.getBoundingClientRect();
+
+          // Check if garage is in viewport
+          if (rect.top >= containerRect.top && rect.top <= containerRect.bottom) {
+            return i;
+          }
+        }
+      }
+      return 0;
+    }
+
+    // Navigate to specific garage
+    function navigateToGarage(index) {
+      if (index < 0 || index >= garages.length) return;
+
+      const targetGarage = document.getElementById(garages[index]);
+      if (targetGarage) {
+        targetGarage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        currentGarageIndex = index;
+        console.log(`[INFO] Navigated to ${garages[index]}`);
+      }
+    }
+
+    // Keyboard event listener
+    document.addEventListener('keydown', (event) => {
+      // Ignore if user is typing in an input/textarea
+      if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+        return;
+      }
+
+      // Get current garage index
+      currentGarageIndex = getCurrentGarageIndex();
+
+      switch (event.key) {
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          event.preventDefault();
+          navigateToGarage(currentGarageIndex - 1);
+          break;
+        case 'ArrowRight':
+        case 'ArrowDown':
+          event.preventDefault();
+          navigateToGarage(currentGarageIndex + 1);
+          break;
+      }
+    });
+
+    console.log('[INFO] Keyboard navigation initialized');
+  }
+
+  /**
+   * Setup settings modal event listeners
+   */
+  function setupSettingsModal() {
+    const settingsBtn = document.getElementById('settings-btn');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const saveSettingsBtn = document.getElementById('save-settings-btn');
+    const resetSettingsBtn = document.getElementById('reset-settings-btn');
+    const cancelSettingsBtn = document.getElementById('cancel-settings-btn');
+    const modal = document.getElementById('settings-modal');
+
+    // Open modal
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', () => {
+        openSettingsModal();
+      });
+    }
+
+    // Close modal
+    if (modalCloseBtn) {
+      modalCloseBtn.addEventListener('click', () => {
+        closeSettingsModal();
+      });
+    }
+
+    if (cancelSettingsBtn) {
+      cancelSettingsBtn.addEventListener('click', () => {
+        closeSettingsModal();
+      });
+    }
+
+    // Close modal on background click
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeSettingsModal();
+        }
+      });
+    }
+
+    // Save settings
+    if (saveSettingsBtn) {
+      saveSettingsBtn.addEventListener('click', () => {
+        saveSettingsFromForm();
+      });
+    }
+
+    // Reset settings
+    if (resetSettingsBtn) {
+      resetSettingsBtn.addEventListener('click', () => {
+        if (confirm('Reset all settings to defaults?')) {
+          resetSettings();
+          alert('Settings reset! Please refresh the page.');
+          closeSettingsModal();
+        }
+      });
+    }
+
+    console.log('[INFO] Settings modal initialized');
   }
 });
