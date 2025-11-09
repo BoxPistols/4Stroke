@@ -355,15 +355,24 @@
       </svg>
       Sign in with Google
     </button>
+
+    <div class="divider">OR</div>
+
+    <button id="local-mode-btn" class="btn btn-secondary" style="margin-top: 0.5rem;">
+      Continue with Local Storage
+      <div style="font-size: 0.75em; opacity: 0.8; margin-top: 4px;">No login required - Data stays in your browser</div>
+    </button>
   </div>
 
   <script type="module">
     import { loginWithGoogle, loginWithEmail, registerWithEmail, getErrorMessage } from './js/auth.js';
+    import { setStorageMode } from './js/storage-service.js';
 
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     const errorMessage = document.getElementById('error-message');
     const googleLoginBtn = document.getElementById('google-login');
+    const localModeBtn = document.getElementById('local-mode-btn');
     const showRegisterBtn = document.getElementById('show-register');
     const showLoginBtn = document.getElementById('show-login');
 
@@ -378,8 +387,15 @@
 
     // On login success
     function onLoginSuccess() {
-      window.location.href = '/index.html';
+      setStorageMode('online');
+      window.location.href = '/main.html';
     }
+
+    // Local mode
+    localModeBtn.addEventListener('click', () => {
+      setStorageMode('local');
+      window.location.href = '/main.html';
+    });
 
     // Toggle loading state
     function setLoading(button, isLoading) {
