@@ -1,9 +1,10 @@
 // Storage service import
 import { getStorageMode, isLocalMode, isOnlineMode, Storage } from './storage-service.js';
 
-// Debounce timer
-let saveTimer = null;
+// Constants
 const DEBOUNCE_DELAY = 500;
+const MOBILE_BREAKPOINT = 768;
+const AUTO_COLLAPSE_DELAY = 5000;
 
 document.addEventListener("DOMContentLoaded", async function () {
   const mode = getStorageMode();
@@ -280,7 +281,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       let isExpanded = false;
       let expandTimeout = null;
 
-      const isMobile = () => window.innerWidth <= 768;
+      const isMobile = () => window.innerWidth <= MOBILE_BREAKPOINT;
 
       userInfo.addEventListener('click', (e) => {
         if (!isMobile()) return;
@@ -290,11 +291,11 @@ document.addEventListener("DOMContentLoaded", async function () {
           userInfo.classList.add('expanded');
           isExpanded = true;
 
-          // Auto-collapse after 5 seconds
+          // Auto-collapse after timeout
           expandTimeout = setTimeout(() => {
             userInfo.classList.remove('expanded');
             isExpanded = false;
-          }, 5000);
+          }, AUTO_COLLAPSE_DELAY);
         }
       });
 

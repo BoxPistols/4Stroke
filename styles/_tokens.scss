@@ -1,0 +1,134 @@
+// Design Tokens - CSS Custom Properties
+:root {
+  // ===== Colors =====
+  --color-primary: #800080;
+  --color-secondary: #0000ff;
+  --color-accent: #ae81ff;
+  --color-danger: #f92672;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  // Gradient colors
+  --gradient-purple: rgba(128, 0, 128, 0.82);
+  --gradient-blue: rgba(0, 0, 255, 0.82);
+  --gradient-overlay: linear-gradient(45deg, var(--gradient-purple), var(--gradient-blue));
+
+  // Background colors
+  --bg-glass: rgba(201, 181, 213, 0.25);
+  --bg-glass-dark: rgba(0, 0, 0, 0.3);
+  --bg-overlay-light: rgba(0, 0, 0, 0.25);
+  --bg-overlay-normal: rgba(0, 0, 0, 0.35);
+  --bg-overlay-dark: rgba(0, 0, 0, 0.5);
+  --bg-button-hover: rgba(0, 0, 0, 0.2);
+
+  // Button colors
+  --btn-primary-bg: rgba(249, 38, 114, 0.8);
+  --btn-primary-bg-hover: rgba(249, 38, 114, 1);
+  --btn-secondary-bg: rgba(174, 129, 255, 0.9);
+
+  // Border colors
+  --border-light: rgba(255, 255, 255, 0.2);
+  --border-normal: rgba(255, 255, 255, 0.3);
+  --border-strong: rgba(255, 255, 255, 0.4);
+
+  // ===== Spacing =====
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+
+  // Viewport-based spacing
+  --spacing-vh-sm: 1vh;
+  --spacing-vh-md: 2vh;
+  --spacing-vh-lg: 4vh;
+  --spacing-vh-xl: 6vh;
+  --spacing-vh-2xl: 8vh;
+
+  --spacing-vw-sm: 1vw;
+  --spacing-vw-md: 2vw;
+  --spacing-vw-lg: 4vw;
+
+  // ===== Typography =====
+  --font-primary: 'Oswald', sans-serif;
+  --font-japanese: YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
+
+  --font-size-xs: 0.85rem;
+  --font-size-sm: 0.9rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.1rem;
+  --font-size-xl: 1.2rem;
+
+  --letter-spacing-tight: 0.05em;
+  --letter-spacing-normal: 0.1em;
+
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+
+  // ===== Border Radius =====
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+  --radius-full: 50%;
+
+  // ===== Shadows =====
+  --shadow-text: drop-shadow(1px 1px 1px black);
+  --shadow-text-strong: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+  --shadow-button-normal: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+  --shadow-button-hover: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.5));
+  --shadow-box: 0 0 4px #ccc;
+  --shadow-focus: 0 0 0 3px rgba(174, 129, 255, 0.2);
+
+  // ===== Glassmorphism =====
+  --blur-light: blur(4px);
+  --blur-medium: blur(6px);
+  --blur-strong: blur(10px);
+
+  // ===== Z-Index Layers =====
+  --z-base: 0;
+  --z-dropdown: 10;
+  --z-header: 11;
+  --z-modal: 100;
+  --z-tooltip: 1000;
+
+  // ===== Transitions =====
+  --transition-fast: 0.15s;
+  --transition-normal: 0.2s;
+  --transition-slow: 0.3s;
+  --transition-expand: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --easing-accelerate: cubic-bezier(0.4, 0.0, 1, 1);
+
+  // ===== Durations =====
+  --duration-collapse: 5000ms;
+
+  // ===== Breakpoints (for JS usage) =====
+  --breakpoint-mobile-sm: 480px;
+  --breakpoint-mobile: 768px;
+  --breakpoint-tablet: 1024px;
+  --breakpoint-desktop: 1200px;
+
+  // ===== Touch Targets =====
+  --touch-target-min: 44px;
+  --touch-target-sm: 40px;
+
+  // ===== Layout =====
+  --max-width-content: 1200px;
+  --grid-gap: 12px;
+  --grid-columns-desktop: 2;
+  --grid-columns-mobile: 1;
+
+  // ===== Container Sizes =====
+  --container-width-mobile: 44px;
+  --container-width-mobile-sm: 40px;
+  --container-width-expanded: 160px;
+
+  // ===== Navigation =====
+  --nav-bottom-mobile: 10vh;
+  --nav-bottom-desktop: 2vh;
+}

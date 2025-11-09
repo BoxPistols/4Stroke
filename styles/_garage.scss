@@ -3,7 +3,7 @@
   overflow-x:hidden;
   min-width:100vw;
   height:100%;
-  padding:4vh 2vw 1vh;
+  padding:var(--spacing-vh-lg) var(--spacing-vw-md) var(--spacing-vh-sm);
 
   scroll-behavior:smooth;
 }
@@ -12,33 +12,33 @@
   display:flex;
   flex-direction:column;
   width:100%;
-  max-width:1200px;
+  max-width:var(--max-width-content);
   margin:0 auto;
   height:auto;
-  padding:1vh 2vw;
+  padding:var(--spacing-vh-sm) var(--spacing-vw-md);
 
   $c4:var(--color4);
 
   .garage {
-    margin:0 0 24px 0;
-    padding:16px;
+    margin:0 0 var(--spacing-xl) 0;
+    padding:var(--spacing-lg);
     width:100%;
 
-    border:1px solid rgba(#fff, .2);
-    border-radius:12px;
-    background-color:rgba(rgb(201, 181, 213), .2);
+    border:1px solid var(--border-light);
+    border-radius:var(--radius-lg);
+    background-color:var(--bg-glass);
 
-    backdrop-filter:blur(4px);
+    backdrop-filter:var(--blur-light);
   }
 
   .garage-strokes {
     display:grid;
-    grid-template-columns:repeat(2, 1fr);
-    gap:12px;
-    margin:12px 0;
+    grid-template-columns:repeat(var(--grid-columns-desktop), 1fr);
+    gap:var(--grid-gap);
+    margin:var(--spacing-md) 0;
     width:100%;
 
-    border-radius:8px;
+    border-radius:var(--radius-md);
   }
 
   //===== Input Text
@@ -46,12 +46,12 @@
     width:100%;
     max-width:100%;
     margin:0;
-    padding:1vh 1vw;
+    padding:var(--spacing-vh-sm) var(--spacing-vw-sm);
     box-sizing:border-box;
 
-    border:1px solid rgba(#fff, .4);
-    border-radius:6px;
-    background:#0004;
+    border:1px solid var(--border-strong);
+    border-radius:var(--radius-sm);
+    background:var(--bg-overlay-normal);
   }
 
   .garage-strokes {
