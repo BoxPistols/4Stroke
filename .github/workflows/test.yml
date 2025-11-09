@@ -33,7 +33,9 @@ jobs:
         run: npm test
 
       - name: Build SCSS
-        run: sass styles/style.scss dist/style.css --no-source-map
+        run: |
+          mkdir -p dist
+          npm run build:css
 
   lint:
     name: Code Quality Check

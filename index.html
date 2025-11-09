@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>4STROKES - Loading</title>
+  <style>
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Oswald', sans-serif;
+    }
+  </style>
   <script type="module">
     import { getStorageMode } from './js/storage-service.js';
 
@@ -23,7 +32,7 @@
   </script>
 </head>
 <body>
-  <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Oswald', sans-serif;">
+  <div class="loading-container">
     <p>Loading 4STROKES...</p>
   </div>
 </body>

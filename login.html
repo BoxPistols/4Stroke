@@ -307,6 +307,17 @@
         margin-bottom: 1.2rem;
       }
     }
+
+    /* Local mode button */
+    .local-mode-btn {
+      margin-top: 0.5rem;
+    }
+
+    .login-message {
+      font-size: 0.75em;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -358,9 +369,9 @@
 
     <div class="divider">OR</div>
 
-    <button id="local-mode-btn" class="btn btn-secondary" style="margin-top: 0.5rem;">
+    <button id="local-mode-btn" class="btn btn-secondary local-mode-btn">
       Continue with Local Storage
-      <div style="font-size: 0.75em; opacity: 0.8; margin-top: 4px;">No login required - Data stays in your browser</div>
+      <div class="login-message">No login required - Data stays in your browser</div>
     </button>
   </div>
 
