@@ -716,8 +716,8 @@ input.stroke-title {
     /* User info area styles */
     .user-info {
       position: fixed;
-      top: 5vh;
-      right: 1.5vw;
+      bottom: 2vh;
+      left: 1vw;
       z-index: 11;
       display: flex;
       align-items: center;
@@ -749,6 +749,18 @@ input.stroke-title {
       filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .user-info #logout-btn .gear-icon {
+      display: none;
+    }
+
+    .user-info #logout-btn .logout-text {
+      display: inline;
     }
 
     .user-info #logout-btn:hover {

@@ -32,7 +32,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       const logoutBtn = document.getElementById('logout-btn');
       if (logoutBtn) {
         logoutBtn.style.display = 'block';
-        logoutBtn.textContent = 'LOGOUT';
+        const logoutText = logoutBtn.querySelector('.logout-text');
+        if (logoutText) {
+          logoutText.textContent = 'LOGOUT';
+        }
       }
 
       // Migrate from localStorage (first time only)
@@ -58,7 +61,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
       logoutBtn.style.display = 'block';
-      logoutBtn.textContent = 'ONLINE MODE';
+      const logoutText = logoutBtn.querySelector('.logout-text');
+      if (logoutText) {
+        logoutText.textContent = 'ONLINE MODE';
+      }
       logoutBtn.title = 'Switch to online mode with cloud sync';
     }
 
