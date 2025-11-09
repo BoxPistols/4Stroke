@@ -1,10 +1,17 @@
 // Storage service import
 import { getStorageMode, isLocalMode, isOnlineMode, Storage } from './storage-service.js';
 
+// URL converter import
+import { processPastedText, processPastedTextSync } from './url-converter.js';
+
 // Constants
 const DEBOUNCE_DELAY = 500;
 const MOBILE_BREAKPOINT = 768;
 const AUTO_COLLAPSE_DELAY = 5000;
+const URL_CONVERSION_ENABLED = true; // Feature flag
+
+// Debounce timer
+let saveTimer = null;
 
 document.addEventListener("DOMContentLoaded", async function () {
   const mode = getStorageMode();
@@ -157,6 +164,54 @@ document.addEventListener("DOMContentLoaded", async function () {
           }
         }, DEBOUNCE_DELAY);
       });
+
+      // URL to Markdown conversion on paste
+      if (URL_CONVERSION_ENABLED) {
+        elm.addEventListener("paste", async (event) => {
+          event.preventDefault();
+
+          // Get pasted text
+          const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+
+          if (!pastedText) return;
+
+          console.log('[INFO] URL conversion: Processing pasted text');
+
+          try {
+            // Convert URLs to Markdown format
+            const processedText = await processPastedText(pastedText);
+
+            // Insert processed text at cursor position
+            const start = elm.selectionStart;
+            const end = elm.selectionEnd;
+            const currentValue = elm.value;
+
+            elm.value = currentValue.substring(0, start) + processedText + currentValue.substring(end);
+
+            // Set cursor position after inserted text
+            const newCursorPos = start + processedText.length;
+            elm.setSelectionRange(newCursorPos, newCursorPos);
+
+            // Trigger save
+            const garageNum = Math.floor(i / 4) + 1;
+            const strokeNum = (i % 4) + 1;
+            const garageId = `garage${garageNum}`;
+            const fieldKey = `stroke${strokeNum}`;
+
+            await Storage.saveStroke(userId, garageId, fieldKey, elm.value);
+            autoSave();
+
+            console.log('[SUCCESS] URL conversion completed');
+          } catch (error) {
+            console.error('[ERROR] URL conversion failed:', error);
+            // Fallback: insert original text
+            const start = elm.selectionStart;
+            const end = elm.selectionEnd;
+            const currentValue = elm.value;
+            elm.value = currentValue.substring(0, start) + pastedText + currentValue.substring(end);
+          }
+        });
+      }
     });
 
     // Title input events
