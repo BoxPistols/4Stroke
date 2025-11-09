@@ -93,14 +93,13 @@ http://localhost:8000/
 
 ### 環境変数の扱い
 
-**推奨方法**: `firebase-config.js` を直接コミット
+**推奨方法**: `firebase-config.js` を直接コミット（シンプルで推奨）
 
-理由:
-- Firebase APIキーは公開されても安全
-- シンプルで管理しやすい
-- ビルドプロセス不要
+- Firebase APIキーは公開されても安全（Firebaseの設計仕様）
+- セキュリティはFirestoreルールと認証で保護
+- Vercel/Netlifyで追加設定不要
 
-**代替方法**: Netlify環境変数を使用（高度）
+**注意**: 真に機密なAPIキー（外部サービスなど）は環境変数を使用してください。
 
 詳細は [Netlifyデプロイガイド](./docs/NETLIFY_DEPLOY.md) を参照してください。
 

@@ -1,104 +1,21 @@
-@charset "UTF-8";
-@import "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css";
-@import url("https://fonts.googleapis.com/css2?family=Oswald&display=swap");
-:root {
-  --color-primary: #800080;
-  --color-secondary: #0000ff;
-  --color-accent: #ae81ff;
-  --color-danger: #f92672;
-  --color-white: #ffffff;
-  --color-black: #000000;
-  --gradient-purple: rgba(128, 0, 128, 0.82);
-  --gradient-blue: rgba(0, 0, 255, 0.82);
-  --gradient-overlay: linear-gradient(45deg, var(--gradient-purple), var(--gradient-blue));
-  --bg-glass: rgba(201, 181, 213, 0.25);
-  --bg-glass-dark: rgba(0, 0, 0, 0.3);
-  --bg-overlay-light: rgba(0, 0, 0, 0.25);
-  --bg-overlay-normal: rgba(0, 0, 0, 0.35);
-  --bg-overlay-dark: rgba(0, 0, 0, 0.5);
-  --bg-button-hover: rgba(0, 0, 0, 0.2);
-  --btn-primary-bg: rgba(249, 38, 114, 0.8);
-  --btn-primary-bg-hover: rgba(249, 38, 114, 1);
-  --btn-secondary-bg: rgba(174, 129, 255, 0.9);
-  --border-light: rgba(255, 255, 255, 0.2);
-  --border-normal: rgba(255, 255, 255, 0.3);
-  --border-strong: rgba(255, 255, 255, 0.4);
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 12px;
-  --spacing-lg: 16px;
-  --spacing-xl: 24px;
-  --spacing-2xl: 32px;
-  --spacing-vh-sm: 1vh;
-  --spacing-vh-md: 2vh;
-  --spacing-vh-lg: 4vh;
-  --spacing-vh-xl: 6vh;
-  --spacing-vh-2xl: 8vh;
-  --spacing-vw-sm: 1vw;
-  --spacing-vw-md: 2vw;
-  --spacing-vw-lg: 4vw;
-  --font-primary: "Oswald", sans-serif;
-  --font-japanese: YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
-  --font-size-xs: 0.85rem;
-  --font-size-sm: 0.9rem;
-  --font-size-md: 1rem;
-  --font-size-lg: 1.1rem;
-  --font-size-xl: 1.2rem;
-  --letter-spacing-tight: 0.05em;
-  --letter-spacing-normal: 0.1em;
-  --line-height-tight: 1.2;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.6;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 20px;
-  --radius-full: 50%;
-  --shadow-text: drop-shadow(1px 1px 1px black);
-  --shadow-text-strong: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
-  --shadow-button-normal: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
-  --shadow-button-hover: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.5));
-  --shadow-box: 0 0 4px #ccc;
-  --shadow-focus: 0 0 0 3px rgba(174, 129, 255, 0.2);
-  --blur-light: blur(4px);
-  --blur-medium: blur(6px);
-  --blur-strong: blur(10px);
-  --z-base: 0;
-  --z-dropdown: 10;
-  --z-header: 11;
-  --z-modal: 100;
-  --z-tooltip: 1000;
-  --transition-fast: 0.15s;
-  --transition-normal: 0.2s;
-  --transition-slow: 0.3s;
-  --transition-expand: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
-  --easing-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
-  --easing-accelerate: cubic-bezier(0.4, 0.0, 1, 1);
-  --duration-collapse: 5000ms;
-  --breakpoint-mobile-sm: 480px;
-  --breakpoint-mobile: 768px;
-  --breakpoint-tablet: 1024px;
-  --breakpoint-desktop: 1200px;
-  --touch-target-min: 44px;
-  --touch-target-sm: 40px;
-  --max-width-content: 1200px;
-  --grid-gap: 12px;
-  --grid-columns-desktop: 2;
-  --grid-columns-mobile: 1;
-  --container-width-mobile: 44px;
-  --container-width-mobile-sm: 40px;
-  --container-width-expanded: 160px;
-  --nav-bottom-mobile: 10vh;
-  --nav-bottom-desktop: 2vh;
-}
-
+<!DOCTYPE html>
+<html lang="ja"></html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4STROKES</title>
+  <link rel="icon" sizes="16x16" href="favicon.ico">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yakuhanjp@3.4.1/dist/css/yakuhanrp.min.css">
+  <style>@charset "UTF-8";
 /**
   * ======= Flex Box =======
   * Example:
   *   @include flex(center, center)
   *   @include flex(null, end, column, nowrap)
 */
+@import "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css";
+@import url("https://fonts.googleapis.com/css2?family=Oswald&display=swap");
 .fx {
   display: flex;
   /**
@@ -480,7 +397,8 @@ body:before {
   background-position: center;
   background-size: cover;
   background-size: cover;
-  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
 }
 
 p {
@@ -530,68 +448,6 @@ nav.garages-nav ul li a {
   filter: drop-shadow(1px 1px 0px black);
 }
 
-@media only screen and (max-width: 768px) {
-  nav.garages-nav {
-    top: auto;
-    bottom: 10vh;
-    right: 1vw;
-    left: 1vw;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 6px 4px;
-    border-radius: 12px;
-    backdrop-filter: blur(10px);
-  }
-  nav.garages-nav ul {
-    justify-content: space-around;
-    flex-wrap: nowrap;
-    gap: 4px;
-  }
-  nav.garages-nav ul li {
-    margin: 0;
-    flex: 1;
-  }
-  nav.garages-nav ul li a {
-    font-size: 1rem;
-    font-weight: 600;
-    padding: 8px 4px;
-    display: block;
-    text-align: center;
-    border-radius: 8px;
-    transition: all 0.2s;
-  }
-  nav.garages-nav ul li a:hover, nav.garages-nav ul li a:active {
-    background: rgba(255, 255, 255, 0.1);
-  }
-  nav.garages-nav ul li a::before {
-    content: "";
-  }
-  nav.garages-nav ul li:nth-child(1) a::after {
-    content: "A";
-  }
-  nav.garages-nav ul li:nth-child(2) a::after {
-    content: "B";
-  }
-  nav.garages-nav ul li:nth-child(3) a::after {
-    content: "C";
-  }
-  nav.garages-nav ul li:nth-child(4) a::after {
-    content: "D";
-  }
-  nav.garages-nav ul li a {
-    font-size: 0;
-    line-height: 0;
-  }
-  nav.garages-nav ul li a::after {
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-}
-@media only screen and (max-width: 480px) {
-  nav.garages-nav ul li a {
-    font-size: 0.8rem;
-    padding: 2px 6px;
-  }
-}
 header.header {
   position: fixed;
   z-index: 10;
@@ -682,7 +538,7 @@ input.stroke-title {
   border: 1px solid #f8f8ff;
   border-radius: 1em;
   outline: none;
-  background: rgba(255, 255, 255, 0.1333333333);
+  background: #fff2;
   font-size: 1.3em;
   filter: drop-shadow(1px 1px 0px black);
 }
@@ -691,7 +547,7 @@ input.stroke-title {
   margin-left: 2px;
   cursor: pointer;
   transform: scale(1.1, 0.9);
-  color: rgba(248, 248, 248, 0.662745098);
+  color: #f8f8f8a9;
   font-size: 24px;
   filter: drop-shadow(1px 1px 0px black);
 }
@@ -702,7 +558,7 @@ input.stroke-title {
 .clear-garage-box > input[type=button] {
   border: none;
   outline: none;
-  background: rgba(255, 255, 255, 0.1333333333);
+  background: #fff2;
   font-size: 1em;
   display: flex;
   /**
@@ -725,107 +581,48 @@ input.stroke-title {
   */
 }
 
-@media only screen and (max-width: 768px) {
-  header.header {
-    top: 1vh;
-    left: 1vw;
-    flex-wrap: nowrap;
-  }
-  header.header .logo-img img {
-    width: 32px;
-  }
-  header.header h1.logo-title {
-    display: none;
-  }
-  header.header #message {
-    font-size: 14px;
-    margin: 0 0 0 8px;
-  }
-  h2.garage-title {
-    font-size: 6vw;
-    margin: 0 16px 12px;
-  }
-  .garage-head {
-    margin: 0 16px 12px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  input.stroke-title {
-    width: 100%;
-    max-width: 100%;
-    font-size: 1em;
-  }
-  .title-delete {
-    font-size: 18px;
-  }
-  .clear-garage-box {
-    width: 100%;
-    margin-left: 0;
-  }
-  .clear-garage-box > input[type=button] {
-    width: 100%;
-    font-size: 0.85em;
-    padding: 8px 12px;
-  }
-}
-@media only screen and (max-width: 480px) {
-  header.header h1.logo-title {
-    font-size: 20px;
-  }
-  header.header #message {
-    font-size: 14px;
-  }
-  h2.garage-title {
-    font-size: 6vw;
-  }
-  input.stroke-title {
-    font-size: 1em;
-  }
-}
 .garages-container {
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: scroll;
   min-width: 100vw;
   height: 100%;
-  padding: var(--spacing-vh-lg) var(--spacing-vw-md) var(--spacing-vh-sm);
+  padding: 4vh 2vw 1vh;
   scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+  scroll-snap-type: mandatory;
+  scroll-snap-points-y: repeat(100vw);
+  scroll-snap-type: x mandatory;
 }
-
 .garages {
   display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: var(--max-width-content);
-  margin: 0 auto;
-  height: auto;
-  padding: var(--spacing-vh-sm) var(--spacing-vw-md);
+  width: auto;
+  height: 100%;
+  padding: 1vh 2vw;
 }
 .garages .garage {
-  margin: 0 0 var(--spacing-xl) 0;
-  padding: var(--spacing-lg);
-  width: 100%;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
-  background-color: var(--bg-glass);
-  backdrop-filter: var(--blur-light);
+  margin: 0 12px;
+  padding: 8px 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background-color: rgba(201, 181, 213, 0.2);
+  -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
+  scroll-snap-align: start;
 }
 .garages .garage-strokes {
   display: grid;
-  grid-template-columns: repeat(var(--grid-columns-desktop), 1fr);
-  gap: var(--grid-gap);
-  margin: var(--spacing-md) 0;
-  width: 100%;
-  border-radius: var(--radius-md);
+  overflow: auto;
+  grid-template-columns: repeat(2, auto);
+  height: calc(100% - 10vh);
+  margin: 0 1vw;
+  border-radius: 8px;
 }
 .garages .garage-strokes .garage-stroke-box {
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  padding: var(--spacing-vh-sm) var(--spacing-vw-sm);
-  box-sizing: border-box;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  background: var(--bg-overlay-normal);
+  width: calc(100vw / 2 - 5vw);
+  margin: 4px;
+  padding: 1vh 1vw;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  background: #0004;
 }
 .garages .garage-strokes .clear-area {
   margin: 8px 0;
@@ -852,7 +649,7 @@ input.stroke-title {
 .garages .garage-strokes input[type=button] {
   color: currentcolor;
   border-color: currentcolor;
-  background: rgba(0, 0, 0, 0.3333333333);
+  background: #0005;
 }
 .garages .garage-strokes .garage-stroke-box:nth-child(1) h3, .garages .garage-strokes .garage-stroke-box:nth-child(1) textarea, .garages .garage-strokes .garage-stroke-box:nth-child(1) input[type=button] {
   color: var(--color4);
@@ -872,12 +669,10 @@ input.stroke-title {
 .garages textarea {
   overflow: auto;
   width: 100%;
-  max-width: 100%;
   height: auto;
   min-height: 60%;
   margin: auto;
   padding: 0.5ch 1ch;
-  box-sizing: border-box;
   resize: none;
   transition: 0.15s;
   border: 2px solid currentcolor !important;
@@ -913,213 +708,200 @@ input.stroke-title {
   border: 2px solid currentcolor !important;
   background-color: rgba(0, 0, 0, 0.5);
 }
+  </style>
+  <script src="https://bundle.run/css-scroll-snap-polyfill@0.1.2"></script>
+  <!-- Firebase App -->
+  <script type="module" src="js/app.js"></script>
 
-@media only screen and (max-width: 1024px) {
-  .garages-container {
-    padding: 6vh 1vw 2vh;
-  }
-  .garage-strokes {
-    grid-template-columns: repeat(2, 1fr) !important;
-    width: 100%;
-  }
-  .garage-strokes .garage-stroke-box {
-    width: 100% !important;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-}
-@media only screen and (max-width: 768px) {
-  .garages-container {
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 8vh 0 15vh;
-  }
-  .garages {
-    flex-direction: column;
-    width: 100%;
-    padding: 0;
-  }
-  .garage {
-    margin: 0 0 24px 0 !important;
-    width: 100% !important;
-    padding: 12px 0 !important;
-    border-left: none !important;
-    border-right: none !important;
-    border-radius: 0 !important;
-  }
-  .garage-strokes {
-    grid-template-columns: 1fr !important;
-    height: auto !important;
-    min-height: auto !important;
-    margin: 0 !important;
-    width: 100%;
-  }
-  .garage-strokes .garage-stroke-box {
-    width: 100% !important;
-    max-width: 100%;
-    margin: 0 0 12px 0 !important;
-    padding: 16px !important;
-    border-radius: 0 !important;
-    box-sizing: border-box;
-  }
-  textarea {
-    min-height: 100px !important;
-    font-size: 1rem !important;
-    width: 100% !important;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-}
-@media only screen and (max-width: 480px) {
-  .garages-container {
-    padding: 12vh 1vw 2vh;
-  }
-  .garage {
-    padding: 8px 4px 12px !important;
-  }
-  .garage-strokes .garage-stroke-box {
-    padding: 1.5vh 3vw !important;
-    width: 100% !important;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-  textarea {
-    min-height: 100px !important;
-    padding: 0.8ch 1ch !important;
-    width: 100% !important;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-  input[type=button] {
-    font-size: 0.85rem !important;
-    padding: 6px 12px !important;
-  }
-}
-.user-info {
-  position: fixed;
-  bottom: var(--spacing-vh-md);
-  left: var(--spacing-vw-sm);
-  z-index: var(--z-header);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  background: var(--bg-glass-dark);
-  border-radius: var(--radius-xl);
-  backdrop-filter: var(--blur-strong);
-  color: var(--color-white);
-  font-family: var(--font-primary);
-  filter: var(--shadow-text);
-}
-.user-info #user-email {
-  font-size: 14px;
-  opacity: 0.9;
-}
-.user-info #logout-btn {
-  padding: 6px var(--spacing-lg);
-  background: var(--btn-primary-bg);
-  color: var(--color-white);
-  border: none;
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  font-size: 13px;
-  font-family: var(--font-primary);
-  transition: all var(--transition-normal);
-  filter: var(--shadow-button-normal);
-  text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-tight);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-.user-info #logout-btn .gear-icon {
-  display: none;
-}
-.user-info #logout-btn .logout-text {
-  display: inline;
-}
-.user-info #logout-btn:hover {
-  background: var(--btn-primary-bg-hover);
-  transform: translateY(-1px);
-  filter: var(--shadow-button-hover);
-}
-.user-info #logout-btn:active {
-  transform: translateY(0);
-}
-@media only screen and (max-width: 768px) {
-  .user-info {
-    top: auto;
-    right: auto;
-    left: var(--spacing-vw-sm);
-    bottom: var(--spacing-vh-md);
-    width: var(--container-width-mobile);
-    height: var(--container-width-mobile);
-    padding: 0;
-    gap: 0;
-    border-radius: var(--radius-full);
-    overflow: hidden;
-    transition: all var(--transition-expand);
-  }
-  .user-info #user-email {
-    display: none;
-  }
-  .user-info #logout-btn {
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    border-radius: var(--radius-full);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--btn-secondary-bg);
-    position: relative;
-  }
-  .user-info #logout-btn .gear-icon {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-  }
-  .user-info #logout-btn .logout-text {
-    display: none;
-  }
-  .user-info.expanded {
-    width: auto;
-    height: auto;
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-sm) var(--spacing-md);
-    flex-direction: column;
-    align-items: stretch;
-    min-width: var(--container-width-expanded);
-  }
-  .user-info.expanded #user-email {
-    display: block;
-    font-size: 11px;
-    text-align: center;
-    margin-bottom: 6px;
-  }
-  .user-info.expanded #logout-btn {
-    width: 100%;
-    height: auto;
-    border-radius: var(--radius-md);
-    padding: 6px var(--spacing-md);
-  }
-  .user-info.expanded #logout-btn .gear-icon {
-    display: none;
-  }
-  .user-info.expanded #logout-btn .logout-text {
-    display: inline;
-    font-size: 11px;
-  }
-}
-@media only screen and (max-width: 480px) {
-  .user-info {
-    width: var(--container-width-mobile-sm);
-    height: var(--container-width-mobile-sm);
-  }
-  .user-info #logout-btn .gear-icon {
-    width: 18px;
-    height: 18px;
-  }
-}
+</head>
+<body>
+<!-- User info area -->
+<div class="user-info">
+  <span id="user-email">Loading...</span>
+  <button id="logout-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" class="gear-icon">
+      <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+    </svg>
+    <span class="logout-text">LOGOUT</span>
+  </button>
+</div>
+
+<a class="js-smooth-scroll" href="#garageA">
+  <header class="header">
+    <div class="logo-img"><img src="./img/logo.svg"></div>
+    <h1 class="logo-title">4STROKES</h1>
+    <div class="is-hidden" id="message">Auto Save...</div>
+  </header>
+</a>
+<nav class="garages-nav">
+  <ul>
+    <li><a class="js-smooth-scroll" href="#garageA">GARAGE-A</a></li>
+    <li><a class="js-smooth-scroll" href="#garageB">GARAGE-B</a></li>
+    <li><a class="js-smooth-scroll" href="#garageC">GARAGE-C</a></li>
+    <li><a class="js-smooth-scroll" href="#garageD">GARAGE-D</a></li>
+  </ul>
+</nav>
+<div class="garages-container">
+  <div class="garages"> 
+    <div class="garage" id="garageA">
+      <h2 class="garage-title garage-titleA">GARAGE-A</h2>
+      <div class="fx garage-head garage-headA">
+        <input class="stroke-title stroke-title1" data-stroke="stroke-title1" name="stroke-title1" value="stroke-title1" autocomplete="off" data-i="1">
+        <div class="title-delete title-delete1">x</div>
+        <div class="clear-garage-box">
+          <input id="clearA" data-clear="clearA" type="button" value="Delete / GARAGE-A">
+        </div>
+      </div>
+      <div class="garage-strokes">
+        <div class="garage-stroke-box">
+          <h3>Key</h3>
+          <textarea class="stroke stroke1" id="stroke1" name="stroke1" data-i="1" data-stroke="A"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear1" data-clear="clearA" type="button" value="Delete / Key">
+          </div>
+        </div>
+        <div class="garage-stroke-box">
+          <h3>Issue</h3>
+          <textarea class="stroke stroke2" id="stroke2" name="stroke2" data-i="2" data-stroke="B"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear2" data-clear="clearB" type="button" value="Delete / Issue">
+          </div>
+        </div>
+        <div class="garage-stroke-box">
+          <h3>Action</h3>
+          <textarea class="stroke stroke3" id="stroke3" name="stroke3" data-i="3" data-stroke="C"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear3" data-clear="clearC" type="button" value="Delete / Action">
+          </div>
+        </div>
+        <div class="garage-stroke-box">
+          <h3>Publish</h3>
+          <textarea class="stroke stroke4" id="stroke4" name="stroke4" data-i="4" data-stroke="D"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear4" data-clear="clearD" type="button" value="Delete / Publish">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="garage" id="garageB">
+      <h2 class="garage-title garage-titleB">GARAGE-B</h2>
+      <div class="fx garage-head garage-headB">
+        <input class="stroke-title stroke-title2" data-stroke="stroke-title2" name="stroke-title2" value="stroke-title2" autocomplete="off" data-i="5">
+        <div class="title-delete title-delete2">x</div>
+        <div class="clear-garage-box">
+          <input id="clearB" data-clear="clearB" type="button" value="Delete / GARAGE-B">
+        </div>
+      </div>
+      <div class="garage-strokes">
+        <div class="garage-stroke-box">
+          <h3>Key</h3>
+          <textarea class="stroke stroke5" id="stroke5" name="stroke5" data-i="5" data-stroke="A"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear5" data-clear="clearA" type="button" value="Delete / Key">
+          </div>
+        </div>
+        <div class="garage-stroke-box">
+          <h3>Issue</h3>
+          <textarea class="stroke stroke6" id="stroke6" name="stroke6" data-i="6" data-stroke="B"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear6" data-clear="clearB" type="button" value="Delete / Issue">
+          </div>
+        </div>
+        <div class="garage-stroke-box">
+          <h3>Action</h3>
+          <textarea class="stroke stroke7" id="stroke7" name="stroke7" data-i="7" data-stroke="C"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear7" data-clear="clearC" type="button" value="Delete / Action">
+          </div>
+        </div>
+        <div class="garage-stroke-box">
+          <h3>Publish</h3>
+          <textarea class="stroke stroke8" id="stroke8" name="stroke8" data-i="8" data-stroke="D"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear8" data-clear="clearD" type="button" value="Delete / Publish">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="garage" id="garageC">
+      <h2 class="garage-title garage-titleC">GARAGE-C</h2>
+      <div class="fx garage-head garage-headC">
+        <input class="stroke-title stroke-title3" data-stroke="stroke-title3" name="stroke-title3" value="stroke-title3" autocomplete="off" data-i="9">
+        <div class="title-delete title-delete3">x</div>
+        <div class="clear-garage-box">
+          <input id="clearC" data-clear="clearC" type="button" value="Delete / GARAGE-C">
+        </div>
+      </div>
+      <div class="garage-strokes">
+        <div class="garage-stroke-box">
+          <h3>Key</h3>
+          <textarea class="stroke stroke9" id="stroke9" name="stroke9" data-i="9" data-stroke="A"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear9" data-clear="clearA" type="button" value="Delete / Key">
+          </div>
+        </div>
+        <div class="garage-stroke-box">
+          <h3>Issue</h3>
+          <textarea class="stroke stroke10" id="stroke10" name="stroke10" data-i="10" data-stroke="B"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear10" data-clear="clearB" type="button" value="Delete / Issue">
+          </div>
+        </div>
+        <div class="garage-stroke-box">
+          <h3>Action</h3>
+          <textarea class="stroke stroke11" id="stroke11" name="stroke11" data-i="11" data-stroke="C"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear11" data-clear="clearC" type="button" value="Delete / Action">
+          </div>
+        </div>
+        <div class="garage-stroke-box">
+          <h3>Publish</h3>
+          <textarea class="stroke stroke12" id="stroke12" name="stroke12" data-i="12" data-stroke="D"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear12" data-clear="clearD" type="button" value="Delete / Publish">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="garage" id="garageD">
+      <h2 class="garage-title garage-titleD">GARAGE-D</h2>
+      <div class="fx garage-head garage-headD">
+        <input class="stroke-title stroke-title4" data-stroke="stroke-title4" name="stroke-title4" value="stroke-title4" autocomplete="off" data-i="13">
+        <div class="title-delete title-delete4">x</div>
+        <div class="clear-garage-box">
+          <input id="clearD" data-clear="clearD" type="button" value="Delete / GARAGE-D">
+        </div>
+      </div>
+      <div class="garage-strokes">
+        <div class="garage-stroke-box">
+          <h3>Key</h3>
+          <textarea class="stroke stroke13" id="stroke13" name="stroke13" data-i="13" data-stroke="A"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear13" data-clear="clearA" type="button" value="Delete / Key">
+          </div>
+        </div>
+        <div class="garage-stroke-box">
+          <h3>Issue</h3>
+          <textarea class="stroke stroke14" id="stroke14" name="stroke14" data-i="14" data-stroke="B"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear14" data-clear="clearB" type="button" value="Delete / Issue">
+          </div>
+        </div>
+        <div class="garage-stroke-box">
+          <h3>Action</h3>
+          <textarea class="stroke stroke15" id="stroke15" name="stroke15" data-i="15" data-stroke="C"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear15" data-clear="clearC" type="button" value="Delete / Action">
+          </div>
+        </div>
+        <div class="garage-stroke-box">
+          <h3>Publish</h3>
+          <textarea class="stroke stroke16" id="stroke16" name="stroke16" data-i="16" data-stroke="D"></textarea>
+          <div class="clear-area">
+            <input class="clear" id="clear16" data-clear="clearD" type="button" value="Delete / Publish">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -2,7 +2,33 @@
   "name": "prepros-project",
   "version": "1.0.0",
   "description": "This is a dummy package.json file created by Prepros to manage packages with NPM. You can edit this file to add your own information.",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:all": "npm run test && npm run test:e2e",
+    "playwright:install": "playwright install",
+    "build:css": "sass styles/style.scss dist/style.css --no-source-map",
+    "build:css:watch": "sass styles/style.scss dist/style.css --no-source-map --watch",
+    "build": "npm run build:css",
+    "prebuild": "echo 'Building CSS...'",
+    "postbuild": "echo 'Build complete!'"
+  },
   "dependencies": {
     "firebase": "^12.5.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
+    "@playwright/test": "^1.56.1",
+    "@vitest/ui": "^4.0.8",
+    "happy-dom": "^20.0.10",
+    "playwright": "^1.56.1",
+    "vitest": "^4.0.8",
+    "vitest-axe": "^0.1.0"
   }
 }

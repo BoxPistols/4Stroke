@@ -1,44 +1,87 @@
-// Firebase関連のインポート
-import { onAuthChange, getCurrentUser, logout } from './auth.js';
-import {
-  loadAllGarages,
-  saveStroke,
-  saveTitle,
-  deleteStroke,
-  deleteGarage,
-  migrateFromLocalStorage
-} from './firestore-crud.js';
+// Storage service import
+import { getStorageMode, isLocalMode, isOnlineMode, Storage } from './storage-service.js';
 
-// デバウンス用のタイマー
+// URL converter import
+import { processPastedText, processPastedTextSync } from './url-converter.js';
+
+// Constants
+const DEBOUNCE_DELAY = 500;
+const MOBILE_BREAKPOINT = 768;
+const AUTO_COLLAPSE_DELAY = 5000;
+const URL_CONVERSION_ENABLED = true; // Feature flag
+
+// Debounce timer
 let saveTimer = null;
-const DEBOUNCE_DELAY = 500; // 500ms待ってから保存
 
-document.addEventListener("DOMContentLoaded", function () {
-  // 認証状態チェック - ログインしていない場合はログイン画面へ
-  onAuthChange(async (user) => {
-    if (!user) {
-      // 未ログインの場合はログイン画面へリダイレクト
-      window.location.href = '/login.html';
-      return;
-    }
+document.addEventListener("DOMContentLoaded", async function () {
+  const mode = getStorageMode();
+  console.log(`[INFO] App starting in ${mode} mode`);
 
-    console.log('✅ ログイン中:', user.email);
+  if (isOnlineMode()) {
+    // Online mode - require authentication
+    const { onAuthChange, getCurrentUser, logout } = await import('./auth.js');
+    const { migrateFromLocalStorage } = await import('./firestore-crud.js');
 
-    // ユーザー情報を表示
+    onAuthChange(async (user) => {
+      if (!user) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      console.log('[SUCCESS] Logged in:', user.email);
+
+      // Show user info
+      const userEmailElement = document.getElementById('user-email');
+      if (userEmailElement) {
+        userEmailElement.textContent = user.email;
+      }
+
+      // Show logout button
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.style.display = 'block';
+        const logoutText = logoutBtn.querySelector('.logout-text');
+        if (logoutText) {
+          logoutText.textContent = 'LOGOUT';
+        }
+      }
+
+      // Migrate from localStorage (first time only)
+      await migrateFromLocalStorage(user.uid);
+
+      // Load data
+      await loadData(user.uid);
+
+      // Setup event listeners
+      setupEventListeners(user.uid);
+    });
+  } else {
+    // Local mode - no authentication required
+    console.log('[INFO] Running in local storage mode');
+
+    // Hide user email, show mode indicator
     const userEmailElement = document.getElementById('user-email');
     if (userEmailElement) {
-      userEmailElement.textContent = user.email;
+      userEmailElement.textContent = 'Local Mode';
     }
 
-    // localStorage → Firestore 移行（初回のみ）
-    await migrateFromLocalStorage(user.uid);
+    // Change logout button to "Switch to Online"
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.style.display = 'block';
+      const logoutText = logoutBtn.querySelector('.logout-text');
+      if (logoutText) {
+        logoutText.textContent = 'ONLINE MODE';
+      }
+      logoutBtn.title = 'Switch to online mode with cloud sync';
+    }
 
-    // Firestoreからデータ読み込み
-    await loadDataFromFirestore(user.uid);
+    // Load data from localStorage
+    await loadData(null);
 
-    // イベントリスナーを設定
-    setupEventListeners(user.uid);
-  });
+    // Setup event listeners
+    setupEventListeners(null);
+  }
 
   // CSS Scroll Snap Polyfill
   const init = function () {
@@ -47,232 +90,314 @@ document.addEventListener("DOMContentLoaded", function () {
   init();
 
   /**
-   * 汎用関数
-   * @_x = ターゲットエレメント
+   * Utility function
    */
-  let qsAll = (_x) => document.querySelectorAll(_x);
-  let qs = (_x) => document.querySelector(_x);
+  const $$ = (_x) => {
+    return document.querySelectorAll(_x);
+  };
 
-  // auto save view
-  let message = qs("#message");
-
+  const handleTextArea = $$("textarea.stroke");
+  const clearBtns = $$("input.clear");
   const autoSave = () => {
+    const message = document.querySelector("#message");
     message.classList.remove("is-hidden");
-    setTimeout(function () {
+    setTimeout(() => {
       message.classList.add("is-hidden");
-    }, 800);
+    }, 1200);
   };
 
   /**
-   * Firestoreからデータを読み込んで画面に表示
+   * Load data from storage (Local or Firestore)
    */
-  async function loadDataFromFirestore(userId) {
+  async function loadData(userId) {
     try {
-      console.log('📖 Firestoreからデータ読み込み中...');
-      const garages = await loadAllGarages(userId);
+      console.log('[INFO] Loading data...');
+      const garages = await Storage.loadAllGarages(userId);
 
-      // 4つのガレージをループ
+      // Populate UI
       for (let i = 1; i <= 4; i++) {
         const garage = garages[`garage${i}`];
 
-        // タイトルを設定
-        const titleInput = qs(`.stroke-title${i}`);
+        // Set title
+        const titleInput = document.querySelector(`#garage${String.fromCharCode(64 + i).toLowerCase()} .stroke-title`);
         if (titleInput) {
           titleInput.value = garage.title || '';
         }
 
-        // ストローク（4つ）を設定
+        // Set strokes
         for (let j = 1; j <= 4; j++) {
           const strokeIndex = (i - 1) * 4 + j;
-          const textarea = qs(`textarea.stroke${strokeIndex}`);
+          const textarea = handleTextArea[strokeIndex - 1];
           if (textarea) {
             textarea.value = garage[`stroke${j}`] || '';
           }
         }
       }
 
-      console.log('✅ データ読み込み完了');
+      console.log('[SUCCESS] Data loaded');
     } catch (error) {
-      console.error('❌ データ読み込みエラー:', error);
-      alert('データの読み込みに失敗しました。ページを再読み込みしてください。');
+      console.error('[ERROR] Data load failed:', error);
+      alert('Failed to load data. Please refresh the page.');
     }
   }
 
   /**
-   * 全てのイベントリスナーを設定
+   * Setup all event listeners
    */
   function setupEventListeners(userId) {
-    // テキストエリアの入力イベント
-    let handleTextArea = qsAll("textArea");
-    for (let i = 0; i < handleTextArea.length; i++) {
-      handleTextArea[i].addEventListener("keyup", (event) => {
-        // デバウンス処理（連続入力時に500ms待ってから保存）
+    // Textarea input events
+    handleTextArea.forEach((elm, i) => {
+      elm.addEventListener("keyup", (event) => {
+        // Debounce (wait 500ms after continuous input)
         clearTimeout(saveTimer);
         saveTimer = setTimeout(async () => {
           const garageNum = Math.floor(i / 4) + 1;
           const strokeNum = (i % 4) + 1;
           const garageId = `garage${garageNum}`;
-          const strokeKey = `stroke${strokeNum}`;
+          const fieldKey = `stroke${strokeNum}`;
 
           try {
-            await saveStroke(userId, garageId, strokeKey, event.target.value);
+            await Storage.saveStroke(userId, garageId, fieldKey, event.target.value);
             autoSave();
           } catch (error) {
-            console.error('❌ 保存エラー:', error);
+            console.error('[ERROR] Save failed:', error);
           }
         }, DEBOUNCE_DELAY);
       });
-    }
 
-    // タイトルの入力イベント
-    let handleTitle = qsAll(".stroke-title");
-    for (let i = 0; i < handleTitle.length; i++) {
-      handleTitle[i].addEventListener("keyup", (event) => {
-        clearTimeout(saveTimer);
-        saveTimer = setTimeout(async () => {
-          const garageId = `garage${i + 1}`;
+      // URL to Markdown conversion on paste
+      if (URL_CONVERSION_ENABLED) {
+        elm.addEventListener("paste", async (event) => {
+          event.preventDefault();
+
+          // Get pasted text
+          const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+
+          if (!pastedText) return;
+
+          console.log('[INFO] URL conversion: Processing pasted text');
 
           try {
-            await saveTitle(userId, garageId, event.target.value);
-            autoSave();
-          } catch (error) {
-            console.error('❌ タイトル保存エラー:', error);
-          }
-        }, DEBOUNCE_DELAY);
-      });
-    }
+            // Convert URLs to Markdown format
+            const processedText = await processPastedText(pastedText);
 
-    // 個別テキストエリア削除機能
-    let handleClear = qsAll("input.clear");
-    for (let i = 0; i < handleClear.length; i++) {
-      handleClear[i].addEventListener("click", async (event) => {
-        let targetRemoveText = qs("textarea.stroke" + (i + 1));
+            // Insert processed text at cursor position
+            const start = elm.selectionStart;
+            const end = elm.selectionEnd;
+            const currentValue = elm.value;
 
-        if (targetRemoveText.value === "") {
-          alert("何も入力されてないわ");
-          return false;
-        } else {
-          let confirmRemove = confirm("消しマンボ?");
+            elm.value = currentValue.substring(0, start) + processedText + currentValue.substring(end);
 
-          if (confirmRemove == true) {
+            // Set cursor position after inserted text
+            const newCursorPos = start + processedText.length;
+            elm.setSelectionRange(newCursorPos, newCursorPos);
+
+            // Trigger save
             const garageNum = Math.floor(i / 4) + 1;
             const strokeNum = (i % 4) + 1;
             const garageId = `garage${garageNum}`;
-            const strokeKey = `stroke${strokeNum}`;
+            const fieldKey = `stroke${strokeNum}`;
 
-            try {
-              await deleteStroke(userId, garageId, strokeKey);
-              targetRemoveText.value = "";
-              alert("闇に葬りマンボ...");
-              autoSave();
-              return true;
-            } catch (error) {
-              console.error('❌ 削除エラー:', error);
-              alert('削除に失敗しました');
-              return false;
-            }
-          } else {
-            alert("やっぱやめとくわ");
-            return false;
+            await Storage.saveStroke(userId, garageId, fieldKey, elm.value);
+            autoSave();
+
+            console.log('[SUCCESS] URL conversion completed');
+          } catch (error) {
+            console.error('[ERROR] URL conversion failed:', error);
+            // Fallback: insert original text
+            const start = elm.selectionStart;
+            const end = elm.selectionEnd;
+            const currentValue = elm.value;
+            elm.value = currentValue.substring(0, start) + pastedText + currentValue.substring(end);
           }
+        });
+      }
+    });
+
+    // Title input events
+    const titleInputs = document.querySelectorAll('.stroke-title');
+    titleInputs.forEach((input, i) => {
+      input.addEventListener("keyup", (event) => {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(async () => {
+          const garageId = `garage${i + 1}`;
+          try {
+            await Storage.saveTitle(userId, garageId, event.target.value);
+            autoSave();
+          } catch (error) {
+            console.error('[ERROR] Title save failed:', error);
+          }
+        }, DEBOUNCE_DELAY);
+      });
+    });
+
+    // Individual stroke delete
+    clearBtns.forEach((btn, i) => {
+      btn.addEventListener("click", async () => {
+        const textarea = handleTextArea[i];
+        if (!textarea.value) {
+          alert("Nothing to delete");
+          return;
+        }
+
+        if (confirm("Delete this stroke?")) {
+          const garageNum = Math.floor(i / 4) + 1;
+          const strokeNum = (i % 4) + 1;
+          const garageId = `garage${garageNum}`;
+          const fieldKey = `stroke${strokeNum}`;
+
+          try {
+            await Storage.deleteStroke(userId, garageId, fieldKey);
+            textarea.value = "";
+            autoSave();
+            alert("Deleted");
+          } catch (error) {
+            console.error('[ERROR] Delete failed:', error);
+            alert('Delete failed');
+          }
+        } else {
+          alert("Cancelled");
         }
       });
-    }
+    });
 
-    // 個別タイトル削除機能
-    let handleTitleClear = qsAll(".title-delete");
-    for (let i = 0; i < handleTitleClear.length; i++) {
-      handleTitleClear[i].addEventListener("click", async (event) => {
-        if (handleTitleClear[i].previousElementSibling.value == "") {
-          alert("何も入力されてないわ");
-          return false;
+    // Title delete
+    const handleTitleClear = $$(".title-delete");
+    handleTitleClear.forEach((btn, i) => {
+      btn.addEventListener("click", async () => {
+        const titleInput = btn.previousElementSibling;
+        if (!titleInput.value) {
+          alert("Nothing to delete");
+          return;
         }
 
-        let confirmRemove = confirm(
-          handleTitleClear[i].previousElementSibling.value + "を消しマンボ?"
-        );
-
-        if (confirmRemove == true) {
+        if (confirm(`Delete "${titleInput.value}"?`)) {
           const garageId = `garage${i + 1}`;
 
           try {
-            await saveTitle(userId, garageId, '');
-            let targetRemoveTitle = qs(".stroke-title" + (i + 1));
-            targetRemoveTitle.value = "";
-            alert("闇に葬りマンボ...");
+            await Storage.saveTitle(userId, garageId, '');
+            titleInput.value = "";
             autoSave();
-            return true;
+            alert("Deleted");
           } catch (error) {
-            console.error('❌ タイトル削除エラー:', error);
-            alert('削除に失敗しました');
-            return false;
+            console.error('[ERROR] Title delete failed:', error);
+            alert('Delete failed');
           }
         } else {
-          alert("やっぱやめとくわ");
-          return false;
+          alert("Cancelled");
         }
       });
-    }
+    });
 
-    // Garageグループ削除機能
-    const handleGarageClear = (_qs, _garageNum) => {
-      let el = qs(_qs);
-      el.addEventListener("click", async (event) => {
-        let confirmRemove = confirm(
-          event.target.value.replace("Delete /", "") + "を消しマンボ?"
-        );
+    // Garage group delete
+    const handleGarageClear = $$('#clearA, #clearB, #clearC, #clearD');
+    handleGarageClear.forEach((btn, garageIndex) => {
+      btn.addEventListener("click", async () => {
+        const garageName = btn.value.replace("Delete /", "").trim();
 
-        if (confirmRemove == true) {
-          const garageId = `garage${_garageNum}`;
+        if (confirm(`Delete ${garageName}?`)) {
+          const garageId = `garage${garageIndex + 1}`;
 
           try {
-            await deleteGarage(userId, garageId);
+            await Storage.deleteGarage(userId, garageId);
 
-            // 画面もクリア
-            const startIndex = (_garageNum - 1) * 4;
+            // Clear UI
+            const startIndex = garageIndex * 4;
             for (let i = startIndex; i < startIndex + 4; i++) {
-              let targetRemoveText = qs("textarea.stroke" + (i + 1));
-              if (targetRemoveText) {
-                targetRemoveText.value = "";
-              }
+              handleTextArea[i].value = "";
             }
 
-            alert("闇に葬りマンボ...");
+            // Clear title
+            const titleInputs = document.querySelectorAll('.stroke-title');
+            if (titleInputs[garageIndex]) {
+              titleInputs[garageIndex].value = "";
+            }
+
             autoSave();
-            return true;
+            alert("Deleted");
           } catch (error) {
-            console.error('❌ ガレージ削除エラー:', error);
-            alert('削除に失敗しました');
-            return false;
+            console.error('[ERROR] Garage delete failed:', error);
+            alert('Delete failed');
           }
         } else {
-          alert("やっぱやめとくわ");
-          return false;
+          alert("Cancelled");
         }
       });
-    };
+    });
 
-    handleGarageClear("#clearA", 1);
-    handleGarageClear("#clearB", 2);
-    handleGarageClear("#clearC", 3);
-    handleGarageClear("#clearD", 4);
-
-    // ログアウトボタン
+    // Logout / Mode switch button
     const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', async () => {
-        if (confirm('ログアウトしますか？')) {
-          try {
-            await logout();
+    const userInfo = document.querySelector('.user-info');
+
+    if (logoutBtn && userInfo) {
+      console.log('[INFO] Setting up logout button, current mode:', getStorageMode());
+
+      // Mobile: Toggle expanded state on first click
+      let isExpanded = false;
+      let expandTimeout = null;
+
+      const isMobile = () => window.innerWidth <= MOBILE_BREAKPOINT;
+
+      userInfo.addEventListener('click', (e) => {
+        if (!isMobile()) return;
+
+        if (!isExpanded) {
+          e.stopPropagation();
+          userInfo.classList.add('expanded');
+          isExpanded = true;
+
+          // Auto-collapse after timeout
+          expandTimeout = setTimeout(() => {
+            userInfo.classList.remove('expanded');
+            isExpanded = false;
+          }, AUTO_COLLAPSE_DELAY);
+        }
+      });
+
+      // Collapse when clicking outside
+      document.addEventListener('click', (e) => {
+        if (isMobile() && isExpanded && !userInfo.contains(e.target)) {
+          userInfo.classList.remove('expanded');
+          isExpanded = false;
+          clearTimeout(expandTimeout);
+        }
+      });
+
+      // Actual logout/mode switch action
+      logoutBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // On mobile, if not expanded, expand instead of action
+        if (isMobile() && !isExpanded) {
+          userInfo.classList.add('expanded');
+          isExpanded = true;
+          return;
+        }
+
+        console.log('[INFO] Logout button clicked, mode:', getStorageMode());
+
+        if (isOnlineMode()) {
+          // Logout from online mode
+          if (confirm('Logout?')) {
+            const { logout } = await import('./auth.js');
+            try {
+              await logout();
+              window.location.href = '/login.html';
+            } catch (error) {
+              console.error('[ERROR] Logout failed:', error);
+              alert('Logout failed');
+            }
+          }
+        } else {
+          // Switch to online mode
+          if (confirm('Switch to online mode? You will need to login.')) {
             window.location.href = '/login.html';
-          } catch (error) {
-            console.error('❌ ログアウトエラー:', error);
-            alert('ログアウトに失敗しました');
           }
         }
       });
+    } else {
+      console.error('[ERROR] Logout button or user-info not found!');
     }
   }
-
-  // Finished
 });
