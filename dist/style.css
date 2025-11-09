@@ -719,16 +719,18 @@ input.stroke-title {
 }
 .garages .garage-strokes {
   display: grid;
-  overflow: auto;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   margin: 12px 0;
+  width: 100%;
   border-radius: 8px;
 }
 .garages .garage-strokes .garage-stroke-box {
   width: 100%;
+  max-width: 100%;
   margin: 0;
   padding: 1vh 1vw;
+  box-sizing: border-box;
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.2666666667);
@@ -778,10 +780,12 @@ input.stroke-title {
 .garages textarea {
   overflow: auto;
   width: 100%;
+  max-width: 100%;
   height: auto;
   min-height: 60%;
   margin: auto;
   padding: 0.5ch 1ch;
+  box-sizing: border-box;
   resize: none;
   transition: 0.15s;
   border: 2px solid currentcolor !important;
@@ -824,9 +828,12 @@ input.stroke-title {
   }
   .garage-strokes {
     grid-template-columns: repeat(2, 1fr) !important;
+    width: 100%;
   }
   .garage-strokes .garage-stroke-box {
-    width: auto !important;
+    width: 100% !important;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }
 @media only screen and (max-width: 768px) {
@@ -853,16 +860,22 @@ input.stroke-title {
     height: auto !important;
     min-height: auto !important;
     margin: 0 !important;
+    width: 100%;
   }
   .garage-strokes .garage-stroke-box {
     width: 100% !important;
+    max-width: 100%;
     margin: 0 0 12px 0 !important;
     padding: 16px !important;
     border-radius: 0 !important;
+    box-sizing: border-box;
   }
   textarea {
     min-height: 100px !important;
     font-size: 1rem !important;
+    width: 100% !important;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }
 @media only screen and (max-width: 480px) {
@@ -874,10 +887,16 @@ input.stroke-title {
   }
   .garage-strokes .garage-stroke-box {
     padding: 1.5vh 3vw !important;
+    width: 100% !important;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   textarea {
     min-height: 100px !important;
     padding: 0.8ch 1ch !important;
+    width: 100% !important;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   input[type=button] {
     font-size: 0.85rem !important;
