@@ -24,25 +24,63 @@ nav.garages-nav {
 @media only screen and (max-width: 768px) {
   nav.garages-nav {
     top:auto;
-    bottom:2vh;
-    right:2vw;
-    left:2vw;
-    background:rgba(0, 0, 0, 0.5);
-    padding:8px;
-    border-radius:8px;
+    bottom:10vh;
+    right:1vw;
+    left:1vw;
+    background:rgba(0, 0, 0, 0.6);
+    padding:6px 4px;
+    border-radius:12px;
     backdrop-filter:blur(10px);
 
     ul {
       justify-content:space-around;
-      flex-wrap:wrap;
+      flex-wrap:nowrap;
+      gap:4px;
 
       li {
-        margin:4px;
+        margin:0;
+        flex:1;
 
         a {
-          font-size:0.9rem;
-          padding:4px 8px;
+          font-size:1rem;
+          font-weight:600;
+          padding:8px 4px;
           display:block;
+          text-align:center;
+          border-radius:8px;
+          transition:all 0.2s;
+
+          &:hover, &:active {
+            background:rgba(255, 255, 255, 0.1);
+          }
+
+          &::before {
+            content:'';
+          }
+        }
+      }
+
+      // Simplify to A B C D
+      li:nth-child(1) a::after {
+        content:'A';
+      }
+      li:nth-child(2) a::after {
+        content:'B';
+      }
+      li:nth-child(3) a::after {
+        content:'C';
+      }
+      li:nth-child(4) a::after {
+        content:'D';
+      }
+
+      li a {
+        font-size:0;
+        line-height:0;
+
+        &::after {
+          font-size:1rem;
+          line-height:1.5;
         }
       }
     }

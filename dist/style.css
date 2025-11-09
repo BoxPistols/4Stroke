@@ -441,25 +441,57 @@ nav.garages-nav ul li a {
 @media only screen and (max-width: 768px) {
   nav.garages-nav {
     top: auto;
-    bottom: 2vh;
-    right: 2vw;
-    left: 2vw;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 8px;
-    border-radius: 8px;
+    bottom: 10vh;
+    right: 1vw;
+    left: 1vw;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 6px 4px;
+    border-radius: 12px;
     backdrop-filter: blur(10px);
   }
   nav.garages-nav ul {
     justify-content: space-around;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    gap: 4px;
   }
   nav.garages-nav ul li {
-    margin: 4px;
+    margin: 0;
+    flex: 1;
   }
   nav.garages-nav ul li a {
-    font-size: 0.9rem;
-    padding: 4px 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 8px 4px;
     display: block;
+    text-align: center;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  nav.garages-nav ul li a:hover, nav.garages-nav ul li a:active {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  nav.garages-nav ul li a::before {
+    content: "";
+  }
+  nav.garages-nav ul li:nth-child(1) a::after {
+    content: "A";
+  }
+  nav.garages-nav ul li:nth-child(2) a::after {
+    content: "B";
+  }
+  nav.garages-nav ul li:nth-child(3) a::after {
+    content: "C";
+  }
+  nav.garages-nav ul li:nth-child(4) a::after {
+    content: "D";
+  }
+  nav.garages-nav ul li a {
+    font-size: 0;
+    line-height: 0;
+  }
+  nav.garages-nav ul li a::after {
+    font-size: 1rem;
+    line-height: 1.5;
   }
 }
 @media only screen and (max-width: 480px) {
@@ -603,37 +635,36 @@ input.stroke-title {
 
 @media only screen and (max-width: 768px) {
   header.header {
-    top: 2vh;
-    left: 2vw;
-    flex-wrap: wrap;
+    top: 1vh;
+    left: 1vw;
+    flex-wrap: nowrap;
   }
   header.header .logo-img img {
-    width: 28px;
+    width: 32px;
   }
   header.header h1.logo-title {
-    font-size: 24px;
-    margin: 0 0 4px 4px;
+    display: none;
   }
   header.header #message {
-    font-size: 18px;
-    margin: 0 0 4px 4px;
+    font-size: 14px;
+    margin: 0 0 0 8px;
   }
   h2.garage-title {
-    font-size: 5vw;
-    margin: 0 8px 8px;
+    font-size: 6vw;
+    margin: 0 16px 12px;
   }
   .garage-head {
-    margin: 0 8px 8px;
+    margin: 0 16px 12px;
     flex-wrap: wrap;
     gap: 8px;
   }
   input.stroke-title {
     width: 100%;
     max-width: 100%;
-    font-size: 1.1em;
+    font-size: 1em;
   }
   .title-delete {
-    font-size: 20px;
+    font-size: 18px;
   }
   .clear-garage-box {
     width: 100%;
@@ -641,7 +672,8 @@ input.stroke-title {
   }
   .clear-garage-box > input[type=button] {
     width: 100%;
-    font-size: 0.9em;
+    font-size: 0.85em;
+    padding: 8px 12px;
   }
 }
 @media only screen and (max-width: 480px) {
@@ -800,29 +832,35 @@ input.stroke-title {
   .garages-container {
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 10vh 2vw 2vh;
+    padding: 8vh 0 15vh;
   }
   .garages {
     flex-direction: column;
     width: 100%;
-    padding: 2vh 1vw;
+    padding: 0;
   }
   .garage {
-    margin: 0 0 20px 0 !important;
+    margin: 0 0 24px 0 !important;
     width: 100% !important;
+    padding: 12px 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-radius: 0 !important;
   }
   .garage-strokes {
     grid-template-columns: 1fr !important;
     height: auto !important;
     min-height: auto !important;
+    margin: 0 !important;
   }
   .garage-strokes .garage-stroke-box {
     width: 100% !important;
-    margin: 8px 0 !important;
-    padding: 2vh 3vw !important;
+    margin: 0 0 12px 0 !important;
+    padding: 16px !important;
+    border-radius: 0 !important;
   }
   textarea {
-    min-height: 120px !important;
+    min-height: 100px !important;
     font-size: 1rem !important;
   }
 }

@@ -764,40 +764,85 @@ input.stroke-title {
     /* Mobile responsive */
     @media only screen and (max-width: 768px) {
       .user-info {
-        top: auto;
-        bottom: 8vh;
-        right: 2vw;
-        left: 2vw;
-        justify-content: center;
-        padding: 10px 12px;
-        gap: 12px;
+        top: 1vh;
+        right: 1vw;
+        left: auto;
+        bottom: auto;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        gap: 0;
+        border-radius: 50%;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .user-info #user-email {
-        font-size: 12px;
-        flex: 1;
-        text-align: center;
+        display: none;
       }
 
       .user-info #logout-btn {
-        padding: 8px 16px;
-        font-size: 12px;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        font-size: 0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(174, 129, 255, 0.9);
+      }
+
+      .user-info #logout-btn::before {
+        content: '';
+        display: block;
+        width: 20px;
+        height: 20px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'%3E%3Cpath d='M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+
+      /* Expanded state when clicked */
+      .user-info.expanded {
+        width: auto;
+        height: auto;
+        border-radius: 20px;
+        padding: 8px 12px;
+        flex-direction: column;
+        align-items: stretch;
+        min-width: 160px;
+      }
+
+      .user-info.expanded #user-email {
+        display: block;
+        font-size: 11px;
+        text-align: center;
+        margin-bottom: 6px;
+      }
+
+      .user-info.expanded #logout-btn {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 11px;
+      }
+
+      .user-info.expanded #logout-btn::before {
+        display: none;
       }
     }
 
     @media only screen and (max-width: 480px) {
       .user-info {
-        padding: 8px 10px;
-        gap: 8px;
+        width: 40px;
+        height: 40px;
       }
 
-      .user-info #user-email {
-        font-size: 11px;
-      }
-
-      .user-info #logout-btn {
-        padding: 6px 12px;
-        font-size: 11px;
+      .user-info #logout-btn::before {
+        width: 18px;
+        height: 18px;
       }
     }
   </style>

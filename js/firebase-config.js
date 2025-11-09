@@ -1,28 +1,24 @@
-// Firebase SDK v10 (CDN モジュール版)
-// 認証とFirestoreに必要なモジュールをインポート
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+// Firebase SDK v10 (CDN module version)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// Firebase設定情報（Firebaseコンソールから取得）
-// このファイルをコピーして firebase-config.js を作成してください
+// Firebase configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyC1vcbD5ov1pgQvdb6CAIBFT4zi2mCwFxc",
+  authDomain: "strokes-a0b62.firebaseapp.com",
+  projectId: "strokes-a0b62",
+  storageBucket: "strokes-a0b62.firebasestorage.app",
+  messagingSenderId: "13565861697",
+  appId: "1:13565861697:web:54b8064f372730d3458bc0",
 };
 
-// Firebaseアプリを初期化
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// 認証サービスのインスタンスを取得
+// Get auth and firestore instances
 export const auth = getAuth(app);
-
-// Firestoreデータベースのインスタンスを取得
 export const db = getFirestore(app);
 
-console.log('Firebase初期化完了 ✅');
-console.log('プロジェクトID:', firebaseConfig.projectId);
+console.log("[SUCCESS] Firebase initialized");
+console.log("[INFO] Project ID:", firebaseConfig.projectId);

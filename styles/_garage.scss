@@ -149,34 +149,40 @@
   .garages-container {
     overflow-y:auto;
     overflow-x:hidden;
-    padding:10vh 2vw 2vh;
+    padding:8vh 0 15vh;
   }
 
   .garages {
     flex-direction:column;
     width:100%;
-    padding:2vh 1vw;
+    padding:0;
   }
 
   .garage {
-    margin:0 0 20px 0 !important;
+    margin:0 0 24px 0 !important;
     width:100% !important;
+    padding:12px 0 !important;
+    border-left:none !important;
+    border-right:none !important;
+    border-radius:0 !important;
   }
 
   .garage-strokes {
     grid-template-columns:1fr !important;
     height:auto !important;
     min-height:auto !important;
+    margin:0 !important;
   }
 
   .garage-strokes .garage-stroke-box {
     width:100% !important;
-    margin:8px 0 !important;
-    padding:2vh 3vw !important;
+    margin:0 0 12px 0 !important;
+    padding:16px !important;
+    border-radius:0 !important;
   }
 
   textarea {
-    min-height:120px !important;
+    min-height:100px !important;
     font-size:1rem !important;
   }
 }

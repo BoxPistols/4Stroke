@@ -265,8 +265,56 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Logout / Mode switch button
     const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', async () => {
+    const userInfo = document.querySelector('.user-info');
+
+    if (logoutBtn && userInfo) {
+      console.log('[INFO] Setting up logout button, current mode:', getStorageMode());
+
+      // Mobile: Toggle expanded state on first click
+      let isExpanded = false;
+      let expandTimeout = null;
+
+      const isMobile = () => window.innerWidth <= 768;
+
+      userInfo.addEventListener('click', (e) => {
+        if (!isMobile()) return;
+
+        if (!isExpanded) {
+          e.stopPropagation();
+          userInfo.classList.add('expanded');
+          isExpanded = true;
+
+          // Auto-collapse after 5 seconds
+          expandTimeout = setTimeout(() => {
+            userInfo.classList.remove('expanded');
+            isExpanded = false;
+          }, 5000);
+        }
+      });
+
+      // Collapse when clicking outside
+      document.addEventListener('click', (e) => {
+        if (isMobile() && isExpanded && !userInfo.contains(e.target)) {
+          userInfo.classList.remove('expanded');
+          isExpanded = false;
+          clearTimeout(expandTimeout);
+        }
+      });
+
+      // Actual logout/mode switch action
+      logoutBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // On mobile, if not expanded, expand instead of action
+        if (isMobile() && !isExpanded) {
+          userInfo.classList.add('expanded');
+          isExpanded = true;
+          return;
+        }
+
+        console.log('[INFO] Logout button clicked, mode:', getStorageMode());
+
         if (isOnlineMode()) {
           // Logout from online mode
           if (confirm('Logout?')) {
@@ -286,6 +334,8 @@ document.addEventListener("DOMContentLoaded", async function () {
           }
         }
       });
+    } else {
+      console.error('[ERROR] Logout button or user-info not found!');
     }
   }
 });

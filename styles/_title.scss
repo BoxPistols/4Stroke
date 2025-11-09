@@ -130,32 +130,31 @@ input.stroke-title {
 // Mobile responsive
 @media only screen and (max-width: 768px) {
   header.header {
-    top:2vh;
-    left:2vw;
-    flex-wrap:wrap;
+    top:1vh;
+    left:1vw;
+    flex-wrap:nowrap;
 
     .logo-img img {
-      width:28px;
+      width:32px;
     }
 
     h1.logo-title {
-      font-size:24px;
-      margin:0 0 4px 4px;
+      display:none;
     }
 
     #message {
-      font-size:18px;
-      margin:0 0 4px 4px;
+      font-size:14px;
+      margin:0 0 0 8px;
     }
   }
 
   h2.garage-title {
-    font-size:5vw;
-    margin:0 8px 8px;
+    font-size:6vw;
+    margin:0 16px 12px;
   }
 
   .garage-head {
-    margin:0 8px 8px;
+    margin:0 16px 12px;
     flex-wrap:wrap;
     gap:8px;
   }
@@ -163,11 +162,11 @@ input.stroke-title {
   input.stroke-title {
     width:100%;
     max-width:100%;
-    font-size:1.1em;
+    font-size:1em;
   }
 
   .title-delete {
-    font-size:20px;
+    font-size:18px;
   }
 
   .clear-garage-box {
@@ -176,7 +175,8 @@ input.stroke-title {
 
     >input[type="button"] {
       width:100%;
-      font-size:0.9em;
+      font-size:0.85em;
+      padding:8px 12px;
     }
   }
 }
