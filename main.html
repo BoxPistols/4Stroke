@@ -739,6 +739,7 @@ input.stroke-title {
     <li><a class="js-smooth-scroll" href="#garageB">GARAGE-B</a></li>
     <li><a class="js-smooth-scroll" href="#garageC">GARAGE-C</a></li>
     <li><a class="js-smooth-scroll" href="#garageD">GARAGE-D</a></li>
+    <li><button id="minimap-toggle-btn" class="minimap-toggle-btn" title="Minimap View">🗺️</button></li>
     <li><button id="settings-btn" class="settings-btn" title="Settings">⚙️</button></li>
   </ul>
 </nav>
@@ -979,5 +980,16 @@ input.stroke-title {
         <button type="button" id="cancel-settings-btn" class="btn btn-tertiary">Cancel</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Minimap View -->
+<div id="minimap-view" class="minimap-view">
+  <div class="minimap-header">
+    <h2>📍 ALL NOTES OVERVIEW</h2>
+    <button class="minimap-close-btn" id="minimap-close-btn">✕ CLOSE</button>
+  </div>
+  <div class="minimap-grid" id="minimap-grid">
+    <!-- Will be populated by JavaScript -->
   </div>
 </div>

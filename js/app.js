@@ -13,6 +13,12 @@ import {
   resetSettings
 } from './settings.js';
 
+// Minimap import
+import {
+  initializeMinimap,
+  setMinimapUserId
+} from './minimap.js';
+
 // Constants
 const DEBOUNCE_DELAY = 500;
 const MOBILE_BREAKPOINT = 768;
@@ -38,6 +44,9 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
 
       console.log('[SUCCESS] Logged in:', user.email);
+
+      // Set user ID for minimap
+      setMinimapUserId(user.uid);
 
       // Show user info
       const userEmailElement = document.getElementById('user-email');
@@ -106,6 +115,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   // Setup settings modal
   setupSettingsModal();
+
+  // Initialize minimap
+  const currentMode = getStorageMode();
+  const userId = isOnlineMode() ? null : null; // Will be set properly in auth callback
+  initializeMinimap(userId);
 
   /**
    * Utility function
