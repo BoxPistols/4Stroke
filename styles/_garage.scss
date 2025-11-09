@@ -1,53 +1,50 @@
 .garages-container {
-  overflow-x:scroll;
+  overflow-y:auto;
+  overflow-x:hidden;
   min-width:100vw;
   height:100%;
   padding:4vh 2vw 1vh;
 
   scroll-behavior:smooth;
-  // 横スクロールプラグイン対応
-  scroll-snap-type:y mandatory;
-  scroll-snap-type:mandatory;
-  scroll-snap-points-y:repeat(100vw);
-  scroll-snap-type:x mandatory;
-  @media only screen and (max-height: 780px) {
-  }
 }
 
 .garages {
   display:flex;
-  width:auto;
-  height:100%;
+  flex-direction:column;
+  width:100%;
+  max-width:1200px;
+  margin:0 auto;
+  height:auto;
   padding:1vh 2vw;
 
   $c4:var(--color4);
 
   .garage {
-    margin:0 12px;
-    padding:8px 8px 16px;
+    margin:0 0 24px 0;
+    padding:16px;
+    width:100%;
 
     border:1px solid rgba(#fff, .2);
-    border-radius:8px;
+    border-radius:12px;
     background-color:rgba(rgb(201, 181, 213), .2);
 
     backdrop-filter:blur(4px);
-    scroll-snap-align:start;
   }
 
   .garage-strokes {
     display:grid;
     overflow:auto;
-    grid-template-columns:repeat(2, auto);
-    height:calc(100% - 10vh);
-    margin:0 1vw;
+    grid-template-columns:repeat(2, 1fr);
+    gap:12px;
+    margin:12px 0;
 
     border-radius:8px;
   }
 
   //===== Input Text
   .garage-strokes .garage-stroke-box {
-    width:calc(100vw / 2 - 5vw);
-    margin:4px;
+    width:100%;
+    margin:0;
     padding:1vh 1vw;
 
     border:1px solid rgba(#fff, .4);
