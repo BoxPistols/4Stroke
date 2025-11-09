@@ -51,7 +51,7 @@ jobs:
       - name: Check file sizes
         run: |
           echo "Checking for files over 1000 lines..."
-          find . -name "*.html" -o -name "*.js" -o -name "*.css" | while read file; do
+          find . -type f \( -name "*.html" -o -name "*.js" -o -name "*.css" \) -not -path "./dist/*" -not -path "./node_modules/*" -not -path "./.git/*" | while read file; do
             lines=$(wc -l < "$file")
             if [ "$lines" -gt 1000 ]; then
               echo "❌ WARNING: $file has $lines lines (max 1000)"
