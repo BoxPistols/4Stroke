@@ -2,7 +2,19 @@
   "name": "prepros-project",
   "version": "1.0.0",
   "description": "This is a dummy package.json file created by Prepros to manage packages with NPM. You can edit this file to add your own information.",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage"
+  },
   "dependencies": {
     "firebase": "^12.5.0"
+  },
+  "devDependencies": {
+    "@vitest/ui": "^4.0.8",
+    "happy-dom": "^20.0.10",
+    "vitest": "^4.0.8"
   }
 }
