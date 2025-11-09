@@ -7,14 +7,23 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:all": "npm run test && npm run test:e2e",
+    "playwright:install": "playwright install"
   },
   "dependencies": {
     "firebase": "^12.5.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
+    "@playwright/test": "^1.56.1",
     "@vitest/ui": "^4.0.8",
     "happy-dom": "^20.0.10",
-    "vitest": "^4.0.8"
+    "playwright": "^1.56.1",
+    "vitest": "^4.0.8",
+    "vitest-axe": "^0.1.0"
   }
 }
