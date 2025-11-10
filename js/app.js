@@ -329,7 +329,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             const { logout } = await import('./auth.js');
             try {
               await logout();
-              window.location.href = './login.html';
+              window.location.href = '/login.html';
             } catch (error) {
               console.error('[ERROR] Logout failed:', error);
               alert('Logout failed');
@@ -338,7 +338,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         } else {
           // Switch to online mode
           if (confirm('Switch to online mode? You will need to login.')) {
-            window.location.href = './login.html';
+            window.location.href = '/login.html';
           }
         }
       });
@@ -511,7 +511,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             const { logout } = await import('./auth.js');
             try {
               await logout();
-              window.location.href = './login.html';
+              window.location.href = '/login.html';
             } catch (error) {
               console.error('[ERROR] Logout failed:', error);
               const { showToast } = await import('./settings.js');
@@ -525,7 +525,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             'You will need to login. Continue?'
           );
           if (confirmed) {
-            window.location.href = './login.html';
+            window.location.href = '/login.html';
           }
         }
       });
@@ -541,7 +541,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     onAuthChange(async (user) => {
       if (!user) {
-        window.location.href = './login.html';
+        window.location.href = '/login.html';
         return;
       }
 
