@@ -1,28 +1,5 @@
 // Settings Modal Styles
 
-// Settings button in nav
-.settings-btn {
-  background: rgba(174, 129, 255, 0.8);
-  border: none;
-  border-radius: var(--radius-md);
-  color: white;
-  cursor: pointer;
-  font-size: 18px;
-  padding: 6px 12px;
-  transition: all var(--transition-normal);
-  filter: var(--shadow-button-normal);
-
-  &:hover {
-    background: rgba(174, 129, 255, 1);
-    transform: translateY(-1px);
-    filter: var(--shadow-button-hover);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-}
-
 // Modal overlay
 .modal {
   display: none;

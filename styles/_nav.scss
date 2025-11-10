@@ -13,8 +13,37 @@ nav.garages-nav {
       margin:0 .5em;
       a {
         color:white;
-
         filter:drop-shadow(1px 1px 0px black);
+      }
+
+      button {
+        background:rgba(174, 129, 255, 0.8);
+        border:none;
+        border-radius:8px;
+        color:white;
+        cursor:pointer;
+        font-size:14px;
+        font-family:"Oswald", sans-serif;
+        font-weight:600;
+        padding:6px 12px;
+        transition:all 0.2s;
+        filter:drop-shadow(1px 1px 0px black);
+        text-transform:uppercase;
+        letter-spacing:0.05em;
+
+        &:hover {
+          background:rgba(174, 129, 255, 1);
+          transform:translateY(-1px);
+        }
+
+        &:active {
+          transform:translateY(0);
+        }
+
+        &.active {
+          background:var(--color-accent);
+          box-shadow:0 0 0 2px rgba(174, 129, 255, 0.5);
+        }
       }
     }
   }
@@ -83,6 +112,11 @@ nav.garages-nav {
           line-height:1.5;
         }
       }
+
+      li button {
+        font-size:0.9rem;
+        padding:6px 10px;
+      }
     }
   }
 }
@@ -94,6 +128,11 @@ nav.garages-nav {
         a {
           font-size:0.8rem;
           padding:2px 6px;
+        }
+
+        button {
+          font-size:0.8rem;
+          padding:4px 8px;
         }
       }
     }

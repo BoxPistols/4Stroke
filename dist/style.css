@@ -529,6 +529,32 @@ nav.garages-nav ul li a {
   color: white;
   filter: drop-shadow(1px 1px 0px black);
 }
+nav.garages-nav ul li button {
+  background: rgba(174, 129, 255, 0.8);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: "Oswald", sans-serif;
+  font-weight: 600;
+  padding: 6px 12px;
+  transition: all 0.2s;
+  filter: drop-shadow(1px 1px 0px black);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+nav.garages-nav ul li button:hover {
+  background: rgb(174, 129, 255);
+  transform: translateY(-1px);
+}
+nav.garages-nav ul li button:active {
+  transform: translateY(0);
+}
+nav.garages-nav ul li button.active {
+  background: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(174, 129, 255, 0.5);
+}
 
 @media only screen and (max-width: 768px) {
   nav.garages-nav {
@@ -585,11 +611,19 @@ nav.garages-nav ul li a {
     font-size: 1rem;
     line-height: 1.5;
   }
+  nav.garages-nav ul li button {
+    font-size: 0.9rem;
+    padding: 6px 10px;
+  }
 }
 @media only screen and (max-width: 480px) {
   nav.garages-nav ul li a {
     font-size: 0.8rem;
     padding: 2px 6px;
+  }
+  nav.garages-nav ul li button {
+    font-size: 0.8rem;
+    padding: 4px 8px;
   }
 }
 header.header {
@@ -1013,171 +1047,6 @@ input.stroke-title {
     padding: 6px 12px !important;
   }
 }
-.user-info {
-  position: fixed;
-  bottom: 16px;
-  left: 12px;
-  z-index: var(--z-header);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  background: var(--bg-glass-dark);
-  border-radius: var(--radius-xl);
-  backdrop-filter: var(--blur-strong);
-  color: var(--color-white);
-  font-family: var(--font-primary);
-  filter: var(--shadow-text);
-}
-.user-info #user-email {
-  font-size: 12px;
-  opacity: 0.9;
-}
-.user-info #logout-btn {
-  padding: 5px 12px;
-  background: var(--btn-primary-bg);
-  color: var(--color-white);
-  border: none;
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  font-size: 11px;
-  font-family: var(--font-primary);
-  transition: all var(--transition-normal);
-  filter: var(--shadow-button-normal);
-  text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-tight);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-}
-.user-info #logout-btn .gear-icon {
-  display: none;
-}
-.user-info #logout-btn .logout-text {
-  display: inline;
-}
-.user-info #logout-btn:hover {
-  background: var(--btn-primary-bg-hover);
-  transform: translateY(-1px);
-  filter: var(--shadow-button-hover);
-}
-.user-info #logout-btn:active {
-  transform: translateY(0);
-}
-@media only screen and (max-width: 768px) {
-  .user-info {
-    top: auto;
-    right: auto;
-    left: 12px;
-    bottom: 16px;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    gap: 0;
-    border-radius: var(--radius-full);
-    overflow: hidden;
-    transition: all var(--transition-expand);
-  }
-  .user-info #user-email {
-    display: none;
-  }
-  .user-info #logout-btn {
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    border-radius: var(--radius-full);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--btn-secondary-bg);
-    position: relative;
-  }
-  .user-info #logout-btn .gear-icon {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-    display: block;
-  }
-  .user-info #logout-btn .logout-text {
-    display: none;
-  }
-  .user-info.expanded {
-    width: auto;
-    height: auto;
-    border-radius: var(--radius-xl);
-    padding: 8px 12px;
-    flex-direction: column;
-    align-items: stretch;
-    min-width: 150px;
-  }
-  .user-info.expanded #user-email {
-    display: block;
-    font-size: 10px;
-    text-align: center;
-    margin-bottom: 6px;
-  }
-  .user-info.expanded #logout-btn {
-    width: 100%;
-    height: auto;
-    border-radius: var(--radius-md);
-    padding: 6px 10px;
-  }
-  .user-info.expanded #logout-btn .gear-icon {
-    display: none;
-  }
-  .user-info.expanded #logout-btn .logout-text {
-    display: inline;
-    font-size: 10px;
-  }
-}
-@media only screen and (max-width: 480px) {
-  .user-info {
-    width: 36px;
-    height: 36px;
-    left: 10px;
-    bottom: 14px;
-  }
-  .user-info #logout-btn .gear-icon {
-    width: 16px;
-    height: 16px;
-  }
-  .user-info.expanded {
-    min-width: 140px;
-    padding: 6px 10px;
-  }
-  .user-info.expanded #user-email {
-    font-size: 9px;
-  }
-  .user-info.expanded #logout-btn {
-    padding: 5px 8px;
-  }
-  .user-info.expanded #logout-btn .logout-text {
-    font-size: 9px;
-  }
-}
-
-.settings-btn {
-  background: rgba(174, 129, 255, 0.8);
-  border: none;
-  border-radius: var(--radius-md);
-  color: white;
-  cursor: pointer;
-  font-size: 18px;
-  padding: 6px 12px;
-  transition: all var(--transition-normal);
-  filter: var(--shadow-button-normal);
-}
-.settings-btn:hover {
-  background: rgb(174, 129, 255);
-  transform: translateY(-1px);
-  filter: var(--shadow-button-hover);
-}
-.settings-btn:active {
-  transform: translateY(0);
-}
-
 .modal {
   display: none;
   position: fixed;
