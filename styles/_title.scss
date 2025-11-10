@@ -5,6 +5,7 @@ header.header {
   z-index:10;
   top:12px;
   left:12px;
+  width:100%;
   display:grid;
   grid-template-columns:auto auto auto;
   padding-left:12px;
@@ -127,12 +128,13 @@ input.stroke-title {
   }
 }
 
-// Mobile responsive
+// Mobile responsive - Breakpoint: 768px
 @media only screen and (max-width: 768px) {
   header.header {
     top:12px;
     left:12px;
     flex-wrap:nowrap;
+    padding-left:0;
 
     .logo-img img {
       width:32px;
@@ -181,30 +183,3 @@ input.stroke-title {
   }
 }
 
-@media only screen and (max-width: 480px) {
-  header.header {
-    top:10px;
-    left:10px;
-
-    .logo-img img {
-      width:28px;
-    }
-
-    h1.logo-title {
-      display:none;
-    }
-
-    #message {
-      font-size:11px;
-      margin:0 0 0 6px;
-    }
-  }
-
-  h2.garage-title {
-    font-size:20px;
-  }
-
-  input.stroke-title {
-    font-size:0.95em;
-  }
-}

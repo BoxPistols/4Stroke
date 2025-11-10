@@ -494,6 +494,11 @@ input[type=button] {
   filter: drop-shadow(1px 1px 0px black);
 }
 
+@media only screen and (max-width: 768px) {
+  body {
+    padding: 28px 12px 56px;
+  }
+}
 nav.garages-nav {
   position: fixed;
   z-index: 10;
@@ -559,12 +564,12 @@ nav.garages-nav ul li button.active {
 @media only screen and (max-width: 768px) {
   nav.garages-nav {
     top: auto;
-    bottom: 70px;
-    right: 12px;
-    left: 12px;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 6px 4px;
-    border-radius: 12px;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 8px 4px;
+    border-radius: 0;
     backdrop-filter: blur(10px);
   }
   nav.garages-nav ul {
@@ -616,21 +621,12 @@ nav.garages-nav ul li button.active {
     padding: 6px 10px;
   }
 }
-@media only screen and (max-width: 480px) {
-  nav.garages-nav ul li a {
-    font-size: 0.8rem;
-    padding: 2px 6px;
-  }
-  nav.garages-nav ul li button {
-    font-size: 0.8rem;
-    padding: 4px 8px;
-  }
-}
 header.header {
   position: fixed;
   z-index: 10;
   top: 12px;
   left: 12px;
+  width: 100%;
   display: grid;
   grid-template-columns: auto auto auto;
   padding-left: 12px;
@@ -764,6 +760,7 @@ input.stroke-title {
     top: 12px;
     left: 12px;
     flex-wrap: nowrap;
+    padding-left: 0;
   }
   header.header .logo-img img {
     width: 32px;
@@ -800,28 +797,6 @@ input.stroke-title {
     width: 100%;
     font-size: 0.85em;
     padding: 8px 12px;
-  }
-}
-@media only screen and (max-width: 480px) {
-  header.header {
-    top: 10px;
-    left: 10px;
-  }
-  header.header .logo-img img {
-    width: 28px;
-  }
-  header.header h1.logo-title {
-    display: none;
-  }
-  header.header #message {
-    font-size: 11px;
-    margin: 0 0 0 6px;
-  }
-  h2.garage-title {
-    font-size: 20px;
-  }
-  input.stroke-title {
-    font-size: 0.95em;
   }
 }
 .garages-container {
