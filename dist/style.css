@@ -494,6 +494,16 @@ input[type=button] {
   filter: drop-shadow(1px 1px 0px black);
 }
 
+@media only screen and (max-width: 768px) {
+  body {
+    padding: 28px 12px 56px;
+  }
+}
+@media only screen and (max-width: 480px) {
+  body {
+    padding: 28px 12px 56px;
+  }
+}
 nav.garages-nav {
   position: fixed;
   z-index: 10;
@@ -559,12 +569,12 @@ nav.garages-nav ul li button.active {
 @media only screen and (max-width: 768px) {
   nav.garages-nav {
     top: auto;
-    bottom: 70px;
-    right: 12px;
-    left: 12px;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 6px 4px;
-    border-radius: 12px;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 8px 4px;
+    border-radius: 0;
     backdrop-filter: blur(10px);
   }
   nav.garages-nav ul {
@@ -764,6 +774,7 @@ input.stroke-title {
     top: 12px;
     left: 12px;
     flex-wrap: nowrap;
+    padding-left: 0;
   }
   header.header .logo-img img {
     width: 32px;
