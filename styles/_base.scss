@@ -96,14 +96,8 @@ input[type="button"] {
   filter:drop-shadow(1px 1px 0px black);
 }
 
-// Mobile responsive
+// Mobile responsive - Breakpoint: 768px
 @media only screen and (max-width: 768px) {
-  body {
-    padding:28px 12px 56px;
-  }
-}
-
-@media only screen and (max-width: 480px) {
   body {
     padding:28px 12px 56px;
   }
