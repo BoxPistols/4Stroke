@@ -1,8 +1,8 @@
-@import "tokens";
-@import "mixins/flexbox";
-@import "base";
-@import "nav";
-@import "title";
-@import "garage";
-@import "settings";
-@import "minimap";
+@use "tokens";
+@use "mixins/flexbox" as *;
+@use "base";
+@use "nav";
+@use "title";
+@use "garage";
+@use "settings";
+@use "minimap";

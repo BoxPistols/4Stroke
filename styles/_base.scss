@@ -4,6 +4,8 @@
  * 横スクロール https://bagelee.com/design/css/scroll_snap_with_css/
  */
 
+@use "mixins/flexbox" as *;
+
 @import "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css";
 @import url("https://fonts.googleapis.com/css2?family=Oswald&display=swap");
 
@@ -49,7 +51,7 @@ body {
   min-width:100vw;
   height:100vh;
   // padding:4px 12px;
-  padding:28px 12px 8px;
+  padding:8px 12px 60px;
 
   font-family:YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans",
   "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
@@ -99,6 +101,6 @@ input[type="button"] {
 // Mobile responsive - Breakpoint: 768px
 @media only screen and (max-width: 768px) {
   body {
-    padding:28px 12px 56px;
+    padding:8px 12px 64px;
   }
 }
