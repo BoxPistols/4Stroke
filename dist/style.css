@@ -502,8 +502,8 @@ input[type=button] {
 nav.garages-nav {
   position: fixed;
   z-index: 10;
-  bottom: 16px;
-  right: 16px;
+  bottom: -8px;
+  right: 8px;
   font-family: "Oswald", sans-serif;
 }
 nav.garages-nav ul {
@@ -543,11 +543,15 @@ nav.garages-nav ul li button {
   font-size: 14px;
   font-family: "Oswald", sans-serif;
   font-weight: 600;
-  padding: 6px 12px;
+  padding: 2px 8px;
   transition: all 0.2s;
   filter: drop-shadow(1px 1px 0px black);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 1.2rem;
 }
 nav.garages-nav ul li button:hover {
   background: rgb(174, 129, 255);
@@ -800,29 +804,34 @@ input.stroke-title {
   }
 }
 .garages-container {
-  overflow-y: auto;
-  overflow-x: hidden;
-  min-width: 100vw;
-  height: 100%;
-  padding: var(--spacing-vh-lg) var(--spacing-vw-md) var(--spacing-vh-sm);
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
   scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
 }
 
 .garages {
   display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: var(--max-width-content);
-  margin: 0 auto;
-  height: auto;
-  padding: var(--spacing-vh-sm) var(--spacing-vw-md);
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: auto;
+  height: 100vh;
+  padding: 0;
 }
 .garages .garage {
-  margin: 0 0 var(--spacing-xl) 0;
-  padding: var(--spacing-lg);
-  width: 100%;
+  flex-shrink: 0;
+  width: 100vw;
+  min-width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: var(--spacing-vh-lg) var(--spacing-vw-md);
+  box-sizing: border-box;
+  scroll-snap-align: start;
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   background-color: var(--bg-glass);
   backdrop-filter: var(--blur-light);
 }
