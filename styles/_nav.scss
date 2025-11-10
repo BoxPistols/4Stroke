@@ -1,3 +1,5 @@
+@use "mixins/flexbox" as *;
+
 nav.garages-nav {
   position:fixed;
   z-index:10;
