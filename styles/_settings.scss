@@ -201,6 +201,36 @@
   gap: 8px;
 }
 
+// Mode selector
+.mode-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .mode-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    font-size: 14px;
+
+    strong {
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 600;
+    }
+
+    span {
+      color: var(--color-accent);
+      font-weight: 500;
+    }
+  }
+
+  #mode-switch-btn {
+    align-self: flex-start;
+    min-width: 200px;
+  }
+}
+
 .garage-order-item {
   background: rgba(0, 0, 0, 0.3);
   border-radius: var(--radius-md);

@@ -48,22 +48,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       // Set user ID for minimap
       setMinimapUserId(user.uid);
 
-      // Show user info
-      const userEmailElement = document.getElementById('user-email');
-      if (userEmailElement) {
-        userEmailElement.textContent = user.email;
-      }
-
-      // Show logout button
-      const logoutBtn = document.getElementById('logout-btn');
-      if (logoutBtn) {
-        logoutBtn.style.display = 'block';
-        const logoutText = logoutBtn.querySelector('.logout-text');
-        if (logoutText) {
-          logoutText.textContent = 'LOGOUT';
-        }
-      }
-
       // Migrate from localStorage (first time only)
       await migrateFromLocalStorage(user.uid);
 
@@ -76,23 +60,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   } else {
     // Local mode - no authentication required
     console.log('[INFO] Running in local storage mode');
-
-    // Hide user email, show mode indicator
-    const userEmailElement = document.getElementById('user-email');
-    if (userEmailElement) {
-      userEmailElement.textContent = 'Local Mode';
-    }
-
-    // Change logout button to "Switch to Online"
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-      logoutBtn.style.display = 'block';
-      const logoutText = logoutBtn.querySelector('.logout-text');
-      if (logoutText) {
-        logoutText.textContent = 'ONLINE MODE';
-      }
-      logoutBtn.title = 'Switch to online mode with cloud sync';
-    }
 
     // Load data from localStorage
     await loadData(null);
@@ -506,6 +473,26 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   /**
+   * Update mode display in settings modal
+   */
+  function updateModeDisplay() {
+    const currentModeDisplay = document.getElementById('current-mode-display');
+    const currentUserDisplay = document.getElementById('current-user-display');
+    const modeSwitchText = document.getElementById('mode-switch-text');
+
+    if (isOnlineMode()) {
+      if (currentModeDisplay) currentModeDisplay.textContent = 'Online Mode';
+      // Will be updated with actual user email when logged in
+      if (currentUserDisplay) currentUserDisplay.textContent = 'Logged in';
+      if (modeSwitchText) modeSwitchText.textContent = 'Logout';
+    } else {
+      if (currentModeDisplay) currentModeDisplay.textContent = 'Local Mode';
+      if (currentUserDisplay) currentUserDisplay.textContent = 'Not logged in';
+      if (modeSwitchText) modeSwitchText.textContent = 'Switch to Online Mode';
+    }
+  }
+
+  /**
    * Setup settings modal event listeners
    */
   function setupSettingsModal() {
@@ -514,12 +501,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     const saveSettingsBtn = document.getElementById('save-settings-btn');
     const resetSettingsBtn = document.getElementById('reset-settings-btn');
     const cancelSettingsBtn = document.getElementById('cancel-settings-btn');
+    const modeSwitchBtn = document.getElementById('mode-switch-btn');
     const modal = document.getElementById('settings-modal');
 
     // Open modal
     if (settingsBtn) {
       settingsBtn.addEventListener('click', () => {
         openSettingsModal();
+        updateModeDisplay();
       });
     }
 
@@ -559,6 +548,30 @@ document.addEventListener("DOMContentLoaded", async function () {
           resetSettings();
           alert('Settings reset! Please refresh the page.');
           closeSettingsModal();
+        }
+      });
+    }
+
+    // Mode switch
+    if (modeSwitchBtn) {
+      modeSwitchBtn.addEventListener('click', async () => {
+        if (isOnlineMode()) {
+          // Logout from online mode
+          if (confirm('Logout?')) {
+            const { logout } = await import('./auth.js');
+            try {
+              await logout();
+              window.location.href = '/login.html';
+            } catch (error) {
+              console.error('[ERROR] Logout failed:', error);
+              alert('Logout failed');
+            }
+          }
+        } else {
+          // Switch to online mode
+          if (confirm('Switch to online mode? You will need to login.')) {
+            window.location.href = '/login.html';
+          }
         }
       });
     }

@@ -715,17 +715,6 @@ input.stroke-title {
 
 </head>
 <body>
-<!-- User info area -->
-<div class="user-info">
-  <span id="user-email">Loading...</span>
-  <button id="logout-btn">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" class="gear-icon">
-      <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
-    </svg>
-    <span class="logout-text">LOGOUT</span>
-  </button>
-</div>
-
 <a class="js-smooth-scroll" href="#garageA">
   <header class="header">
     <div class="logo-img"><img src="./img/logo.svg"></div>
@@ -739,8 +728,8 @@ input.stroke-title {
     <li><a class="js-smooth-scroll" href="#garageB">GARAGE-B</a></li>
     <li><a class="js-smooth-scroll" href="#garageC">GARAGE-C</a></li>
     <li><a class="js-smooth-scroll" href="#garageD">GARAGE-D</a></li>
-    <li><button id="minimap-toggle-btn" class="minimap-toggle-btn" title="Minimap View">🗺️</button></li>
-    <li><button id="settings-btn" class="settings-btn" title="Settings">⚙️</button></li>
+    <li><button id="minimap-toggle-btn" class="minimap-toggle-btn" title="Minimap View">MAP</button></li>
+    <li><button id="settings-btn" class="settings-btn" title="Settings">SET</button></li>
   </ul>
 </nav>
 <div class="garages-container">
@@ -974,6 +963,26 @@ input.stroke-title {
         </div>
       </section>
 
+      <!-- Storage Mode -->
+      <section class="settings-section">
+        <h3>Storage Mode</h3>
+        <p class="settings-description">Choose between local storage and online mode with cloud sync.</p>
+
+        <div class="mode-selector">
+          <div class="mode-info">
+            <strong>Current Mode:</strong>
+            <span id="current-mode-display">Local Mode</span>
+          </div>
+          <div class="mode-info">
+            <strong>User:</strong>
+            <span id="current-user-display">Not logged in</span>
+          </div>
+          <button type="button" id="mode-switch-btn" class="btn btn-secondary">
+            <span id="mode-switch-text">Switch to Online Mode</span>
+          </button>
+        </div>
+      </section>
+
       <div class="modal-actions">
         <button type="button" id="save-settings-btn" class="btn btn-primary">Save Settings</button>
         <button type="button" id="reset-settings-btn" class="btn btn-secondary">Reset to Defaults</button>
@@ -986,8 +995,8 @@ input.stroke-title {
 <!-- Minimap View -->
 <div id="minimap-view" class="minimap-view">
   <div class="minimap-header">
-    <h2>📍 ALL NOTES OVERVIEW</h2>
-    <button class="minimap-close-btn" id="minimap-close-btn">✕ CLOSE</button>
+    <h2>ALL NOTES OVERVIEW</h2>
+    <button class="minimap-close-btn" id="minimap-close-btn">CLOSE</button>
   </div>
   <div class="minimap-grid" id="minimap-grid">
     <!-- Will be populated by JavaScript -->
