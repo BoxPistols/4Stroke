@@ -47,6 +47,22 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       console.log('[SUCCESS] Logged in:', user.email);
 
+      // Update user info display in settings modal
+      const currentUserDisplay = document.getElementById('current-user-display');
+      if (currentUserDisplay) {
+        currentUserDisplay.textContent = user.email || 'Logged in';
+      }
+
+      // Update logout button text with user email
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        const logoutText = logoutBtn.querySelector('.logout-text');
+        if (logoutText) {
+          logoutText.textContent = 'LOGOUT';
+        }
+        logoutBtn.title = `Logout (${user.email})`;
+      }
+
       // Set user ID for minimap
       setMinimapUserId(user.uid);
 
@@ -62,6 +78,16 @@ document.addEventListener("DOMContentLoaded", async function () {
   } else {
     // Local mode - no authentication required
     console.log('[INFO] Running in local storage mode');
+
+    // Update logout button for local mode
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      const logoutText = logoutBtn.querySelector('.logout-text');
+      if (logoutText) {
+        logoutText.textContent = 'LOGIN';
+      }
+      logoutBtn.title = 'Switch to Online Mode';
+    }
 
     // Load data from localStorage
     await loadData(null);

@@ -447,6 +447,47 @@ nav.garages-nav ul li a {
   color: white;
   filter: drop-shadow(1px 1px 0px black);
 }
+nav.garages-nav ul li button {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  padding: 4px 8px;
+  color: white;
+  font-family: "Oswald", sans-serif;
+  cursor: pointer;
+  filter: drop-shadow(1px 1px 0px black);
+  transition: all 0.2s ease;
+}
+nav.garages-nav ul li button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: white;
+}
+nav.garages-nav ul li.user-info {
+  position: relative;
+}
+nav.garages-nav ul li.user-info .logout-btn {
+  background: rgba(249, 38, 114, 0.3);
+  border-color: var(--color1);
+  color: white;
+}
+nav.garages-nav ul li.user-info .logout-btn:hover {
+  background: rgba(249, 38, 114, 0.5);
+  border-color: var(--color1);
+}
+@media (max-width: 768px) {
+  nav.garages-nav ul li.user-info {
+    overflow: hidden;
+  }
+  nav.garages-nav ul li.user-info .logout-btn {
+    max-width: 40px;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: max-width 0.3s ease;
+  }
+  nav.garages-nav ul li.user-info.expanded .logout-btn {
+    max-width: 120px;
+  }
+}
 
 header.header {
   position: fixed;
@@ -730,6 +771,11 @@ input.stroke-title {
     <li><a class="js-smooth-scroll" href="#garageD">GARAGE-D</a></li>
     <li><button id="minimap-toggle-btn" class="minimap-toggle-btn" title="Minimap View">MAP</button></li>
     <li><button id="settings-btn" class="settings-btn" title="Settings">SET</button></li>
+    <li class="user-info">
+      <button id="logout-btn" class="logout-btn" title="Logout / Switch Mode">
+        <span class="logout-text">LOGOUT</span>
+      </button>
+    </li>
   </ul>
 </nav>
 <div class="garages-container">
