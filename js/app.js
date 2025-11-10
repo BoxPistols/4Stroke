@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     return document.querySelectorAll(_x);
   };
 
-  // Initialize UI element references
+  // Initialize UI element references - MUST be defined before functions that use them
   const handleTextArea = $$("textarea.stroke");
   const clearBtns = $$("input.clear");
   const autoSave = () => {
@@ -51,88 +51,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       message.classList.add("is-hidden");
     }, 1200);
   };
-
-  if (isOnlineMode()) {
-    // Online mode - require authentication
-    const { onAuthChange, getCurrentUser, logout } = await import('./auth.js');
-    const { migrateFromLocalStorage } = await import('./firestore-crud.js');
-
-    onAuthChange(async (user) => {
-      if (!user) {
-        window.location.href = '/login.html';
-        return;
-      }
-
-      console.log('[SUCCESS] Logged in:', user.email);
-
-      // Update user info display in settings modal
-      const currentUserDisplay = document.getElementById('current-user-display');
-      if (currentUserDisplay) {
-        currentUserDisplay.textContent = user.email || 'Logged in';
-      }
-
-      // Update logout button text with user email
-      const logoutBtn = document.getElementById('logout-btn');
-      if (logoutBtn) {
-        const logoutText = logoutBtn.querySelector('.logout-text');
-        if (logoutText) {
-          logoutText.textContent = 'LOGOUT';
-        }
-        logoutBtn.title = `Logout (${user.email})`;
-      }
-
-      // Set user ID for minimap
-      setMinimapUserId(user.uid);
-
-      // Migrate from localStorage (first time only)
-      await migrateFromLocalStorage(user.uid);
-
-      // Load data
-      await loadData(user.uid);
-
-      // Setup event listeners
-      setupEventListeners(user.uid);
-    });
-  } else {
-    // Local mode - no authentication required
-    console.log('[INFO] Running in local storage mode');
-
-    // Update logout button for local mode
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-      const logoutText = logoutBtn.querySelector('.logout-text');
-      if (logoutText) {
-        logoutText.textContent = 'LOGIN';
-      }
-      logoutBtn.title = 'Switch to Online Mode';
-    }
-
-    // Load data from localStorage
-    await loadData(null);
-
-    // Setup event listeners
-    setupEventListeners(null);
-  }
-
-  // CSS Scroll Snap Polyfill
-  const init = function () {
-    cssScrollSnapPolyfill();
-  };
-  init();
-
-  // Initialize settings (garage order and shortcuts)
-  initializeSettings();
-
-  // Keyboard navigation for garages
-  setupKeyboardNavigation();
-
-  // Setup settings modal
-  setupSettingsModal();
-
-  // Initialize minimap
-  const currentMode = getStorageMode();
-  const userId = isOnlineMode() ? null : null; // Will be set properly in auth callback
-  initializeMinimap(userId);
 
   /**
    * Load data from storage (Local or Firestore)
@@ -615,4 +533,86 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     console.log('[INFO] Settings modal initialized');
   }
+
+  if (isOnlineMode()) {
+    // Online mode - require authentication
+    const { onAuthChange, getCurrentUser, logout } = await import('./auth.js');
+    const { migrateFromLocalStorage } = await import('./firestore-crud.js');
+
+    onAuthChange(async (user) => {
+      if (!user) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      console.log('[SUCCESS] Logged in:', user.email);
+
+      // Update user info display in settings modal
+      const currentUserDisplay = document.getElementById('current-user-display');
+      if (currentUserDisplay) {
+        currentUserDisplay.textContent = user.email || 'Logged in';
+      }
+
+      // Update logout button text with user email
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        const logoutText = logoutBtn.querySelector('.logout-text');
+        if (logoutText) {
+          logoutText.textContent = 'LOGOUT';
+        }
+        logoutBtn.title = `Logout (${user.email})`;
+      }
+
+      // Set user ID for minimap
+      setMinimapUserId(user.uid);
+
+      // Migrate from localStorage (first time only)
+      await migrateFromLocalStorage(user.uid);
+
+      // Load data
+      await loadData(user.uid);
+
+      // Setup event listeners
+      setupEventListeners(user.uid);
+    });
+  } else {
+    // Local mode - no authentication required
+    console.log('[INFO] Running in local storage mode');
+
+    // Update logout button for local mode
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      const logoutText = logoutBtn.querySelector('.logout-text');
+      if (logoutText) {
+        logoutText.textContent = 'LOGIN';
+      }
+      logoutBtn.title = 'Switch to Online Mode';
+    }
+
+    // Load data from localStorage
+    await loadData(null);
+
+    // Setup event listeners
+    setupEventListeners(null);
+  }
+
+  // CSS Scroll Snap Polyfill
+  const init = function () {
+    cssScrollSnapPolyfill();
+  };
+  init();
+
+  // Initialize settings (garage order and shortcuts)
+  initializeSettings();
+
+  // Keyboard navigation for garages
+  setupKeyboardNavigation();
+
+  // Setup settings modal
+  setupSettingsModal();
+
+  // Initialize minimap
+  const currentMode = getStorageMode();
+  const userId = isOnlineMode() ? null : null; // Will be set properly in auth callback
+  initializeMinimap(userId);
 });
