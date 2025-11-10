@@ -5,12 +5,12 @@
 header.header {
   position:fixed;
   z-index:10;
-  top:12px;
+  bottom:12px;
   left:12px;
-  width:100%;
+  width:auto;
   display:grid;
   grid-template-columns:auto auto auto;
-  padding-left:12px;
+  padding-left:0;
 
   color:white;
 
@@ -21,18 +21,18 @@ header.header {
 
   .logo-img {
     img {
-      width:36px;
-      padding:4px;
+      width:24px;
+      padding:2px;
     }
   }
 
   h1.logo-title {
-    margin:0 0 8px 4px;
+    margin:0 0 4px 4px;
 
     letter-spacing:.05ch;
 
     text-shadow:1px 1px 2px rgba(#000, .2);
-    font-size:32px;
+    font-size:20px;
     font-weight:400;
   }
 
@@ -133,13 +133,13 @@ input.stroke-title {
 // Mobile responsive - Breakpoint: 768px
 @media only screen and (max-width: 768px) {
   header.header {
-    top:12px;
+    bottom:12px;
     left:12px;
     flex-wrap:nowrap;
     padding-left:0;
 
     .logo-img img {
-      width:32px;
+      width:20px;
     }
 
     h1.logo-title {
