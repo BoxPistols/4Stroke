@@ -134,17 +134,19 @@
 // ===== Mobile Responsive
 @media only screen and (max-width: 1024px) {
   .garages-container {
-    padding:6vh 1vw 2vh;
+    padding:80px 12px 24px;
   }
 
   .garage-strokes {
     grid-template-columns:repeat(2, 1fr) !important;
+    gap:12px;
     width:100%;
   }
 
   .garage-strokes .garage-stroke-box {
     width:100% !important;
     max-width:100%;
+    padding:12px;
     box-sizing:border-box;
   }
 }
@@ -153,7 +155,7 @@
   .garages-container {
     overflow-y:auto;
     overflow-x:hidden;
-    padding:8vh 0 15vh;
+    padding:80px 0 120px;
   }
 
   .garages {
@@ -163,16 +165,18 @@
   }
 
   .garage {
-    margin:0 0 24px 0 !important;
+    margin:0 0 20px 0 !important;
     width:100% !important;
-    padding:12px 0 !important;
+    padding:16px 12px !important;
     border-left:none !important;
     border-right:none !important;
     border-radius:0 !important;
   }
 
   .garage-strokes {
+    display:grid !important;
     grid-template-columns:1fr !important;
+    gap:12px !important;
     height:auto !important;
     min-height:auto !important;
     margin:0 !important;
@@ -182,32 +186,39 @@
   .garage-strokes .garage-stroke-box {
     width:100% !important;
     max-width:100%;
-    margin:0 0 12px 0 !important;
+    margin:0 !important;
     padding:16px !important;
-    border-radius:0 !important;
+    border-radius:8px !important;
     box-sizing:border-box;
   }
 
   textarea {
-    min-height:100px !important;
+    min-height:120px !important;
     font-size:1rem !important;
     width:100% !important;
     max-width:100%;
+    padding:8px 12px !important;
     box-sizing:border-box;
   }
 }
 
 @media only screen and (max-width: 480px) {
   .garages-container {
-    padding:12vh 1vw 2vh;
+    padding:80px 0 120px;
   }
 
   .garage {
-    padding:8px 4px 12px !important;
+    padding:12px 8px !important;
+    margin:0 0 16px 0 !important;
+  }
+
+  .garage-strokes {
+    gap:12px !important;
   }
 
   .garage-strokes .garage-stroke-box {
-    padding:1.5vh 3vw !important;
+    padding:12px !important;
+    border-radius:6px !important;
     width:100% !important;
     max-width:100%;
     box-sizing:border-box;
@@ -215,7 +226,7 @@
 
   textarea {
     min-height:100px !important;
-    padding:.8ch 1ch !important;
+    padding:8px 10px !important;
     width:100% !important;
     max-width:100%;
     box-sizing:border-box;

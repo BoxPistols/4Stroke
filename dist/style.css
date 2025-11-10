@@ -497,8 +497,8 @@ input[type=button] {
 nav.garages-nav {
   position: fixed;
   z-index: 10;
-  top: 1.5vh;
-  right: 1.5vw;
+  top: 16px;
+  right: 16px;
   font-family: "Oswald", sans-serif;
 }
 nav.garages-nav ul {
@@ -529,13 +529,39 @@ nav.garages-nav ul li a {
   color: white;
   filter: drop-shadow(1px 1px 0px black);
 }
+nav.garages-nav ul li button {
+  background: rgba(174, 129, 255, 0.8);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: "Oswald", sans-serif;
+  font-weight: 600;
+  padding: 6px 12px;
+  transition: all 0.2s;
+  filter: drop-shadow(1px 1px 0px black);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+nav.garages-nav ul li button:hover {
+  background: rgb(174, 129, 255);
+  transform: translateY(-1px);
+}
+nav.garages-nav ul li button:active {
+  transform: translateY(0);
+}
+nav.garages-nav ul li button.active {
+  background: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(174, 129, 255, 0.5);
+}
 
 @media only screen and (max-width: 768px) {
   nav.garages-nav {
     top: auto;
-    bottom: 10vh;
-    right: 1vw;
-    left: 1vw;
+    bottom: 70px;
+    right: 12px;
+    left: 12px;
     background: rgba(0, 0, 0, 0.6);
     padding: 6px 4px;
     border-radius: 12px;
@@ -585,21 +611,29 @@ nav.garages-nav ul li a {
     font-size: 1rem;
     line-height: 1.5;
   }
+  nav.garages-nav ul li button {
+    font-size: 0.9rem;
+    padding: 6px 10px;
+  }
 }
 @media only screen and (max-width: 480px) {
   nav.garages-nav ul li a {
     font-size: 0.8rem;
     padding: 2px 6px;
   }
+  nav.garages-nav ul li button {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
 }
 header.header {
   position: fixed;
   z-index: 10;
-  top: 1vh;
-  left: 1vw;
+  top: 12px;
+  left: 12px;
   display: grid;
   grid-template-columns: auto auto auto;
-  padding-left: 1vw;
+  padding-left: 12px;
   color: white;
   font-family: "Oswald", sans-serif;
   filter: drop-shadow(1px 1px 0px black);
@@ -661,12 +695,12 @@ h3 {
 }
 
 h2.garage-title {
-  margin: 0 calc(1vw + 4px) 8px;
-  font-size: 2.4vw;
+  margin: 0 16px 8px;
+  font-size: 28px;
 }
 
 .garage-head {
-  margin: 0 calc(1vw + 4px) 4px;
+  margin: 0 16px 4px;
 }
 
 input.stroke-title {
@@ -727,8 +761,8 @@ input.stroke-title {
 
 @media only screen and (max-width: 768px) {
   header.header {
-    top: 1vh;
-    left: 1vw;
+    top: 12px;
+    left: 12px;
     flex-wrap: nowrap;
   }
   header.header .logo-img img {
@@ -738,11 +772,11 @@ input.stroke-title {
     display: none;
   }
   header.header #message {
-    font-size: 14px;
+    font-size: 12px;
     margin: 0 0 0 8px;
   }
   h2.garage-title {
-    font-size: 6vw;
+    font-size: 22px;
     margin: 0 16px 12px;
   }
   .garage-head {
@@ -769,17 +803,25 @@ input.stroke-title {
   }
 }
 @media only screen and (max-width: 480px) {
+  header.header {
+    top: 10px;
+    left: 10px;
+  }
+  header.header .logo-img img {
+    width: 28px;
+  }
   header.header h1.logo-title {
-    font-size: 20px;
+    display: none;
   }
   header.header #message {
-    font-size: 14px;
+    font-size: 11px;
+    margin: 0 0 0 6px;
   }
   h2.garage-title {
-    font-size: 6vw;
+    font-size: 20px;
   }
   input.stroke-title {
-    font-size: 1em;
+    font-size: 0.95em;
   }
 }
 .garages-container {
@@ -916,15 +958,17 @@ input.stroke-title {
 
 @media only screen and (max-width: 1024px) {
   .garages-container {
-    padding: 6vh 1vw 2vh;
+    padding: 80px 12px 24px;
   }
   .garage-strokes {
     grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px;
     width: 100%;
   }
   .garage-strokes .garage-stroke-box {
     width: 100% !important;
     max-width: 100%;
+    padding: 12px;
     box-sizing: border-box;
   }
 }
@@ -932,7 +976,7 @@ input.stroke-title {
   .garages-container {
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 8vh 0 15vh;
+    padding: 80px 0 120px;
   }
   .garages {
     flex-direction: column;
@@ -940,15 +984,17 @@ input.stroke-title {
     padding: 0;
   }
   .garage {
-    margin: 0 0 24px 0 !important;
+    margin: 0 0 20px 0 !important;
     width: 100% !important;
-    padding: 12px 0 !important;
+    padding: 16px 12px !important;
     border-left: none !important;
     border-right: none !important;
     border-radius: 0 !important;
   }
   .garage-strokes {
+    display: grid !important;
     grid-template-columns: 1fr !important;
+    gap: 12px !important;
     height: auto !important;
     min-height: auto !important;
     margin: 0 !important;
@@ -957,35 +1003,41 @@ input.stroke-title {
   .garage-strokes .garage-stroke-box {
     width: 100% !important;
     max-width: 100%;
-    margin: 0 0 12px 0 !important;
+    margin: 0 !important;
     padding: 16px !important;
-    border-radius: 0 !important;
+    border-radius: 8px !important;
     box-sizing: border-box;
   }
   textarea {
-    min-height: 100px !important;
+    min-height: 120px !important;
     font-size: 1rem !important;
     width: 100% !important;
     max-width: 100%;
+    padding: 8px 12px !important;
     box-sizing: border-box;
   }
 }
 @media only screen and (max-width: 480px) {
   .garages-container {
-    padding: 12vh 1vw 2vh;
+    padding: 80px 0 120px;
   }
   .garage {
-    padding: 8px 4px 12px !important;
+    padding: 12px 8px !important;
+    margin: 0 0 16px 0 !important;
+  }
+  .garage-strokes {
+    gap: 12px !important;
   }
   .garage-strokes .garage-stroke-box {
-    padding: 1.5vh 3vw !important;
+    padding: 12px !important;
+    border-radius: 6px !important;
     width: 100% !important;
     max-width: 100%;
     box-sizing: border-box;
   }
   textarea {
     min-height: 100px !important;
-    padding: 0.8ch 1ch !important;
+    padding: 8px 10px !important;
     width: 100% !important;
     max-width: 100%;
     box-sizing: border-box;
@@ -995,131 +1047,702 @@ input.stroke-title {
     padding: 6px 12px !important;
   }
 }
-.user-info {
+.modal {
+  display: none;
   position: fixed;
-  bottom: var(--spacing-vh-md);
-  left: var(--spacing-vw-sm);
-  z-index: var(--z-header);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  background: var(--bg-glass-dark);
-  border-radius: var(--radius-xl);
-  backdrop-filter: var(--blur-strong);
-  color: var(--color-white);
-  font-family: var(--font-primary);
-  filter: var(--shadow-text);
+  z-index: var(--z-modal);
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
 }
-.user-info #user-email {
-  font-size: 14px;
-  opacity: 0.9;
-}
-.user-info #logout-btn {
-  padding: 6px var(--spacing-lg);
-  background: var(--btn-primary-bg);
-  color: var(--color-white);
-  border: none;
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  font-size: 13px;
-  font-family: var(--font-primary);
-  transition: all var(--transition-normal);
-  filter: var(--shadow-button-normal);
-  text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-tight);
+.modal.active {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
 }
-.user-info #logout-btn .gear-icon {
-  display: none;
+
+.modal-content {
+  background: linear-gradient(135deg, rgba(128, 0, 128, 0.95), rgba(0, 0, 255, 0.95));
+  border-radius: var(--radius-xl);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  max-width: 600px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: modalSlideIn 0.3s ease-out;
 }
-.user-info #logout-btn .logout-text {
-  display: inline;
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.user-info #logout-btn:hover {
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.modal-header h2 {
+  margin: 0;
+  color: white;
+  font-family: var(--font-primary);
+  font-size: 24px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.modal-header .modal-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+.modal-header .modal-close:hover {
+  transform: rotate(90deg);
+  color: var(--color-danger);
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.settings-section {
+  margin-bottom: 32px;
+}
+.settings-section h3 {
+  color: white;
+  font-family: var(--font-primary);
+  font-size: 18px;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.settings-section .settings-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.shortcut-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.shortcut-item {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+.shortcut-item > label {
+  display: block;
+  color: white;
+  font-family: var(--font-primary);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.shortcut-config {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.shortcut-config .key-input {
+  width: 50px;
+  height: 36px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-sm);
+  color: #333;
+  text-transform: uppercase;
+}
+.shortcut-config .key-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(174, 129, 255, 0.3);
+}
+.shortcut-config label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+.shortcut-config label input[type=checkbox] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.garage-order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mode-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.mode-selector .mode-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-size: 14px;
+}
+.mode-selector .mode-info strong {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+}
+.mode-selector .mode-info span {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+.mode-selector #mode-switch-btn {
+  align-self: flex-start;
+  min-width: 200px;
+}
+
+.garage-order-item {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: move;
+  transition: all var(--transition-fast);
+}
+.garage-order-item:hover {
+  background: rgba(0, 0, 0, 0.4);
+  transform: translateX(4px);
+}
+.garage-order-item.dragging {
+  opacity: 0.5;
+  transform: rotate(2deg);
+}
+.garage-order-item .drag-handle {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 20px;
+  cursor: grab;
+}
+.garage-order-item .drag-handle:active {
+  cursor: grabbing;
+}
+.garage-order-item .garage-label {
+  flex: 1;
+  color: white;
+  font-family: var(--font-primary);
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.garage-order-item .order-buttons {
+  display: flex;
+  gap: 4px;
+}
+.garage-order-item .order-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: white;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+.garage-order-item .order-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+}
+.garage-order-item .order-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  letter-spacing: 0.05em;
+}
+.btn.btn-primary {
+  background: var(--btn-primary-bg);
+  color: white;
+}
+.btn.btn-primary:hover {
   background: var(--btn-primary-bg-hover);
-  transform: translateY(-1px);
-  filter: var(--shadow-button-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(249, 38, 114, 0.4);
 }
-.user-info #logout-btn:active {
-  transform: translateY(0);
+.btn.btn-secondary {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
 }
+.btn.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+.btn.btn-tertiary {
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+}
+.btn.btn-tertiary:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
 @media only screen and (max-width: 768px) {
-  .user-info {
-    top: auto;
-    right: auto;
-    left: var(--spacing-vw-sm);
-    bottom: var(--spacing-vh-md);
-    width: var(--container-width-mobile);
-    height: var(--container-width-mobile);
-    padding: 0;
-    gap: 0;
-    border-radius: var(--radius-full);
-    overflow: hidden;
-    transition: all var(--transition-expand);
+  .modal-content {
+    width: 95%;
+    max-height: 90vh;
   }
-  .user-info #user-email {
-    display: none;
+  .modal-header {
+    padding: 16px 20px;
   }
-  .user-info #logout-btn {
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    border-radius: var(--radius-full);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--btn-secondary-bg);
-    position: relative;
+  .modal-header h2 {
+    font-size: 20px;
   }
-  .user-info #logout-btn .gear-icon {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
+  .modal-body {
+    padding: 20px;
   }
-  .user-info #logout-btn .logout-text {
-    display: none;
-  }
-  .user-info.expanded {
-    width: auto;
-    height: auto;
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-sm) var(--spacing-md);
+  .shortcut-config {
     flex-direction: column;
-    align-items: stretch;
-    min-width: var(--container-width-expanded);
+    align-items: flex-start;
   }
-  .user-info.expanded #user-email {
-    display: block;
-    font-size: 11px;
-    text-align: center;
-    margin-bottom: 6px;
-  }
-  .user-info.expanded #logout-btn {
+  .shortcut-config .key-input {
     width: 100%;
-    height: auto;
-    border-radius: var(--radius-md);
-    padding: 6px var(--spacing-md);
   }
-  .user-info.expanded #logout-btn .gear-icon {
-    display: none;
+  .shortcut-config label {
+    width: 100%;
   }
-  .user-info.expanded #logout-btn .logout-text {
-    display: inline;
-    font-size: 11px;
+  .modal-actions {
+    flex-direction: column;
+  }
+  .modal-actions .btn {
+    width: 100%;
+  }
+  .settings-btn {
+    font-size: 16px;
+    padding: 4px 10px;
   }
 }
 @media only screen and (max-width: 480px) {
-  .user-info {
-    width: var(--container-width-mobile-sm);
-    height: var(--container-width-mobile-sm);
+  .modal-header h2 {
+    font-size: 18px;
   }
-  .user-info #logout-btn .gear-icon {
-    width: 18px;
-    height: 18px;
+  .settings-section h3 {
+    font-size: 16px;
+  }
+  .garage-order-item {
+    padding: 10px 12px;
+  }
+  .garage-order-item .garage-label {
+    font-size: 14px;
+  }
+}
+.confirm-modal .modal-content {
+  max-width: 450px;
+}
+.confirm-modal .modal-body {
+  padding: 24px;
+}
+.confirm-modal .modal-body p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: white;
+  text-align: center;
+}
+.confirm-modal .modal-actions {
+  padding: 16px 24px 24px;
+  gap: 12px;
+}
+.confirm-modal .modal-actions .btn {
+  min-width: 100px;
+}
+
+.toast {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: rgba(46, 213, 115, 0.95);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 10000;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.toast span {
+  display: block;
+}
+
+@media only screen and (max-width: 768px) {
+  .toast {
+    top: 60px;
+    right: 12px;
+    left: 12px;
+    text-align: center;
+  }
+}
+.minimap-toggle-btn {
+  background: rgba(102, 217, 239, 0.8);
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 6px 12px;
+  transition: all var(--transition-normal);
+  filter: var(--shadow-button-normal);
+}
+.minimap-toggle-btn:hover {
+  background: rgb(102, 217, 239);
+  transform: translateY(-1px);
+  filter: var(--shadow-button-hover);
+}
+.minimap-toggle-btn:active {
+  transform: translateY(0);
+}
+.minimap-toggle-btn.active {
+  background: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(174, 129, 255, 0.5);
+}
+
+.minimap-view {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, rgba(128, 0, 128, 0.95), rgba(0, 0, 255, 0.95));
+  backdrop-filter: blur(10px);
+  z-index: 50;
+  overflow-y: auto;
+  padding: 80px 20px 20px;
+}
+.minimap-view.active {
+  display: block;
+}
+
+.minimap-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.minimap-note {
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  cursor: move;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+.minimap-note:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.minimap-note.dragging {
+  opacity: 0.5;
+  transform: rotate(3deg) scale(0.95);
+  cursor: grabbing;
+}
+.minimap-note.drag-over {
+  border-color: var(--color-accent);
+  background: rgba(174, 129, 255, 0.2);
+  transform: scale(1.02);
+}
+.minimap-note .minimap-note-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.minimap-note .minimap-note-header .note-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.minimap-note .minimap-note-header .note-label .garage-name {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-primary);
+  text-transform: uppercase;
+}
+.minimap-note .minimap-note-header .note-label .note-title {
+  font-size: 13px;
+  color: white;
+  font-family: var(--font-primary);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.minimap-note .minimap-note-header .drag-handle {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: grab;
+}
+.minimap-note .minimap-note-header .drag-handle:active {
+  cursor: grabbing;
+}
+.minimap-note .minimap-note-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+.minimap-note .minimap-note-content textarea {
+  width: 100%;
+  height: 100%;
+  min-height: 120px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-sm);
+  color: inherit;
+  font-size: 11px;
+  line-height: 1.4;
+  font-family: var(--font-japanese);
+  resize: none;
+  transition: all var(--transition-fast);
+}
+.minimap-note .minimap-note-content textarea:focus {
+  outline: none;
+  background: rgba(0, 0, 0, 0.5);
+  border-color: white;
+}
+.minimap-note .minimap-note-content textarea:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+.minimap-note.stroke-1 {
+  border-left: 4px solid var(--color4);
+}
+.minimap-note.stroke-1 .minimap-note-header .note-title,
+.minimap-note.stroke-1 .minimap-note-content textarea {
+  color: var(--color4);
+}
+.minimap-note.stroke-2 {
+  border-left: 4px solid var(--color2);
+}
+.minimap-note.stroke-2 .minimap-note-header .note-title,
+.minimap-note.stroke-2 .minimap-note-content textarea {
+  color: var(--color2);
+}
+.minimap-note.stroke-3 {
+  border-left: 4px solid var(--color3);
+}
+.minimap-note.stroke-3 .minimap-note-header .note-title,
+.minimap-note.stroke-3 .minimap-note-content textarea {
+  color: var(--color3);
+}
+.minimap-note.stroke-4 {
+  border-left: 4px solid var(--color1);
+}
+.minimap-note.stroke-4 .minimap-note-header .note-title,
+.minimap-note.stroke-4 .minimap-note-content textarea {
+  color: var(--color1);
+}
+
+.minimap-header {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 12px 24px;
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.minimap-header h2 {
+  margin: 0;
+  color: white;
+  font-family: var(--font-primary);
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.minimap-header .minimap-close-btn {
+  background: var(--btn-primary-bg);
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  cursor: pointer;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-family: var(--font-primary);
+  text-transform: uppercase;
+  transition: all var(--transition-normal);
+}
+.minimap-header .minimap-close-btn:hover {
+  background: var(--btn-primary-bg-hover);
+  transform: translateY(-1px);
+}
+
+@media only screen and (max-width: 1024px) {
+  .minimap-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 16px;
+  }
+  .minimap-note {
+    min-height: 180px;
+  }
+  .minimap-note .minimap-note-content textarea {
+    font-size: 10px;
+    min-height: 100px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .minimap-view {
+    padding: 70px 10px 10px;
+  }
+  .minimap-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 12px;
+  }
+  .minimap-note {
+    min-height: 150px;
+    padding: 10px;
+  }
+  .minimap-note .minimap-note-header {
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+  }
+  .minimap-note .minimap-note-header .note-label .garage-name {
+    font-size: 9px;
+  }
+  .minimap-note .minimap-note-header .note-label .note-title {
+    font-size: 11px;
+  }
+  .minimap-note .minimap-note-header .drag-handle {
+    font-size: 14px;
+  }
+  .minimap-note .minimap-note-content textarea {
+    font-size: 10px;
+    min-height: 80px;
+    padding: 6px;
+  }
+  .minimap-header {
+    top: 10px;
+    padding: 10px 16px;
+  }
+  .minimap-header h2 {
+    font-size: 14px;
+  }
+  .minimap-header .minimap-close-btn {
+    padding: 5px 12px;
+    font-size: 11px;
+  }
+  .minimap-toggle-btn {
+    font-size: 16px;
+    padding: 4px 10px;
+  }
+}
+@media only screen and (max-width: 480px) {
+  .minimap-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .minimap-note {
+    min-height: 130px;
+  }
+  .minimap-header h2 {
+    font-size: 12px;
+  }
+}
+@media print {
+  .minimap-view {
+    padding: 20px;
+    background: white;
+  }
+  .minimap-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .minimap-note {
+    border: 1px solid #333;
+    break-inside: avoid;
+  }
+  .minimap-note .drag-handle {
+    display: none;
+  }
+  .minimap-header {
+    position: static;
+    transform: none;
+    margin-bottom: 20px;
+  }
+  .minimap-header .minimap-close-btn {
+    display: none;
   }
 }

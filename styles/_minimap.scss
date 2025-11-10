@@ -1,0 +1,370 @@
+// Minimap View Styles
+// 16 notes (4 garages x 4 strokes) in a 4x4 grid
+
+// Minimap toggle button
+.minimap-toggle-btn {
+  background: rgba(102, 217, 239, 0.8);
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 6px 12px;
+  transition: all var(--transition-normal);
+  filter: var(--shadow-button-normal);
+
+  &:hover {
+    background: rgba(102, 217, 239, 1);
+    transform: translateY(-1px);
+    filter: var(--shadow-button-hover);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &.active {
+    background: var(--color-accent);
+    box-shadow: 0 0 0 2px rgba(174, 129, 255, 0.5);
+  }
+}
+
+// Minimap container
+.minimap-view {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, rgba(128, 0, 128, 0.95), rgba(0, 0, 255, 0.95));
+  backdrop-filter: blur(10px);
+  z-index: 50;
+  overflow-y: auto;
+  padding: 80px 20px 20px;
+
+  &.active {
+    display: block;
+  }
+}
+
+// Minimap grid layout
+.minimap-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+// Minimap note card
+.minimap-note {
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  cursor: move;
+  transition: all var(--transition-fast);
+  position: relative;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  &.dragging {
+    opacity: 0.5;
+    transform: rotate(3deg) scale(0.95);
+    cursor: grabbing;
+  }
+
+  &.drag-over {
+    border-color: var(--color-accent);
+    background: rgba(174, 129, 255, 0.2);
+    transform: scale(1.02);
+  }
+
+  // Note header
+  .minimap-note-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
+    .note-label {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .garage-name {
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.6);
+        font-family: var(--font-primary);
+        text-transform: uppercase;
+      }
+
+      .note-title {
+        font-size: 13px;
+        color: white;
+        font-family: var(--font-primary);
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+    }
+
+    .drag-handle {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: grab;
+
+      &:active {
+        cursor: grabbing;
+      }
+    }
+  }
+
+  // Note content preview
+  .minimap-note-content {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+
+    textarea {
+      width: 100%;
+      height: 100%;
+      min-height: 120px;
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid currentColor;
+      border-radius: var(--radius-sm);
+      color: inherit;
+      font-size: 11px;
+      line-height: 1.4;
+      font-family: var(--font-japanese);
+      resize: none;
+      transition: all var(--transition-fast);
+
+      &:focus {
+        outline: none;
+        background: rgba(0, 0, 0, 0.5);
+        border-color: white;
+      }
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+
+  // Color coding by stroke type (same as main view)
+  &.stroke-1 {
+    border-left: 4px solid var(--color4);
+    .minimap-note-header .note-title,
+    .minimap-note-content textarea {
+      color: var(--color4);
+    }
+  }
+
+  &.stroke-2 {
+    border-left: 4px solid var(--color2);
+    .minimap-note-header .note-title,
+    .minimap-note-content textarea {
+      color: var(--color2);
+    }
+  }
+
+  &.stroke-3 {
+    border-left: 4px solid var(--color3);
+    .minimap-note-header .note-title,
+    .minimap-note-content textarea {
+      color: var(--color3);
+    }
+  }
+
+  &.stroke-4 {
+    border-left: 4px solid var(--color1);
+    .minimap-note-header .note-title,
+    .minimap-note-content textarea {
+      color: var(--color1);
+    }
+  }
+}
+
+// Minimap header
+.minimap-header {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 12px 24px;
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  h2 {
+    margin: 0;
+    color: white;
+    font-family: var(--font-primary);
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .minimap-close-btn {
+    background: var(--btn-primary-bg);
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    cursor: pointer;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-family: var(--font-primary);
+    text-transform: uppercase;
+    transition: all var(--transition-normal);
+
+    &:hover {
+      background: var(--btn-primary-bg-hover);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// Tablet responsive
+@media only screen and (max-width: 1024px) {
+  .minimap-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .minimap-note {
+    min-height: 180px;
+
+    .minimap-note-content textarea {
+      font-size: 10px;
+      min-height: 100px;
+    }
+  }
+}
+
+// Mobile responsive
+@media only screen and (max-width: 768px) {
+  .minimap-view {
+    padding: 70px 10px 10px;
+  }
+
+  .minimap-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .minimap-note {
+    min-height: 150px;
+    padding: 10px;
+
+    .minimap-note-header {
+      margin-bottom: 6px;
+      padding-bottom: 6px;
+
+      .note-label {
+        .garage-name {
+          font-size: 9px;
+        }
+
+        .note-title {
+          font-size: 11px;
+        }
+      }
+
+      .drag-handle {
+        font-size: 14px;
+      }
+    }
+
+    .minimap-note-content textarea {
+      font-size: 10px;
+      min-height: 80px;
+      padding: 6px;
+    }
+  }
+
+  .minimap-header {
+    top: 10px;
+    padding: 10px 16px;
+
+    h2 {
+      font-size: 14px;
+    }
+
+    .minimap-close-btn {
+      padding: 5px 12px;
+      font-size: 11px;
+    }
+  }
+
+  .minimap-toggle-btn {
+    font-size: 16px;
+    padding: 4px 10px;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .minimap-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .minimap-note {
+    min-height: 130px;
+  }
+
+  .minimap-header {
+    h2 {
+      font-size: 12px;
+    }
+  }
+}
+
+// Print styles
+@media print {
+  .minimap-view {
+    padding: 20px;
+    background: white;
+  }
+
+  .minimap-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  .minimap-note {
+    border: 1px solid #333;
+    break-inside: avoid;
+
+    .drag-handle {
+      display: none;
+    }
+  }
+
+  .minimap-header {
+    position: static;
+    transform: none;
+    margin-bottom: 20px;
+
+    .minimap-close-btn {
+      display: none;
+    }
+  }
+}

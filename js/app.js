@@ -4,6 +4,23 @@ import { getStorageMode, isLocalMode, isOnlineMode, Storage } from './storage-se
 // URL converter import
 import { processPastedText, processPastedTextSync } from './url-converter.js';
 
+// Settings import
+import {
+  initializeSettings,
+  openSettingsModal,
+  closeSettingsModal,
+  saveSettingsFromForm,
+  resetSettings,
+  resetSettingsWithConfirmation,
+  showConfirmation
+} from './settings.js';
+
+// Minimap import
+import {
+  initializeMinimap,
+  setMinimapUserId
+} from './minimap.js';
+
 // Constants
 const DEBOUNCE_DELAY = 500;
 const MOBILE_BREAKPOINT = 768;
@@ -30,21 +47,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       console.log('[SUCCESS] Logged in:', user.email);
 
-      // Show user info
-      const userEmailElement = document.getElementById('user-email');
-      if (userEmailElement) {
-        userEmailElement.textContent = user.email;
-      }
-
-      // Show logout button
-      const logoutBtn = document.getElementById('logout-btn');
-      if (logoutBtn) {
-        logoutBtn.style.display = 'block';
-        const logoutText = logoutBtn.querySelector('.logout-text');
-        if (logoutText) {
-          logoutText.textContent = 'LOGOUT';
-        }
-      }
+      // Set user ID for minimap
+      setMinimapUserId(user.uid);
 
       // Migrate from localStorage (first time only)
       await migrateFromLocalStorage(user.uid);
@@ -59,23 +63,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Local mode - no authentication required
     console.log('[INFO] Running in local storage mode');
 
-    // Hide user email, show mode indicator
-    const userEmailElement = document.getElementById('user-email');
-    if (userEmailElement) {
-      userEmailElement.textContent = 'Local Mode';
-    }
-
-    // Change logout button to "Switch to Online"
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-      logoutBtn.style.display = 'block';
-      const logoutText = logoutBtn.querySelector('.logout-text');
-      if (logoutText) {
-        logoutText.textContent = 'ONLINE MODE';
-      }
-      logoutBtn.title = 'Switch to online mode with cloud sync';
-    }
-
     // Load data from localStorage
     await loadData(null);
 
@@ -88,6 +75,20 @@ document.addEventListener("DOMContentLoaded", async function () {
     cssScrollSnapPolyfill();
   };
   init();
+
+  // Initialize settings (garage order and shortcuts)
+  initializeSettings();
+
+  // Keyboard navigation for garages
+  setupKeyboardNavigation();
+
+  // Setup settings modal
+  setupSettingsModal();
+
+  // Initialize minimap
+  const currentMode = getStorageMode();
+  const userId = isOnlineMode() ? null : null; // Will be set properly in auth callback
+  initializeMinimap(userId);
 
   /**
    * Utility function
@@ -399,5 +400,192 @@ document.addEventListener("DOMContentLoaded", async function () {
     } else {
       console.error('[ERROR] Logout button or user-info not found!');
     }
+  }
+
+  /**
+   * Setup keyboard navigation for garages
+   */
+  function setupKeyboardNavigation() {
+    let currentGarageIndex = 0;
+
+    // Get current garage index based on scroll position
+    function getCurrentGarageIndex(garages) {
+      const garageElements = garages.map(id => document.getElementById(id));
+      const scrollContainer = document.querySelector('.garages-container');
+
+      if (!scrollContainer) return 0;
+
+      const scrollTop = scrollContainer.scrollTop;
+      const scrollLeft = scrollContainer.scrollLeft;
+
+      // Find which garage is currently visible
+      for (let i = 0; i < garageElements.length; i++) {
+        const garage = garageElements[i];
+        if (garage) {
+          const rect = garage.getBoundingClientRect();
+          const containerRect = scrollContainer.getBoundingClientRect();
+
+          // Check if garage is in viewport
+          if (rect.top >= containerRect.top && rect.top <= containerRect.bottom) {
+            return i;
+          }
+        }
+      }
+      return 0;
+    }
+
+    // Navigate to specific garage
+    function navigateToGarage(index, garages) {
+      if (index < 0 || index >= garages.length) return;
+
+      const targetGarage = document.getElementById(garages[index]);
+      if (targetGarage) {
+        targetGarage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        currentGarageIndex = index;
+        console.log(`[INFO] Navigated to ${garages[index]}`);
+      }
+    }
+
+    // Keyboard event listener
+    document.addEventListener('keydown', (event) => {
+      // Ignore if user is typing in an input/textarea
+      if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+        return;
+      }
+
+      // Load current garage order from settings each time
+      const settings = loadSettings();
+      const garages = settings.garageOrder;
+
+      // Get current garage index
+      currentGarageIndex = getCurrentGarageIndex(garages);
+
+      switch (event.key) {
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          event.preventDefault();
+          navigateToGarage(currentGarageIndex - 1, garages);
+          break;
+        case 'ArrowRight':
+        case 'ArrowDown':
+          event.preventDefault();
+          navigateToGarage(currentGarageIndex + 1, garages);
+          break;
+      }
+    });
+
+    console.log('[INFO] Keyboard navigation initialized');
+  }
+
+  /**
+   * Update mode display in settings modal
+   */
+  function updateModeDisplay() {
+    const currentModeDisplay = document.getElementById('current-mode-display');
+    const currentUserDisplay = document.getElementById('current-user-display');
+    const modeSwitchText = document.getElementById('mode-switch-text');
+
+    if (isOnlineMode()) {
+      if (currentModeDisplay) currentModeDisplay.textContent = 'Online Mode';
+      // Will be updated with actual user email when logged in
+      if (currentUserDisplay) currentUserDisplay.textContent = 'Logged in';
+      if (modeSwitchText) modeSwitchText.textContent = 'Logout';
+    } else {
+      if (currentModeDisplay) currentModeDisplay.textContent = 'Local Mode';
+      if (currentUserDisplay) currentUserDisplay.textContent = 'Not logged in';
+      if (modeSwitchText) modeSwitchText.textContent = 'Switch to Online Mode';
+    }
+  }
+
+  /**
+   * Setup settings modal event listeners
+   */
+  function setupSettingsModal() {
+    const settingsBtn = document.getElementById('settings-btn');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const saveSettingsBtn = document.getElementById('save-settings-btn');
+    const resetSettingsBtn = document.getElementById('reset-settings-btn');
+    const cancelSettingsBtn = document.getElementById('cancel-settings-btn');
+    const modeSwitchBtn = document.getElementById('mode-switch-btn');
+    const modal = document.getElementById('settings-modal');
+
+    // Open modal
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', () => {
+        openSettingsModal();
+        updateModeDisplay();
+      });
+    }
+
+    // Close modal
+    if (modalCloseBtn) {
+      modalCloseBtn.addEventListener('click', () => {
+        closeSettingsModal();
+      });
+    }
+
+    if (cancelSettingsBtn) {
+      cancelSettingsBtn.addEventListener('click', () => {
+        closeSettingsModal();
+      });
+    }
+
+    // Close modal on background click
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeSettingsModal();
+        }
+      });
+    }
+
+    // Save settings
+    if (saveSettingsBtn) {
+      saveSettingsBtn.addEventListener('click', () => {
+        saveSettingsFromForm();
+      });
+    }
+
+    // Reset settings
+    if (resetSettingsBtn) {
+      resetSettingsBtn.addEventListener('click', () => {
+        resetSettingsWithConfirmation();
+      });
+    }
+
+    // Mode switch
+    if (modeSwitchBtn) {
+      modeSwitchBtn.addEventListener('click', async () => {
+        if (isOnlineMode()) {
+          // Logout from online mode
+          const confirmed = await showConfirmation(
+            'Logout',
+            'Are you sure you want to logout?'
+          );
+          if (confirmed) {
+            const { logout } = await import('./auth.js');
+            try {
+              await logout();
+              window.location.href = '/login.html';
+            } catch (error) {
+              console.error('[ERROR] Logout failed:', error);
+              const { showToast } = await import('./settings.js');
+              showToast('Logout failed');
+            }
+          }
+        } else {
+          // Switch to online mode
+          const confirmed = await showConfirmation(
+            'Switch to Online Mode',
+            'You will need to login. Continue?'
+          );
+          if (confirmed) {
+            window.location.href = '/login.html';
+          }
+        }
+      });
+    }
+
+    console.log('[INFO] Settings modal initialized');
   }
 });
