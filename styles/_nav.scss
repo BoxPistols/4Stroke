@@ -32,11 +32,10 @@ nav.garages-nav {
         filter:drop-shadow(1px 1px 0px black);
         text-transform:uppercase;
         letter-spacing:0.05em;
-        vertical-align:bottom;
         display:flex;
         justify-content:center;
-        align-items:baseline;
-        height:1rem;
+        align-items:center;
+        height:1.2rem;
 
         &:hover {
           background:rgba(174, 129, 255, 1);
