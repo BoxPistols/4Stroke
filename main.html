@@ -956,7 +956,7 @@ input.stroke-title {
       <!-- Garage Order -->
       <section class="settings-section">
         <h3>Garage Order</h3>
-        <p class="settings-description">Drag and drop to reorder garages. Changes apply after page refresh.</p>
+        <p class="settings-description">Drag and drop to reorder garages. Changes apply immediately.</p>
 
         <div id="garage-order-list" class="garage-order-list">
           <!-- Will be populated by JavaScript -->
@@ -1001,4 +1001,25 @@ input.stroke-title {
   <div class="minimap-grid" id="minimap-grid">
     <!-- Will be populated by JavaScript -->
   </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirm-modal" class="modal confirm-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="confirm-title">Confirm</h2>
+    </div>
+    <div class="modal-body">
+      <p id="confirm-message">Are you sure?</p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" id="confirm-yes-btn" class="btn btn-primary">Yes</button>
+      <button type="button" id="confirm-no-btn" class="btn btn-tertiary">No</button>
+    </div>
+  </div>
+</div>
+
+<!-- Success Toast -->
+<div id="success-toast" class="toast">
+  <span id="success-toast-message">Settings saved successfully!</span>
 </div>

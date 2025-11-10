@@ -8,6 +8,8 @@ import {
   openSettingsModal,
   closeSettingsModal,
   initializeSettings,
+  showConfirmation,
+  showToast,
 } from '../js/settings.js';
 
 // Mock DOM elements
@@ -50,6 +52,23 @@ function setupDOM() {
       <div class="garage" id="garageB"></div>
       <div class="garage" id="garageC"></div>
       <div class="garage" id="garageD"></div>
+    </div>
+    <div id="confirm-modal" class="modal confirm-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="confirm-title">Confirm</h2>
+        </div>
+        <div class="modal-body">
+          <p id="confirm-message">Are you sure?</p>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="confirm-yes-btn" class="btn btn-primary">Yes</button>
+          <button type="button" id="confirm-no-btn" class="btn btn-tertiary">No</button>
+        </div>
+      </div>
+    </div>
+    <div id="success-toast" class="toast">
+      <span id="success-toast-message">Settings saved successfully!</span>
     </div>
   `;
 }
@@ -457,6 +476,99 @@ describe('Settings Module', () => {
         const result = saveSettings(settings);
         expect(result).toBe(true);
       });
+    });
+  });
+
+  describe('UI Components', () => {
+    beforeEach(() => {
+      setupDOM();
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+      vi.useRealTimers();
+    });
+
+    it('should show confirmation dialog', async () => {
+      const promise = showConfirmation('Test Title', 'Test Message');
+
+      const modal = document.getElementById('confirm-modal');
+      const title = document.getElementById('confirm-title');
+      const message = document.getElementById('confirm-message');
+
+      expect(modal.classList.contains('active')).toBe(true);
+      expect(title.textContent).toBe('Test Title');
+      expect(message.textContent).toBe('Test Message');
+
+      // Click yes
+      const yesBtn = document.getElementById('confirm-yes-btn');
+      yesBtn.click();
+
+      const result = await promise;
+      expect(result).toBe(true);
+      expect(modal.classList.contains('active')).toBe(false);
+    });
+
+    it('should return false when clicking no in confirmation', async () => {
+      const promise = showConfirmation('Test', 'Test');
+
+      const noBtn = document.getElementById('confirm-no-btn');
+      noBtn.click();
+
+      const result = await promise;
+      expect(result).toBe(false);
+    });
+
+    it('should close confirmation on escape key', async () => {
+      const promise = showConfirmation('Test', 'Test');
+
+      const modal = document.getElementById('confirm-modal');
+      expect(modal.classList.contains('active')).toBe(true);
+
+      // Simulate escape key
+      const event = new KeyboardEvent('keydown', { key: 'Escape' });
+      document.dispatchEvent(event);
+
+      const result = await promise;
+      expect(result).toBe(false);
+      expect(modal.classList.contains('active')).toBe(false);
+    });
+
+    it('should show toast notification', () => {
+      showToast('Test message');
+
+      const toast = document.getElementById('success-toast');
+      const message = document.getElementById('success-toast-message');
+
+      expect(toast.classList.contains('show')).toBe(true);
+      expect(message.textContent).toBe('Test message');
+    });
+
+    it('should hide toast after duration', () => {
+      showToast('Test message', 1000);
+
+      const toast = document.getElementById('success-toast');
+      expect(toast.classList.contains('show')).toBe(true);
+
+      vi.advanceTimersByTime(1000);
+
+      expect(toast.classList.contains('show')).toBe(false);
+    });
+
+    it('should handle missing toast elements gracefully', () => {
+      const toast = document.getElementById('success-toast');
+      toast.remove();
+
+      expect(() => showToast('Test')).not.toThrow();
+    });
+
+    it('should handle missing confirmation modal elements gracefully', async () => {
+      const modal = document.getElementById('confirm-modal');
+      modal.remove();
+
+      const result = await showConfirmation('Test', 'Test');
+      expect(result).toBe(false);
     });
   });
 });

@@ -1386,6 +1386,61 @@ input.stroke-title {
     font-size: 14px;
   }
 }
+.confirm-modal .modal-content {
+  max-width: 450px;
+}
+.confirm-modal .modal-body {
+  padding: 24px;
+}
+.confirm-modal .modal-body p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: white;
+  text-align: center;
+}
+.confirm-modal .modal-actions {
+  padding: 16px 24px 24px;
+  gap: 12px;
+}
+.confirm-modal .modal-actions .btn {
+  min-width: 100px;
+}
+
+.toast {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: rgba(46, 213, 115, 0.95);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 10000;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.toast span {
+  display: block;
+}
+
+@media only screen and (max-width: 768px) {
+  .toast {
+    top: 60px;
+    right: 12px;
+    left: 12px;
+    text-align: center;
+  }
+}
 .minimap-toggle-btn {
   background: rgba(102, 217, 239, 0.8);
   border: none;

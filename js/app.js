@@ -10,7 +10,9 @@ import {
   openSettingsModal,
   closeSettingsModal,
   saveSettingsFromForm,
-  resetSettings
+  resetSettings,
+  resetSettingsWithConfirmation,
+  showConfirmation
 } from './settings.js';
 
 // Minimap import
@@ -404,11 +406,10 @@ document.addEventListener("DOMContentLoaded", async function () {
    * Setup keyboard navigation for garages
    */
   function setupKeyboardNavigation() {
-    const garages = ['garageA', 'garageB', 'garageC', 'garageD'];
     let currentGarageIndex = 0;
 
     // Get current garage index based on scroll position
-    function getCurrentGarageIndex() {
+    function getCurrentGarageIndex(garages) {
       const garageElements = garages.map(id => document.getElementById(id));
       const scrollContainer = document.querySelector('.garages-container');
 
@@ -434,7 +435,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     // Navigate to specific garage
-    function navigateToGarage(index) {
+    function navigateToGarage(index, garages) {
       if (index < 0 || index >= garages.length) return;
 
       const targetGarage = document.getElementById(garages[index]);
@@ -452,19 +453,23 @@ document.addEventListener("DOMContentLoaded", async function () {
         return;
       }
 
+      // Load current garage order from settings each time
+      const settings = loadSettings();
+      const garages = settings.garageOrder;
+
       // Get current garage index
-      currentGarageIndex = getCurrentGarageIndex();
+      currentGarageIndex = getCurrentGarageIndex(garages);
 
       switch (event.key) {
         case 'ArrowLeft':
         case 'ArrowUp':
           event.preventDefault();
-          navigateToGarage(currentGarageIndex - 1);
+          navigateToGarage(currentGarageIndex - 1, garages);
           break;
         case 'ArrowRight':
         case 'ArrowDown':
           event.preventDefault();
-          navigateToGarage(currentGarageIndex + 1);
+          navigateToGarage(currentGarageIndex + 1, garages);
           break;
       }
     });
@@ -544,11 +549,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Reset settings
     if (resetSettingsBtn) {
       resetSettingsBtn.addEventListener('click', () => {
-        if (confirm('Reset all settings to defaults?')) {
-          resetSettings();
-          alert('Settings reset! Please refresh the page.');
-          closeSettingsModal();
-        }
+        resetSettingsWithConfirmation();
       });
     }
 
@@ -557,19 +558,28 @@ document.addEventListener("DOMContentLoaded", async function () {
       modeSwitchBtn.addEventListener('click', async () => {
         if (isOnlineMode()) {
           // Logout from online mode
-          if (confirm('Logout?')) {
+          const confirmed = await showConfirmation(
+            'Logout',
+            'Are you sure you want to logout?'
+          );
+          if (confirmed) {
             const { logout } = await import('./auth.js');
             try {
               await logout();
               window.location.href = '/login.html';
             } catch (error) {
               console.error('[ERROR] Logout failed:', error);
-              alert('Logout failed');
+              const { showToast } = await import('./settings.js');
+              showToast('Logout failed');
             }
           }
         } else {
           // Switch to online mode
-          if (confirm('Switch to online mode? You will need to login.')) {
+          const confirmed = await showConfirmation(
+            'Switch to Online Mode',
+            'You will need to login. Continue?'
+          );
+          if (confirmed) {
             window.location.href = '/login.html';
           }
         }

@@ -3,6 +3,9 @@
 
 const SETTINGS_KEY = 'garage-settings';
 
+// Store the garage shortcut listener to prevent duplicates
+let garageShortcutListener = null;
+
 // Default settings
 const DEFAULT_SETTINGS = {
   shortcuts: {
@@ -90,7 +93,13 @@ export function applyGarageOrder(order) {
  * Setup keyboard shortcuts for garages
  */
 export function setupGarageShortcuts(settings) {
-  document.addEventListener('keydown', (event) => {
+  // Remove the previous listener to prevent duplicates
+  if (garageShortcutListener) {
+    document.removeEventListener('keydown', garageShortcutListener);
+  }
+
+  // Create new listener function
+  garageShortcutListener = (event) => {
     // Ignore if user is typing
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
       return;
@@ -115,7 +124,10 @@ export function setupGarageShortcuts(settings) {
         }
       }
     }
-  });
+  };
+
+  // Add the new listener
+  document.addEventListener('keydown', garageShortcutListener);
 
   console.log('[INFO] Garage shortcuts initialized');
 }
@@ -245,6 +257,74 @@ function setupOrderButtons() {
 }
 
 /**
+ * Show confirmation dialog
+ */
+export function showConfirmation(title, message) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById('confirm-modal');
+    const titleEl = document.getElementById('confirm-title');
+    const messageEl = document.getElementById('confirm-message');
+    const yesBtn = document.getElementById('confirm-yes-btn');
+    const noBtn = document.getElementById('confirm-no-btn');
+
+    if (!modal || !titleEl || !messageEl || !yesBtn || !noBtn) {
+      resolve(false);
+      return;
+    }
+
+    titleEl.textContent = title;
+    messageEl.textContent = message;
+    modal.classList.add('active');
+
+    const handleYes = () => {
+      modal.classList.remove('active');
+      yesBtn.removeEventListener('click', handleYes);
+      noBtn.removeEventListener('click', handleNo);
+      resolve(true);
+    };
+
+    const handleNo = () => {
+      modal.classList.remove('active');
+      yesBtn.removeEventListener('click', handleYes);
+      noBtn.removeEventListener('click', handleNo);
+      resolve(false);
+    };
+
+    yesBtn.addEventListener('click', handleYes);
+    noBtn.addEventListener('click', handleNo);
+
+    // Close on escape
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        modal.classList.remove('active');
+        yesBtn.removeEventListener('click', handleYes);
+        noBtn.removeEventListener('click', handleNo);
+        document.removeEventListener('keydown', handleEscape);
+        resolve(false);
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+  });
+}
+
+/**
+ * Show success toast
+ */
+export function showToast(message, duration = 3000) {
+  const toast = document.getElementById('success-toast');
+  const messageEl = document.getElementById('success-toast-message');
+
+  if (!toast || !messageEl) return;
+
+  messageEl.textContent = message;
+  toast.classList.add('show');
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, duration);
+}
+
+/**
  * Save settings from form
  */
 export function saveSettingsFromForm() {
@@ -277,10 +357,38 @@ export function saveSettingsFromForm() {
   // Save settings
   const settings = { shortcuts, garageOrder };
   if (saveSettings(settings)) {
-    alert('Settings saved! Refresh the page to apply changes.');
+    // Apply settings dynamically without page refresh
+    applyGarageOrder(settings.garageOrder);
+    setupGarageShortcuts(settings);
+
+    showToast('Settings saved successfully!');
     closeSettingsModal();
   } else {
-    alert('Failed to save settings');
+    showToast('Failed to save settings', 3000);
+  }
+}
+
+/**
+ * Reset settings to defaults with confirmation
+ */
+export async function resetSettingsWithConfirmation() {
+  const confirmed = await showConfirmation(
+    'Reset Settings',
+    'Are you sure you want to reset all settings to defaults? This cannot be undone.'
+  );
+
+  if (confirmed) {
+    if (resetSettings()) {
+      // Apply default settings dynamically
+      const defaultSettings = loadSettings();
+      applyGarageOrder(defaultSettings.garageOrder);
+      setupGarageShortcuts(defaultSettings);
+      populateSettingsForm();
+
+      showToast('Settings reset to defaults');
+    } else {
+      showToast('Failed to reset settings', 3000);
+    }
   }
 }
 
