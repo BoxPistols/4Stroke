@@ -34,6 +34,24 @@ document.addEventListener("DOMContentLoaded", async function () {
   const mode = getStorageMode();
   console.log(`[INFO] App starting in ${mode} mode`);
 
+  /**
+   * Utility function
+   */
+  const $$ = (_x) => {
+    return document.querySelectorAll(_x);
+  };
+
+  // Initialize UI element references
+  const handleTextArea = $$("textarea.stroke");
+  const clearBtns = $$("input.clear");
+  const autoSave = () => {
+    const message = document.querySelector("#message");
+    message.classList.remove("is-hidden");
+    setTimeout(() => {
+      message.classList.add("is-hidden");
+    }, 1200);
+  };
+
   if (isOnlineMode()) {
     // Online mode - require authentication
     const { onAuthChange, getCurrentUser, logout } = await import('./auth.js');
@@ -115,23 +133,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   const currentMode = getStorageMode();
   const userId = isOnlineMode() ? null : null; // Will be set properly in auth callback
   initializeMinimap(userId);
-
-  /**
-   * Utility function
-   */
-  const $$ = (_x) => {
-    return document.querySelectorAll(_x);
-  };
-
-  const handleTextArea = $$("textarea.stroke");
-  const clearBtns = $$("input.clear");
-  const autoSave = () => {
-    const message = document.querySelector("#message");
-    message.classList.remove("is-hidden");
-    setTimeout(() => {
-      message.classList.add("is-hidden");
-    }, 1200);
-  };
 
   /**
    * Load data from storage (Local or Firestore)
