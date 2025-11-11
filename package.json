@@ -17,7 +17,9 @@
     "build:css:watch": "sass styles/style.scss dist/style.css --no-source-map --watch",
     "build": "npm run build:css",
     "prebuild": "echo 'Building CSS...'",
-    "postbuild": "echo 'Build complete!'"
+    "postbuild": "echo 'Build complete!'",
+    "dev": "concurrently \"npm run build:css:watch\" \"npm run server:dev\"",
+    "server:dev": "http-server -p 8080 -c-1"
   },
   "dependencies": {
     "firebase": "^12.5.0",
