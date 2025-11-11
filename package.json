@@ -29,6 +29,7 @@
     "@axe-core/playwright": "^4.11.0",
     "@playwright/test": "^1.56.1",
     "@vitest/ui": "^4.0.8",
+    "concurrently": "^9.2.1",
     "happy-dom": "^20.0.10",
     "playwright": "^1.56.1",
     "sass": "^1.83.2",
