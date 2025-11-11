@@ -20,7 +20,8 @@
     "postbuild": "echo 'Build complete!'"
   },
   "dependencies": {
-    "firebase": "^12.5.0"
+    "firebase": "^12.5.0",
+    "marked": "^17.0.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
