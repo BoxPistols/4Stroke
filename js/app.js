@@ -125,7 +125,21 @@ document.addEventListener("DOMContentLoaded", async function () {
       const newText = updateTextWithCheckbox(textarea.value, checkboxIndex, isChecked);
       textarea.value = newText;
 
-      // Save to storage
+      // Update progress bar immediately for better UX
+      const stats = countCheckboxes(newText);
+      const progressEl = preview.querySelector('.checkbox-progress');
+      if (stats.hasCheckboxes) {
+        const progressHTML = createProgressHTML(stats);
+        if (progressEl) {
+          progressEl.outerHTML = progressHTML;
+        } else {
+          preview.insertAdjacentHTML('afterbegin', progressHTML);
+        }
+      } else if (progressEl) {
+        progressEl.remove();
+      }
+
+      // Save to storage in the background
       const garageNum = Math.floor(index / 4) + 1;
       const strokeNum = (index % 4) + 1;
       const garageId = `garage${garageNum}`;
@@ -133,8 +147,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       Storage.saveStroke(userId, garageId, fieldKey, newText).then(() => {
         autoSave();
-        // Re-render preview
-        updateMarkdownPreview(textarea, index, userId);
       }).catch(error => {
         console.error('[ERROR] Checkbox save failed:', error);
       });

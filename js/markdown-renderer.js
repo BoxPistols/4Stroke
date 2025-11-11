@@ -28,16 +28,15 @@ export function countCheckboxes(text) {
 
 /**
  * Custom renderer for marked to handle checkboxes
+ * Uses GFM task list token properties for better reliability
  */
 const renderer = {
-  listitem(text) {
-    // Match checkbox pattern: - [ ] or - [x]
-    const checkboxPattern = /^\[([ xX])\]\s+(.*)$/;
-    const match = text.text.match(checkboxPattern);
-
-    if (match) {
-      const isChecked = match[1].toLowerCase() === 'x';
-      const content = match[2];
+  listitem(token) {
+    // Use the `task` and `checked` properties from the token for GFM task lists.
+    // This is more robust than manually parsing the text.
+    if (token.task) {
+      const content = token.text;
+      const isChecked = token.checked;
 
       return `
         <li class="checkbox-item">
@@ -49,7 +48,7 @@ const renderer = {
       `;
     }
 
-    return `<li>${text.text}</li>`;
+    return `<li>${token.text}</li>`;
   }
 };
 
