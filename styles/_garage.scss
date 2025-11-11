@@ -110,7 +110,6 @@
     overflow:auto;
     width:100%;
     max-width:100%;
-    min-height:200px;
     margin:auto;
     padding:.5ch 1ch;
     box-sizing:border-box;
@@ -214,7 +213,6 @@
 
   textarea {
     flex:1 !important;
-    min-height:180px !important;
     font-size:1rem !important;
     width:100% !important;
     max-width:100%;
@@ -251,7 +249,6 @@
 
   textarea {
     flex:1 !important;
-    min-height:150px !important;
     padding:8px 10px !important;
     width:100% !important;
     max-width:100%;
