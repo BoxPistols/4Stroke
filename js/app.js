@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const garage = garages[`garage${i}`];
 
         // Set title
-        const titleInput = document.querySelector(`#garage${String.fromCharCode(64 + i).toLowerCase()} .stroke-title`);
+        const titleInput = document.querySelector(`#garage${String.fromCharCode(64 + i)} .stroke-title`);
         if (titleInput) {
           titleInput.value = garage.title || '';
         }
