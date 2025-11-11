@@ -4,6 +4,15 @@ import { getStorageMode, isLocalMode, isOnlineMode, Storage } from './storage-se
 // URL converter import
 import { processPastedText, processPastedTextSync } from './url-converter.js';
 
+// Markdown renderer import
+import {
+  renderMarkdown,
+  countCheckboxes,
+  createProgressHTML,
+  setupCheckboxHandlers,
+  updateTextWithCheckbox
+} from './markdown-renderer.js';
+
 // Settings import
 import {
   initializeSettings,
@@ -88,12 +97,77 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   /**
+   * Update markdown preview for a textarea
+   */
+  function updateMarkdownPreview(textarea, index, userId) {
+    const previewId = textarea.id + '-preview';
+    const preview = document.getElementById(previewId);
+
+    if (!preview) return;
+
+    const text = textarea.value;
+
+    // Count checkboxes
+    const stats = countCheckboxes(text);
+
+    // Render markdown
+    const html = renderMarkdown(text);
+
+    // Create progress bar if there are checkboxes
+    const progressHTML = createProgressHTML(stats);
+
+    // Update preview
+    preview.innerHTML = progressHTML + html;
+
+    // Setup checkbox handlers
+    setupCheckboxHandlers(preview, (checkboxIndex, isChecked) => {
+      // Update textarea content
+      const newText = updateTextWithCheckbox(textarea.value, checkboxIndex, isChecked);
+      textarea.value = newText;
+
+      // Update progress bar immediately for better UX
+      const stats = countCheckboxes(newText);
+      const progressEl = preview.querySelector('.checkbox-progress');
+      if (stats.hasCheckboxes) {
+        const progressHTML = createProgressHTML(stats);
+        if (progressEl) {
+          progressEl.outerHTML = progressHTML;
+        } else {
+          preview.insertAdjacentHTML('afterbegin', progressHTML);
+        }
+      } else if (progressEl) {
+        progressEl.remove();
+      }
+
+      // Save to storage in the background
+      const garageNum = Math.floor(index / 4) + 1;
+      const strokeNum = (index % 4) + 1;
+      const garageId = `garage${garageNum}`;
+      const fieldKey = `stroke${strokeNum}`;
+
+      Storage.saveStroke(userId, garageId, fieldKey, newText).then(() => {
+        autoSave();
+      }).catch(error => {
+        console.error('[ERROR] Checkbox save failed:', error);
+      });
+    });
+  }
+
+  /**
    * Setup all event listeners
    */
   function setupEventListeners(userId) {
+    // Initial render of all textareas
+    handleTextArea.forEach((elm, i) => {
+      updateMarkdownPreview(elm, i, userId);
+    });
+
     // Textarea input events
     handleTextArea.forEach((elm, i) => {
       elm.addEventListener("keyup", (event) => {
+        // Update preview immediately
+        updateMarkdownPreview(elm, i, userId);
+
         // Debounce (wait 500ms after continuous input)
         clearTimeout(saveTimer);
         saveTimer = setTimeout(async () => {
@@ -146,6 +220,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             await Storage.saveStroke(userId, garageId, fieldKey, elm.value);
             autoSave();
+
+            // Update preview after paste
+            updateMarkdownPreview(elm, i, userId);
 
             console.log('[SUCCESS] URL conversion completed');
           } catch (error) {

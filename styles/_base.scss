@@ -22,8 +22,8 @@
 }
 
 ::-webkit-scrollbar {
-  width:12px;
-  height:6px;
+  width:thin;
+  height:thin;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -37,6 +37,9 @@
   padding:0;
 
   outline:none;
+
+  scrollbar-width:thin;
+  scrollbar-color:currentColor transparent;
 }
 
 html {
@@ -93,7 +96,12 @@ p {
 }
 
 input[type="button"] {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
   margin:0;
+  padding:8px 16px;
+  line-height:1;
 
   filter:drop-shadow(1px 1px 0px black);
 }

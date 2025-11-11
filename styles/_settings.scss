@@ -288,12 +288,16 @@
 }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 10px 20px;
   border: none;
   border-radius: var(--radius-md);
   font-family: var(--font-primary);
   font-size: 14px;
   font-weight: 600;
+  line-height: 1;
   text-transform: uppercase;
   cursor: pointer;
   transition: all var(--transition-normal);

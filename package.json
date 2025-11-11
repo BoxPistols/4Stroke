@@ -17,15 +17,19 @@
     "build:css:watch": "sass styles/style.scss dist/style.css --no-source-map --watch",
     "build": "npm run build:css",
     "prebuild": "echo 'Building CSS...'",
-    "postbuild": "echo 'Build complete!'"
+    "postbuild": "echo 'Build complete!'",
+    "dev": "concurrently \"npm run build:css:watch\" \"npm run server:dev\"",
+    "server:dev": "http-server -p 8080 -c-1"
   },
   "dependencies": {
-    "firebase": "^12.5.0"
+    "firebase": "^12.5.0",
+    "marked": "^17.0.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
     "@playwright/test": "^1.56.1",
     "@vitest/ui": "^4.0.8",
+    "concurrently": "^9.2.1",
     "happy-dom": "^20.0.10",
     "playwright": "^1.56.1",
     "sass": "^1.83.2",

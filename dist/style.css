@@ -417,8 +417,8 @@
 }
 
 ::-webkit-scrollbar {
-  width: 12px;
-  height: 6px;
+  width: thin;
+  height: thin;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -431,6 +431,8 @@
   margin: 0;
   padding: 0;
   outline: none;
+  scrollbar-width: thin;
+  scrollbar-color: currentColor transparent;
 }
 
 html {
@@ -490,7 +492,12 @@ p {
 }
 
 input[type=button] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin: 0;
+  padding: 8px 16px;
+  line-height: 1;
   filter: drop-shadow(1px 1px 0px black);
 }
 
@@ -841,11 +848,15 @@ input.stroke-title {
   gap: var(--grid-gap);
   margin: var(--spacing-md) 0;
   width: 100%;
+  height: calc(92vh - 140px);
   border-radius: var(--radius-md);
 }
 .garages .garage-strokes .garage-stroke-box {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 100%;
+  height: 100%;
   margin: 0;
   padding: var(--spacing-vh-sm) var(--spacing-vw-sm);
   box-sizing: border-box;
@@ -896,11 +907,10 @@ input.stroke-title {
   border-color: var(--color1);
 }
 .garages textarea {
+  flex: 1;
   overflow: auto;
   width: 100%;
   max-width: 100%;
-  height: auto;
-  min-height: 60%;
   margin: auto;
   padding: 0.5ch 1ch;
   box-sizing: border-box;
@@ -950,8 +960,12 @@ input.stroke-title {
     width: 100%;
   }
   .garage-strokes .garage-stroke-box {
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
     max-width: 100%;
+    height: auto !important;
+    min-height: 400px;
     padding: 12px;
     box-sizing: border-box;
   }
@@ -985,15 +999,19 @@ input.stroke-title {
     width: 100%;
   }
   .garage-strokes .garage-stroke-box {
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
     max-width: 100%;
+    height: auto !important;
+    min-height: 350px;
     margin: 0 !important;
     padding: 16px !important;
     border-radius: 8px !important;
     box-sizing: border-box;
   }
   textarea {
-    min-height: 120px !important;
+    flex: 1 !important;
     font-size: 1rem !important;
     width: 100% !important;
     max-width: 100%;
@@ -1013,6 +1031,10 @@ input.stroke-title {
     gap: 12px !important;
   }
   .garage-strokes .garage-stroke-box {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 300px;
     padding: 12px !important;
     border-radius: 6px !important;
     width: 100% !important;
@@ -1020,7 +1042,7 @@ input.stroke-title {
     box-sizing: border-box;
   }
   textarea {
-    min-height: 100px !important;
+    flex: 1 !important;
     padding: 8px 10px !important;
     width: 100% !important;
     max-width: 100%;
@@ -1285,12 +1307,16 @@ input.stroke-title {
 }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 10px 20px;
   border: none;
   border-radius: var(--radius-md);
   font-family: var(--font-primary);
   font-size: 14px;
   font-weight: 600;
+  line-height: 1;
   text-transform: uppercase;
   cursor: pointer;
   transition: all var(--transition-normal);
@@ -1728,5 +1754,224 @@ input.stroke-title {
   }
   .minimap-header .minimap-close-btn {
     display: none;
+  }
+}
+.stroke-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.stroke-preview {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.5ch 1ch;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: white;
+  font-family: YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
+  font-size: 0.9em;
+  line-height: 1.6;
+  transition: 0.15s;
+}
+.stroke-preview:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(0, 0, 0, 0.15);
+}
+.stroke-preview:empty::before {
+  content: "Preview will appear here...";
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+}
+.stroke-preview h1, .stroke-preview h2, .stroke-preview h3, .stroke-preview h4, .stroke-preview h5, .stroke-preview h6 {
+  margin: 0.8em 0 0.4em 0;
+  font-weight: 600;
+  line-height: 1.3;
+  color: currentColor;
+}
+.stroke-preview h1 {
+  font-size: 1.8em;
+}
+.stroke-preview h2 {
+  font-size: 1.5em;
+}
+.stroke-preview h3 {
+  font-size: 1.3em;
+}
+.stroke-preview h4 {
+  font-size: 1.1em;
+}
+.stroke-preview h5 {
+  font-size: 1em;
+}
+.stroke-preview h6 {
+  font-size: 0.9em;
+}
+.stroke-preview p {
+  margin: 0.5em 0;
+  line-height: 1.6;
+}
+.stroke-preview a {
+  color: var(--color4);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color4);
+  transition: all 0.2s;
+}
+.stroke-preview a:hover {
+  color: var(--color5);
+  border-bottom-color: var(--color5);
+}
+.stroke-preview code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: "Courier New", monospace;
+  font-size: 0.9em;
+}
+.stroke-preview pre {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 0.8em 0;
+}
+.stroke-preview pre code {
+  background: none;
+  padding: 0;
+}
+.stroke-preview blockquote {
+  border-left: 3px solid var(--color3);
+  padding-left: 12px;
+  margin: 0.8em 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-style: italic;
+}
+.stroke-preview ul, .stroke-preview ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+.stroke-preview li {
+  margin: 0.3em 0;
+  line-height: 1.6;
+}
+.stroke-preview hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  margin: 1.2em 0;
+}
+.stroke-preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 0.5em 0;
+}
+.stroke-preview strong {
+  font-weight: 600;
+  color: var(--color1);
+}
+.stroke-preview em {
+  font-style: italic;
+  color: var(--color3);
+}
+
+.checkbox-item {
+  list-style: none;
+  margin: 0.4em 0;
+  padding-left: 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s;
+}
+.checkbox-label:hover {
+  opacity: 0.8;
+}
+
+.markdown-checkbox {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: var(--color2);
+  border: 2px solid currentColor;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+.markdown-checkbox:checked {
+  accent-color: var(--color2);
+}
+.markdown-checkbox:hover {
+  transform: scale(1.1);
+}
+
+.checkbox-text {
+  flex: 1;
+  line-height: 1.6;
+  color: white;
+  transition: all 0.2s;
+}
+.checkbox-text.checked {
+  text-decoration: line-through;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.checkbox-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 8px 0;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.progress-bar-container {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color2), var(--color4));
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 8px rgba(166, 226, 46, 0.5);
+}
+
+.progress-text {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--color2);
+  white-space: nowrap;
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.5px;
+}
+
+@media only screen and (max-width: 768px) {
+  .stroke-preview {
+    font-size: 1rem;
+    padding: 8px 12px;
+  }
+  .checkbox-progress {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .progress-text {
+    text-align: center;
   }
 }
