@@ -109,6 +109,7 @@ export const LocalStorage = {
 
 /**
  * Unified Storage API - automatically uses Local or Online storage
+ * With automatic offline fallback for online mode
  */
 export const Storage = {
   /**
@@ -118,56 +119,56 @@ export const Storage = {
     if (isLocalMode()) {
       return LocalStorage.loadAllGarages();
     } else {
-      const { loadAllGarages } = await import('./firestore-crud.js');
-      return loadAllGarages(userId);
+      try {
+        const { loadAllGarages } = await import('./firestore-crud.js');
+        return await loadAllGarages(userId);
+      } catch (error) {
+        console.warn('[WARN] Failed to load from Firestore, falling back to localStorage:', error);
+        return LocalStorage.loadAllGarages();
+      }
     }
   },
 
   /**
-   * Save stroke
+   * Save stroke with offline fallback
    */
   async saveStroke(userId, garageId, fieldKey, value) {
     if (isLocalMode()) {
       return LocalStorage.saveStroke(garageId, fieldKey, value);
     } else {
-      const { saveStroke } = await import('./firestore-crud.js');
-      return saveStroke(userId, garageId, fieldKey, value);
+      const { saveWithFallback } = await import('./offline-manager.js');
+      return saveWithFallback(userId, garageId, fieldKey, value);
     }
   },
 
   /**
-   * Save title
+   * Save title with offline fallback
    */
   async saveTitle(userId, garageId, title) {
-    if (isLocalMode()) {
-      return LocalStorage.saveTitle(garageId, title);
-    } else {
-      const { saveTitle } = await import('./firestore-crud.js');
-      return saveTitle(userId, garageId, title);
-    }
+    return this.saveStroke(userId, garageId, 'title', title);
   },
 
   /**
-   * Delete stroke
+   * Delete stroke with offline fallback
    */
   async deleteStroke(userId, garageId, fieldKey) {
     if (isLocalMode()) {
       return LocalStorage.deleteStroke(garageId, fieldKey);
     } else {
-      const { deleteStroke } = await import('./firestore-crud.js');
-      return deleteStroke(userId, garageId, fieldKey);
+      const { deleteWithFallback } = await import('./offline-manager.js');
+      return deleteWithFallback(userId, garageId, fieldKey);
     }
   },
 
   /**
-   * Delete garage
+   * Delete garage with offline fallback
    */
   async deleteGarage(userId, garageId) {
     if (isLocalMode()) {
       return LocalStorage.deleteGarage(garageId);
     } else {
-      const { deleteGarage } = await import('./firestore-crud.js');
-      return deleteGarage(userId, garageId);
+      const { deleteGarageWithFallback } = await import('./offline-manager.js');
+      return deleteGarageWithFallback(userId, garageId);
     }
   }
 };

@@ -1,6 +1,14 @@
 // Storage service import
 import { getStorageMode, isLocalMode, isOnlineMode, Storage } from './storage-service.js';
 
+// Offline manager import
+import {
+  initializeOfflineManager,
+  syncOfflineQueue,
+  getOfflineQueueCount,
+  isNetworkOnline
+} from './offline-manager.js';
+
 // URL converter import
 import { processPastedText, processPastedTextSync } from './url-converter.js';
 
@@ -692,4 +700,50 @@ document.addEventListener("DOMContentLoaded", async function () {
   const currentMode = getStorageMode();
   const userId = isOnlineMode() ? null : null; // Will be set properly in auth callback
   initializeMinimap(userId);
+
+  // Initialize offline manager and status indicator
+  const offlineIndicator = document.getElementById('offline-indicator');
+  const queueCountElement = document.getElementById('queue-count');
+  const statusText = offlineIndicator?.querySelector('.status-text');
+
+  function updateOfflineStatus(isOnline) {
+    if (!offlineIndicator) return;
+
+    if (isOnlineMode()) {
+      // Only show indicator in online mode
+      if (isOnline) {
+        offlineIndicator.classList.remove('offline');
+        offlineIndicator.classList.add('show');
+        if (statusText) statusText.textContent = 'Online';
+
+        // Update queue count
+        const queueCount = getOfflineQueueCount();
+        if (queueCountElement) {
+          queueCountElement.textContent = queueCount > 0 ? `${queueCount} pending` : '';
+        }
+      } else {
+        offlineIndicator.classList.add('offline');
+        offlineIndicator.classList.add('show');
+        if (statusText) statusText.textContent = 'Offline';
+
+        // Update queue count
+        const queueCount = getOfflineQueueCount();
+        if (queueCountElement) {
+          queueCountElement.textContent = queueCount > 0 ? `${queueCount} pending` : '';
+        }
+      }
+    } else {
+      // Hide indicator in local mode
+      offlineIndicator.classList.remove('show');
+    }
+  }
+
+  // Initialize offline manager with status callback
+  if (isOnlineMode()) {
+    initializeOfflineManager(updateOfflineStatus);
+    console.log('[INFO] Offline manager initialized');
+
+    // Initial status update
+    updateOfflineStatus(isNetworkOnline());
+  }
 });

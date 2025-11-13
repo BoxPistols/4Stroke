@@ -106,9 +106,42 @@ input[type="button"] {
   filter:drop-shadow(1px 1px 0px black);
 }
 
+// Sync notification styles
+.sync-notification {
+  position:fixed;
+  z-index:9999;
+  top:20px;
+  right:20px;
+  padding:12px 24px;
+
+  transform:translateX(400px);
+  transition:transform 0.3s ease-in-out;
+
+  color:white;
+  border-radius:8px;
+  background:rgba(34, 197, 94, 0.95);
+  box-shadow:0 4px 12px rgba(0, 0, 0, 0.3);
+
+  font-size:14px;
+  font-weight:500;
+  filter:drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.2));
+
+  &.show {
+    transform:translateX(0);
+  }
+}
+
 // Mobile responsive - Breakpoint: 768px
 @media only screen and (max-width: 768px) {
   body {
     padding:8px 12px 64px;
+  }
+
+  .sync-notification {
+    top:10px;
+    right:10px;
+    padding:8px 16px;
+
+    font-size:12px;
   }
 }
