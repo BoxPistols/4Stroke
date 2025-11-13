@@ -7,12 +7,13 @@ const SETTINGS_KEY = 'garage-settings';
 let garageShortcutListener = null;
 
 // Default settings
+// Mac: Option key is Alt key
 const DEFAULT_SETTINGS = {
   shortcuts: {
-    garageA: { key: '1', modifiers: ['ctrl'] },
-    garageB: { key: '2', modifiers: ['ctrl'] },
-    garageC: { key: '3', modifiers: ['ctrl'] },
-    garageD: { key: '4', modifiers: ['ctrl'] }
+    garageA: { key: '1', modifiers: ['alt'] },
+    garageB: { key: '2', modifiers: ['alt'] },
+    garageC: { key: '3', modifiers: ['alt'] },
+    garageD: { key: '4', modifiers: ['alt'] }
   },
   garageOrder: ['garageA', 'garageB', 'garageC', 'garageD']
 };
@@ -105,6 +106,14 @@ export function setupGarageShortcuts(settings) {
       return;
     }
 
+    // Cmd + Control + Arrow keys for garage navigation
+    // On Mac: Cmd (metaKey) + Control (ctrlKey) + Left/Right
+    if (event.metaKey && event.ctrlKey && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
+      event.preventDefault();
+      navigateGarage(event.key === 'ArrowLeft' ? 'prev' : 'next', settings.garageOrder);
+      return;
+    }
+
     // Check each garage shortcut
     for (const [garageId, shortcut] of Object.entries(settings.shortcuts)) {
       if (event.key === shortcut.key || event.key === shortcut.key.toLowerCase()) {
@@ -133,6 +142,49 @@ export function setupGarageShortcuts(settings) {
 }
 
 /**
+ * Navigate to next or previous garage
+ */
+function navigateGarage(direction, garageOrder) {
+  // Find current garage
+  const garages = garageOrder.map(id => document.getElementById(id));
+  let currentIndex = -1;
+
+  // Determine which garage is currently in view
+  const container = document.querySelector('.garages-container');
+  if (!container) return;
+
+  const scrollLeft = container.scrollLeft;
+  const viewportWidth = container.clientWidth;
+
+  for (let i = 0; i < garages.length; i++) {
+    const garage = garages[i];
+    if (garage) {
+      const garageLeft = garage.offsetLeft;
+      const garageRight = garageLeft + garage.offsetWidth;
+
+      // Check if garage is currently in viewport
+      if (scrollLeft >= garageLeft - viewportWidth / 2 && scrollLeft < garageRight - viewportWidth / 2) {
+        currentIndex = i;
+        break;
+      }
+    }
+  }
+
+  // Navigate to next or previous
+  let targetIndex = currentIndex;
+  if (direction === 'next') {
+    targetIndex = Math.min(currentIndex + 1, garages.length - 1);
+  } else if (direction === 'prev') {
+    targetIndex = Math.max(currentIndex - 1, 0);
+  }
+
+  if (targetIndex !== currentIndex && garages[targetIndex]) {
+    garages[targetIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    console.log(`[INFO] Navigated to ${garageOrder[targetIndex]} via arrow keys`);
+  }
+}
+
+/**
  * Open settings modal
  */
 export function openSettingsModal() {
@@ -140,6 +192,7 @@ export function openSettingsModal() {
   if (modal) {
     modal.classList.add('active');
     populateSettingsForm();
+    setupModalEscapeKey();
   }
 }
 
@@ -150,6 +203,34 @@ export function closeSettingsModal() {
   const modal = document.getElementById('settings-modal');
   if (modal) {
     modal.classList.remove('active');
+    removeModalEscapeKey();
+  }
+}
+
+/**
+ * Setup ESC key to close modal
+ */
+let modalEscapeHandler = null;
+
+function setupModalEscapeKey() {
+  // Remove previous listener if exists
+  if (modalEscapeHandler) {
+    document.removeEventListener('keydown', modalEscapeHandler);
+  }
+
+  modalEscapeHandler = (e) => {
+    if (e.key === 'Escape') {
+      closeSettingsModal();
+    }
+  };
+
+  document.addEventListener('keydown', modalEscapeHandler);
+}
+
+function removeModalEscapeKey() {
+  if (modalEscapeHandler) {
+    document.removeEventListener('keydown', modalEscapeHandler);
+    modalEscapeHandler = null;
   }
 }
 

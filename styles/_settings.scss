@@ -27,7 +27,8 @@
   max-width: 600px;
   width: 90%;
   max-height: 85vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   animation: modalSlideIn 0.3s ease-out;
 }
 
@@ -42,13 +43,14 @@
   }
 }
 
-// Modal header
+// Modal header (fixed at top)
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
 
   h2 {
     margin: 0;
@@ -81,9 +83,11 @@
   }
 }
 
-// Modal body
+// Modal body (scrollable)
 .modal-body {
   padding: 24px;
+  overflow-y: auto;
+  flex: 1;
 }
 
 // Settings sections
@@ -277,14 +281,15 @@
   }
 }
 
-// Modal actions
+// Modal actions (fixed at bottom)
 .modal-actions {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
-  padding-top: 16px;
+  padding: 16px 24px;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .btn {

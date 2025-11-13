@@ -168,23 +168,24 @@
 
 @media only screen and (max-width: 768px) {
   .garages-container {
-    overflow-y:auto;
-    overflow-x:hidden;
+    overflow-x:auto;
+    overflow-y:hidden;
     padding:80px 0 120px;
   }
 
   .garages {
-    flex-direction:column;
-    width:100%;
+    flex-direction:row;
+    flex-wrap:nowrap;
+    width:auto;
     padding:0;
   }
 
   .garage {
-    margin:0 0 20px 0 !important;
-    width:100% !important;
+    flex-shrink:0;
+    width:100vw !important;
+    min-width:100vw;
+    margin:0 !important;
     padding:16px 12px !important;
-    border-left:none !important;
-    border-right:none !important;
     border-radius:0 !important;
   }
 
@@ -223,12 +224,22 @@
 
 @media only screen and (max-width: 480px) {
   .garages-container {
+    overflow-x:auto;
+    overflow-y:hidden;
     padding:80px 0 120px;
   }
 
+  .garages {
+    flex-direction:row;
+    flex-wrap:nowrap;
+  }
+
   .garage {
+    flex-shrink:0;
+    width:100vw !important;
+    min-width:100vw;
     padding:12px 8px !important;
-    margin:0 0 16px 0 !important;
+    margin:0 !important;
   }
 
   .garage-strokes {

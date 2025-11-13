@@ -18,7 +18,8 @@ import {
   countCheckboxes,
   createProgressHTML,
   setupCheckboxHandlers,
-  updateTextWithCheckbox
+  updateTextWithCheckbox,
+  initNotionStylePreview
 } from './markdown-renderer.js';
 
 // Settings import
@@ -689,6 +690,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   // Initialize settings (garage order and shortcuts)
   initializeSettings();
+
+  // Initialize Notion-style preview mode
+  initNotionStylePreview();
 
   // Keyboard navigation for garages
   setupKeyboardNavigation();

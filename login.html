@@ -318,6 +318,44 @@
       opacity: 0.8;
       margin-top: 4px;
     }
+
+    /* Forgot password link */
+    .forgot-password-link {
+      text-align: right;
+      margin-top: -0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .forgot-password-link a {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .forgot-password-link a:hover {
+      color: var(--color-purple);
+      text-decoration: underline;
+    }
+
+    /* Success message */
+    .success-message {
+      background: rgba(166, 226, 46, 0.2);
+      color: var(--color-white);
+      padding: 0.9rem;
+      border-radius: 8px;
+      border-left: 4px solid var(--color-issue);
+      margin-bottom: 1.5rem;
+      display: none;
+      font-size: 0.9rem;
+      filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+    }
+
+    .success-message.show {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
   </style>
 </head>
 <body>
@@ -326,6 +364,7 @@
     <p class="login-subtitle">Authentication Required</p>
 
     <div id="error-message" class="error-message"></div>
+    <div id="success-message" class="success-message"></div>
 
     <!-- Login Form -->
     <form id="login-form">
@@ -336,6 +375,9 @@
       <div class="form-group">
         <label for="login-password">Password</label>
         <input type="password" id="login-password" required autocomplete="current-password" placeholder="6+ characters">
+      </div>
+      <div class="forgot-password-link">
+        <a id="show-forgot-password">Forgot password?</a>
       </div>
       <button type="submit" class="btn btn-primary" id="login-btn">Login</button>
       <button type="button" id="show-register" class="btn btn-secondary">Create Account</button>
@@ -353,6 +395,19 @@
       </div>
       <button type="submit" class="btn btn-primary" id="register-btn">Register</button>
       <button type="button" id="show-login" class="btn btn-secondary">Back to Login</button>
+    </form>
+
+    <!-- Password Reset Form (initially hidden) -->
+    <form id="reset-password-form" class="form-hidden">
+      <div class="form-group">
+        <label for="reset-email">Email Address</label>
+        <input type="email" id="reset-email" required autocomplete="email" placeholder="your@email.com">
+        <small style="color: rgba(255, 255, 255, 0.7); font-size: 0.85rem; margin-top: 0.5rem; display: block;">
+          Enter your email address and we'll send you a password reset link.
+        </small>
+      </div>
+      <button type="submit" class="btn btn-primary" id="reset-btn">Send Reset Link</button>
+      <button type="button" id="show-login-from-reset" class="btn btn-secondary">Back to Login</button>
     </form>
 
     <div class="divider">OR</div>
@@ -376,23 +431,38 @@
   </div>
 
   <script type="module">
-    import { loginWithGoogle, loginWithEmail, registerWithEmail, getErrorMessage } from './js/auth.js';
+    import { loginWithGoogle, loginWithEmail, registerWithEmail, sendPasswordReset, getErrorMessage } from './js/auth.js';
     import { setStorageMode } from './js/storage-service.js';
 
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
+    const resetPasswordForm = document.getElementById('reset-password-form');
     const errorMessage = document.getElementById('error-message');
+    const successMessage = document.getElementById('success-message');
     const googleLoginBtn = document.getElementById('google-login');
     const localModeBtn = document.getElementById('local-mode-btn');
     const showRegisterBtn = document.getElementById('show-register');
     const showLoginBtn = document.getElementById('show-login');
+    const showForgotPasswordBtn = document.getElementById('show-forgot-password');
+    const showLoginFromResetBtn = document.getElementById('show-login-from-reset');
 
     // Show error message
     function showError(message) {
+      successMessage.classList.remove('show');
       errorMessage.textContent = message;
       errorMessage.classList.add('show');
       setTimeout(() => {
         errorMessage.classList.remove('show');
+      }, 5000);
+    }
+
+    // Show success message
+    function showSuccess(message) {
+      errorMessage.classList.remove('show');
+      successMessage.textContent = message;
+      successMessage.classList.add('show');
+      setTimeout(() => {
+        successMessage.classList.remove('show');
       }, 5000);
     }
 
@@ -471,17 +541,58 @@
       }
     });
 
+    // Password reset
+    resetPasswordForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('reset-email').value;
+      const submitBtn = document.getElementById('reset-btn');
+
+      submitBtn.dataset.originalText = submitBtn.innerHTML;
+      setLoading(submitBtn, true);
+
+      try {
+        await sendPasswordReset(email);
+        showSuccess('Password reset email sent! Please check your inbox.');
+        setLoading(submitBtn, false);
+        // Clear the form
+        resetPasswordForm.reset();
+      } catch (error) {
+        showError(getErrorMessage(error));
+        setLoading(submitBtn, false);
+      }
+    });
+
     // Toggle forms
     showRegisterBtn.addEventListener('click', () => {
       loginForm.classList.add('form-hidden');
       registerForm.classList.remove('form-hidden');
+      resetPasswordForm.classList.add('form-hidden');
       errorMessage.classList.remove('show');
+      successMessage.classList.remove('show');
     });
 
     showLoginBtn.addEventListener('click', () => {
       registerForm.classList.add('form-hidden');
       loginForm.classList.remove('form-hidden');
+      resetPasswordForm.classList.add('form-hidden');
       errorMessage.classList.remove('show');
+      successMessage.classList.remove('show');
+    });
+
+    showForgotPasswordBtn.addEventListener('click', () => {
+      loginForm.classList.add('form-hidden');
+      registerForm.classList.add('form-hidden');
+      resetPasswordForm.classList.remove('form-hidden');
+      errorMessage.classList.remove('show');
+      successMessage.classList.remove('show');
+    });
+
+    showLoginFromResetBtn.addEventListener('click', () => {
+      resetPasswordForm.classList.add('form-hidden');
+      loginForm.classList.remove('form-hidden');
+      registerForm.classList.add('form-hidden');
+      errorMessage.classList.remove('show');
+      successMessage.classList.remove('show');
     });
   </script>
 </body>

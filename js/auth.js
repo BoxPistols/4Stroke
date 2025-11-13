@@ -6,7 +6,8 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  sendPasswordResetEmail
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
 /**
@@ -55,6 +56,21 @@ export async function registerWithEmail(email, password) {
     return result.user;
   } catch (error) {
     console.error('❌ 新規登録失敗:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * パスワードリセットメールを送信
+ * @param {string} email - メールアドレス
+ * @returns {Promise<void>}
+ */
+export async function sendPasswordReset(email) {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    console.log('✅ パスワードリセットメール送信成功:', email);
+  } catch (error) {
+    console.error('❌ パスワードリセットメール送信失敗:', error.message);
     throw error;
   }
 }
@@ -112,6 +128,7 @@ export function getErrorMessage(error) {
     'auth/weak-password': 'パスワードは6文字以上にしてください',
     'auth/popup-closed-by-user': 'ログインがキャンセルされました',
     'auth/network-request-failed': 'ネットワークエラーが発生しました',
+    'auth/missing-email': 'メールアドレスを入力してください',
   };
 
   return errorMessages[error.code] || `エラーが発生しました: ${error.message}`;
