@@ -18,18 +18,29 @@ const DEFAULT_SETTINGS = {
 };
 
 /**
- * Load settings from localStorage
+ * Load settings from localStorage with defensive deep merge
  */
 export function loadSettings() {
   try {
     const stored = localStorage.getItem(SETTINGS_KEY);
     if (stored) {
       const settings = JSON.parse(stored);
-      // Merge with defaults to ensure all fields exist
-      return {
-        shortcuts: { ...DEFAULT_SETTINGS.shortcuts, ...settings.shortcuts },
-        garageOrder: settings.garageOrder || DEFAULT_SETTINGS.garageOrder
-      };
+
+      // Deep-merge shortcuts to ensure shape and default modifiers exist
+      const shortcuts = { ...DEFAULT_SETTINGS.shortcuts };
+      if (settings.shortcuts && typeof settings.shortcuts === 'object') {
+        for (const id of Object.keys(DEFAULT_SETTINGS.shortcuts)) {
+          const user = settings.shortcuts[id] || {};
+          shortcuts[id] = {
+            key: user.key || DEFAULT_SETTINGS.shortcuts[id].key,
+            modifiers: Array.isArray(user.modifiers) ? user.modifiers : DEFAULT_SETTINGS.shortcuts[id].modifiers
+          };
+        }
+      }
+
+      const garageOrder = Array.isArray(settings.garageOrder) ? settings.garageOrder : DEFAULT_SETTINGS.garageOrder;
+
+      return { shortcuts, garageOrder };
     }
   } catch (error) {
     console.error('[ERROR] Failed to load settings:', error);
@@ -105,6 +116,14 @@ export function setupGarageShortcuts(settings) {
       return;
     }
 
+    // Cmd + Control + Arrow keys for garage navigation
+    // On Mac: Cmd (metaKey) + Control (ctrlKey) + Left/Right
+    if (event.metaKey && event.ctrlKey && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
+      event.preventDefault();
+      navigateGarage(event.key === 'ArrowLeft' ? 'prev' : 'next', settings.garageOrder);
+      return;
+    }
+
     // Check each garage shortcut
     for (const [garageId, shortcut] of Object.entries(settings.shortcuts)) {
       if (event.key === shortcut.key || event.key === shortcut.key.toLowerCase()) {
@@ -130,6 +149,49 @@ export function setupGarageShortcuts(settings) {
   document.addEventListener('keydown', garageShortcutListener);
 
   console.log('[INFO] Garage shortcuts initialized');
+}
+
+/**
+ * Navigate to next or previous garage
+ */
+function navigateGarage(direction, garageOrder) {
+  // Find current garage
+  const garages = garageOrder.map(id => document.getElementById(id));
+  let currentIndex = -1;
+
+  // Determine which garage is currently in view
+  const container = document.querySelector('.garages-container');
+  if (!container) return;
+
+  const scrollLeft = container.scrollLeft;
+  const viewportWidth = container.clientWidth;
+
+  for (let i = 0; i < garages.length; i++) {
+    const garage = garages[i];
+    if (garage) {
+      const garageLeft = garage.offsetLeft;
+      const garageRight = garageLeft + garage.offsetWidth;
+
+      // Check if garage is currently in viewport
+      if (scrollLeft >= garageLeft - viewportWidth / 2 && scrollLeft < garageRight - viewportWidth / 2) {
+        currentIndex = i;
+        break;
+      }
+    }
+  }
+
+  // Navigate to next or previous
+  let targetIndex = currentIndex;
+  if (direction === 'next') {
+    targetIndex = Math.min(currentIndex + 1, garages.length - 1);
+  } else if (direction === 'prev') {
+    targetIndex = Math.max(currentIndex - 1, 0);
+  }
+
+  if (targetIndex !== currentIndex && garages[targetIndex]) {
+    garages[targetIndex].scrollIntoView({ behavior: 'smooth', inline: 'start' });
+    console.log(`[INFO] Navigated to ${garageOrder[targetIndex]} via arrow keys`);
+  }
 }
 
 /**
@@ -404,5 +466,22 @@ export function initializeSettings() {
   // Setup keyboard shortcuts
   setupGarageShortcuts(settings);
 
+  // Setup global ESC key handler for modal
+  setupGlobalEscapeHandler();
+
   console.log('[INFO] Settings initialized');
+}
+
+/**
+ * Setup global ESC key handler (more efficient than add/remove per modal open/close)
+ */
+function setupGlobalEscapeHandler() {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('settings-modal');
+      if (modal && modal.classList.contains('active')) {
+        closeSettingsModal();
+      }
+    }
+  });
 }

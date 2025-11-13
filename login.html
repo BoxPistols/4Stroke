@@ -337,6 +337,9 @@
         <label for="login-password">Password</label>
         <input type="password" id="login-password" required autocomplete="current-password" placeholder="6+ characters">
       </div>
+      <div style="text-align: right; margin-bottom: 1rem;">
+        <a href="#" id="forgot-password-link" style="color: rgba(255, 255, 255, 0.7); font-size: 0.85rem; text-decoration: none;">Forgot password?</a>
+      </div>
       <button type="submit" class="btn btn-primary" id="login-btn">Login</button>
       <button type="button" id="show-register" class="btn btn-secondary">Create Account</button>
     </form>
@@ -376,7 +379,7 @@
   </div>
 
   <script type="module">
-    import { loginWithGoogle, loginWithEmail, registerWithEmail, getErrorMessage } from './js/auth.js';
+    import { loginWithGoogle, loginWithEmail, registerWithEmail, sendPasswordReset, getErrorMessage } from './js/auth.js';
     import { setStorageMode } from './js/storage-service.js';
 
     const loginForm = document.getElementById('login-form');
@@ -386,6 +389,7 @@
     const localModeBtn = document.getElementById('local-mode-btn');
     const showRegisterBtn = document.getElementById('show-register');
     const showLoginBtn = document.getElementById('show-login');
+    const forgotPasswordLink = document.getElementById('forgot-password-link');
 
     // Show error message
     function showError(message) {
@@ -468,6 +472,20 @@
       } catch (error) {
         showError(getErrorMessage(error));
         setLoading(submitBtn, false);
+      }
+    });
+
+    // Password reset
+    forgotPasswordLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const email = prompt('Enter your email address for password reset:');
+      if (email) {
+        try {
+          await sendPasswordReset(email);
+          alert('Password reset email sent! Please check your inbox.');
+        } catch (error) {
+          showError(getErrorMessage(error));
+        }
       }
     });
 
