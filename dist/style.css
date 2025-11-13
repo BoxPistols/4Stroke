@@ -501,9 +501,35 @@ input[type=button] {
   filter: drop-shadow(1px 1px 0px black);
 }
 
+.sync-notification {
+  position: fixed;
+  z-index: 9999;
+  top: 20px;
+  right: 20px;
+  padding: 12px 24px;
+  transform: translateX(400px);
+  transition: transform 0.3s ease-in-out;
+  color: white;
+  border-radius: 8px;
+  background: rgba(34, 197, 94, 0.95);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  font-size: 14px;
+  font-weight: 500;
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.2));
+}
+.sync-notification.show {
+  transform: translateX(0);
+}
+
 @media only screen and (max-width: 768px) {
   body {
     padding: 8px 12px 64px;
+  }
+  .sync-notification {
+    top: 10px;
+    right: 10px;
+    padding: 8px 16px;
+    font-size: 12px;
   }
 }
 nav.garages-nav {
@@ -675,13 +701,67 @@ header.header h1.logo-title {
   font-size: 20px;
   font-weight: 400;
 }
+header.header .header-status {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 header.header #message {
-  margin: 2px 0 7px 5px;
+  margin: 2px 0 0 5px;
   opacity: 0.7;
   text-shadow: 0 0 3px rgba(255, 255, 0, 0.6);
   font-size: 24px;
 }
+header.header .offline-indicator {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 0 5px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  opacity: 0.9;
+}
+header.header .offline-indicator.show {
+  display: flex;
+}
+header.header .offline-indicator .status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: pulse 2s ease-in-out infinite;
+}
+header.header .offline-indicator.offline .status-dot {
+  background: #ef4444;
+  animation: none;
+}
+header.header .offline-indicator .status-text {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+header.header .offline-indicator .queue-count {
+  margin-left: 4px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.8);
+  font-size: 10px;
+  font-weight: 600;
+}
+header.header .offline-indicator .queue-count:empty {
+  display: none;
+}
 
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
 h2, h3 {
   margin: 0.2em 0.2em;
   letter-spacing: 0.05ch;
@@ -782,6 +862,22 @@ input.stroke-title {
   header.header #message {
     font-size: 12px;
     margin: 0 0 0 8px;
+  }
+  header.header .offline-indicator {
+    font-size: 10px;
+    padding: 2px 6px;
+    margin: 0 0 0 8px;
+  }
+  header.header .offline-indicator .status-dot {
+    width: 6px;
+    height: 6px;
+  }
+  header.header .offline-indicator .status-text {
+    font-size: 9px;
+  }
+  header.header .offline-indicator .queue-count {
+    font-size: 8px;
+    padding: 1px 4px;
   }
   h2.garage-title {
     font-size: 22px;
