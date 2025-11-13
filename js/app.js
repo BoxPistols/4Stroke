@@ -24,6 +24,7 @@ import {
 // Settings import
 import {
   initializeSettings,
+  loadSettings,
   openSettingsModal,
   closeSettingsModal,
   saveSettingsFromForm,
