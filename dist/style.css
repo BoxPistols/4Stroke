@@ -466,6 +466,7 @@ body {
     * Wrap = Fold at the edge -|（4th Argument）
     * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
   */
+  align-items: flex-end;
 }
 body:before {
   position: fixed;
@@ -499,6 +500,62 @@ input[type=button] {
   padding: 8px 16px;
   line-height: 1;
   filter: drop-shadow(1px 1px 0px black);
+}
+
+.btn {
+  background: #f92672;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: "Oswald", sans-serif;
+  font-weight: 600;
+  padding: 1px 6px;
+  transition: all 0.2s;
+  filter: drop-shadow(1px 1px 0px black);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 1px;
+  position: relative;
+  min-width: 60px;
+  min-height: 28px;
+}
+.btn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-50%);
+  z-index: -1;
+}
+.btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(249, 38, 114, 0.4) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: -2;
+}
+.btn:hover {
+  background: #ff2e7e;
+  transform: translateY(-1px);
+}
+.btn:hover::after {
+  opacity: 1;
+}
+.btn:active {
+  transform: translateY(0);
 }
 
 .sync-notification {
@@ -568,15 +625,14 @@ nav.garages-nav ul li a {
   filter: drop-shadow(1px 1px 0px black);
 }
 nav.garages-nav ul li button {
-  background: rgba(174, 129, 255, 0.8);
+  background: #f92672;
   border: none;
-  border-radius: 8px;
   color: white;
   cursor: pointer;
   font-size: 14px;
   font-family: "Oswald", sans-serif;
   font-weight: 600;
-  padding: 2px 8px;
+  padding: 1px 6px;
   transition: all 0.2s;
   filter: drop-shadow(1px 1px 0px black);
   text-transform: uppercase;
@@ -584,18 +640,48 @@ nav.garages-nav ul li button {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 1.2rem;
+  height: 1px;
+  position: relative;
+  min-width: 60px;
+  min-height: 28px;
+}
+nav.garages-nav ul li button::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-50%);
+  z-index: -1;
+}
+nav.garages-nav ul li button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(249, 38, 114, 0.4) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: -2;
 }
 nav.garages-nav ul li button:hover {
-  background: rgb(174, 129, 255);
+  background: #ff2e7e;
   transform: translateY(-1px);
+}
+nav.garages-nav ul li button:hover::after {
+  opacity: 1;
 }
 nav.garages-nav ul li button:active {
   transform: translateY(0);
 }
 nav.garages-nav ul li button.active {
   background: var(--color-accent);
-  box-shadow: 0 0 0 2px rgba(174, 129, 255, 0.5);
+  box-shadow: 0 0 0 2px rgba(249, 38, 114, 0.5), 0 0 10px rgba(249, 38, 114, 0.3);
 }
 
 @media only screen and (max-width: 768px) {
@@ -1068,21 +1154,22 @@ input.stroke-title {
 }
 @media only screen and (max-width: 768px) {
   .garages-container {
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     padding: 80px 0 120px;
   }
   .garages {
-    flex-direction: column;
-    width: 100%;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: auto;
     padding: 0;
   }
   .garage {
-    margin: 0 0 20px 0 !important;
-    width: 100% !important;
+    flex-shrink: 0;
+    width: 100vw !important;
+    min-width: 100vw;
+    margin: 0 !important;
     padding: 16px 12px !important;
-    border-left: none !important;
-    border-right: none !important;
     border-radius: 0 !important;
   }
   .garage-strokes {
@@ -1116,33 +1203,16 @@ input.stroke-title {
   }
 }
 @media only screen and (max-width: 480px) {
-  .garages-container {
-    padding: 80px 0 120px;
-  }
   .garage {
     padding: 12px 8px !important;
-    margin: 0 0 16px 0 !important;
-  }
-  .garage-strokes {
-    gap: 12px !important;
   }
   .garage-strokes .garage-stroke-box {
-    display: flex !important;
-    flex-direction: column !important;
-    height: auto !important;
     min-height: 300px;
     padding: 12px !important;
     border-radius: 6px !important;
-    width: 100% !important;
-    max-width: 100%;
-    box-sizing: border-box;
   }
   textarea {
-    flex: 1 !important;
     padding: 8px 10px !important;
-    width: 100% !important;
-    max-width: 100%;
-    box-sizing: border-box;
   }
   input[type=button] {
     font-size: 0.85rem !important;
@@ -1173,7 +1243,8 @@ input.stroke-title {
   max-width: 600px;
   width: 90%;
   max-height: 85vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   animation: modalSlideIn 0.3s ease-out;
 }
 
@@ -1193,6 +1264,7 @@ input.stroke-title {
   align-items: center;
   padding: 20px 24px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
 }
 .modal-header h2 {
   margin: 0;
@@ -1224,6 +1296,8 @@ input.stroke-title {
 
 .modal-body {
   padding: 24px;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .settings-section {
@@ -1397,9 +1471,10 @@ input.stroke-title {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
-  padding-top: 16px;
+  padding: 16px 24px;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .btn {
@@ -1858,6 +1933,7 @@ input.stroke-title {
   gap: 8px;
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
 .stroke-preview {

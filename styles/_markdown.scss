@@ -10,27 +10,8 @@
   overflow: hidden;
   position: relative;
 
-  // Notion-style: Default preview mode
-  &.preview-mode {
-    .stroke {
-      display: none;
-    }
-
-    .stroke-preview {
-      cursor: text;
-    }
-  }
-
-  // Edit mode
-  &.edit-mode {
-    .stroke {
-      display: flex;
-    }
-
-    .stroke-preview {
-      display: none;
-    }
-  }
+  // Notion-style preview/edit mode DISABLED
+  // Causes issues with textarea visibility and interaction
 }
 
 // Preview container
