@@ -7,30 +7,40 @@ const SETTINGS_KEY = 'garage-settings';
 let garageShortcutListener = null;
 
 // Default settings
-// Mac: Option key is Alt key
 const DEFAULT_SETTINGS = {
   shortcuts: {
-    garageA: { key: '1', modifiers: ['alt'] },
-    garageB: { key: '2', modifiers: ['alt'] },
-    garageC: { key: '3', modifiers: ['alt'] },
-    garageD: { key: '4', modifiers: ['alt'] }
+    garageA: { key: '1', modifiers: ['ctrl'] },
+    garageB: { key: '2', modifiers: ['ctrl'] },
+    garageC: { key: '3', modifiers: ['ctrl'] },
+    garageD: { key: '4', modifiers: ['ctrl'] }
   },
   garageOrder: ['garageA', 'garageB', 'garageC', 'garageD']
 };
 
 /**
- * Load settings from localStorage
+ * Load settings from localStorage with defensive deep merge
  */
 export function loadSettings() {
   try {
     const stored = localStorage.getItem(SETTINGS_KEY);
     if (stored) {
       const settings = JSON.parse(stored);
-      // Merge with defaults to ensure all fields exist
-      return {
-        shortcuts: { ...DEFAULT_SETTINGS.shortcuts, ...settings.shortcuts },
-        garageOrder: settings.garageOrder || DEFAULT_SETTINGS.garageOrder
-      };
+
+      // Deep-merge shortcuts to ensure shape and default modifiers exist
+      const shortcuts = { ...DEFAULT_SETTINGS.shortcuts };
+      if (settings.shortcuts && typeof settings.shortcuts === 'object') {
+        for (const id of Object.keys(DEFAULT_SETTINGS.shortcuts)) {
+          const user = settings.shortcuts[id] || {};
+          shortcuts[id] = {
+            key: user.key || DEFAULT_SETTINGS.shortcuts[id].key,
+            modifiers: Array.isArray(user.modifiers) ? user.modifiers : DEFAULT_SETTINGS.shortcuts[id].modifiers
+          };
+        }
+      }
+
+      const garageOrder = Array.isArray(settings.garageOrder) ? settings.garageOrder : DEFAULT_SETTINGS.garageOrder;
+
+      return { shortcuts, garageOrder };
     }
   } catch (error) {
     console.error('[ERROR] Failed to load settings:', error);
@@ -192,7 +202,6 @@ export function openSettingsModal() {
   if (modal) {
     modal.classList.add('active');
     populateSettingsForm();
-    setupModalEscapeKey();
   }
 }
 
@@ -203,34 +212,6 @@ export function closeSettingsModal() {
   const modal = document.getElementById('settings-modal');
   if (modal) {
     modal.classList.remove('active');
-    removeModalEscapeKey();
-  }
-}
-
-/**
- * Setup ESC key to close modal
- */
-let modalEscapeHandler = null;
-
-function setupModalEscapeKey() {
-  // Remove previous listener if exists
-  if (modalEscapeHandler) {
-    document.removeEventListener('keydown', modalEscapeHandler);
-  }
-
-  modalEscapeHandler = (e) => {
-    if (e.key === 'Escape') {
-      closeSettingsModal();
-    }
-  };
-
-  document.addEventListener('keydown', modalEscapeHandler);
-}
-
-function removeModalEscapeKey() {
-  if (modalEscapeHandler) {
-    document.removeEventListener('keydown', modalEscapeHandler);
-    modalEscapeHandler = null;
   }
 }
 
@@ -485,5 +466,22 @@ export function initializeSettings() {
   // Setup keyboard shortcuts
   setupGarageShortcuts(settings);
 
+  // Setup global ESC key handler for modal
+  setupGlobalEscapeHandler();
+
   console.log('[INFO] Settings initialized');
+}
+
+/**
+ * Setup global ESC key handler (more efficient than add/remove per modal open/close)
+ */
+function setupGlobalEscapeHandler() {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('settings-modal');
+      if (modal && modal.classList.contains('active')) {
+        closeSettingsModal();
+      }
+    }
+  });
 }

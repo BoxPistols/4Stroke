@@ -562,38 +562,22 @@
       }
     });
 
+    // Form toggle helper
+    const forms = [loginForm, registerForm, resetPasswordForm];
+
+    function showForm(formToShow) {
+      forms.forEach(form => {
+        form.classList.toggle('form-hidden', form !== formToShow);
+      });
+      errorMessage.classList.remove('show');
+      successMessage.classList.remove('show');
+    }
+
     // Toggle forms
-    showRegisterBtn.addEventListener('click', () => {
-      loginForm.classList.add('form-hidden');
-      registerForm.classList.remove('form-hidden');
-      resetPasswordForm.classList.add('form-hidden');
-      errorMessage.classList.remove('show');
-      successMessage.classList.remove('show');
-    });
-
-    showLoginBtn.addEventListener('click', () => {
-      registerForm.classList.add('form-hidden');
-      loginForm.classList.remove('form-hidden');
-      resetPasswordForm.classList.add('form-hidden');
-      errorMessage.classList.remove('show');
-      successMessage.classList.remove('show');
-    });
-
-    showForgotPasswordBtn.addEventListener('click', () => {
-      loginForm.classList.add('form-hidden');
-      registerForm.classList.add('form-hidden');
-      resetPasswordForm.classList.remove('form-hidden');
-      errorMessage.classList.remove('show');
-      successMessage.classList.remove('show');
-    });
-
-    showLoginFromResetBtn.addEventListener('click', () => {
-      resetPasswordForm.classList.add('form-hidden');
-      loginForm.classList.remove('form-hidden');
-      registerForm.classList.add('form-hidden');
-      errorMessage.classList.remove('show');
-      successMessage.classList.remove('show');
-    });
+    showRegisterBtn.addEventListener('click', () => showForm(registerForm));
+    showLoginBtn.addEventListener('click', () => showForm(loginForm));
+    showForgotPasswordBtn.addEventListener('click', () => showForm(resetPasswordForm));
+    showLoginFromResetBtn.addEventListener('click', () => showForm(loginForm));
   </script>
 </body>
 </html>
