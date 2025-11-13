@@ -179,7 +179,7 @@ function navigateGarage(direction, garageOrder) {
   }
 
   if (targetIndex !== currentIndex && garages[targetIndex]) {
-    garages[targetIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    garages[targetIndex].scrollIntoView({ behavior: 'smooth', inline: 'start' });
     console.log(`[INFO] Navigated to ${garageOrder[targetIndex]} via arrow keys`);
   }
 }
