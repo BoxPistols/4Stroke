@@ -61,6 +61,7 @@ body {
 
   scroll-behavior:smooth;
   @include flex(null, center);
+  align-items:flex-end;
   &:before {
     position:fixed;
     z-index:-1;
@@ -104,6 +105,70 @@ input[type="button"] {
   line-height:1;
 
   filter:drop-shadow(1px 1px 0px black);
+}
+
+// Universal button style with horizontal line design
+.btn {
+  background:#f92672;
+  border:none;
+  color:white;
+  cursor:pointer;
+  font-size:14px;
+  font-family:"Oswald", sans-serif;
+  font-weight:600;
+  padding:1px 6px;
+  transition:all 0.2s;
+  filter:drop-shadow(1px 1px 0px black);
+  text-transform:uppercase;
+  letter-spacing:0.05em;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:1px;
+  position:relative;
+  min-width:60px;
+  min-height:28px;
+
+  // Center horizontal line (cool & solid design)
+  &::before {
+    content:'';
+    position:absolute;
+    top:50%;
+    left:0;
+    right:0;
+    height:1px;
+    background:rgba(255, 255, 255, 0.3);
+    transform:translateY(-50%);
+    z-index:-1;
+  }
+
+  // Glow effect
+  &::after {
+    content:'';
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:100%;
+    height:100%;
+    background:radial-gradient(circle, rgba(249, 38, 114, 0.4) 0%, transparent 70%);
+    transform:translate(-50%, -50%);
+    opacity:0;
+    transition:opacity 0.2s;
+    z-index:-2;
+  }
+
+  &:hover {
+    background:#ff2e7e;
+    transform:translateY(-1px);
+
+    &::after {
+      opacity:1;
+    }
+  }
+
+  &:active {
+    transform:translateY(0);
+  }
 }
 
 // Sync notification styles
