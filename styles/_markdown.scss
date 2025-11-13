@@ -8,6 +8,10 @@
   gap: 8px;
   flex: 1;
   overflow: hidden;
+  position: relative;
+
+  // Notion-style preview/edit mode DISABLED
+  // Causes issues with textarea visibility and interaction
 }
 
 // Preview container

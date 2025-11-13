@@ -19,6 +19,7 @@ import {
   createProgressHTML,
   setupCheckboxHandlers,
   updateTextWithCheckbox
+  // initNotionStylePreview - DISABLED: Causes UI issues
 } from './markdown-renderer.js';
 
 // Settings import
@@ -689,6 +690,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   // Initialize settings (garage order and shortcuts)
   initializeSettings();
+
+  // Initialize Notion-style preview mode
+  // DISABLED: Causes issues with textarea visibility and interaction
+  // initNotionStylePreview();
 
   // Keyboard navigation for garages
   setupKeyboardNavigation();

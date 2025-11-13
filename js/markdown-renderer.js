@@ -147,3 +147,45 @@ export function updateTextWithCheckbox(originalText, index, isChecked) {
 
   return lines.join('\n');
 }
+
+/**
+ * Initialize Notion-style preview mode for all stroke containers
+ */
+export function initNotionStylePreview() {
+  const containers = document.querySelectorAll('.stroke-container');
+
+  containers.forEach(container => {
+    const textarea = container.querySelector('.stroke');
+    const preview = container.querySelector('.stroke-preview');
+
+    if (!textarea || !preview) return;
+
+    // Set default to preview mode
+    container.classList.add('preview-mode');
+
+    // Click preview to enter edit mode
+    preview.addEventListener('click', () => {
+      container.classList.remove('preview-mode');
+      container.classList.add('edit-mode');
+      textarea.focus();
+    });
+
+    // Exit edit mode when textarea loses focus
+    textarea.addEventListener('blur', () => {
+      // Small delay to ensure any pending changes are saved
+      setTimeout(() => {
+        container.classList.remove('edit-mode');
+        container.classList.add('preview-mode');
+      }, 100);
+    });
+
+    // Exit edit mode on Escape key
+    textarea.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        textarea.blur();
+      }
+    });
+  });
+
+  console.log('[INFO] Notion-style preview mode initialized');
+}
