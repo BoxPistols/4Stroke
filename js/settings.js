@@ -59,34 +59,54 @@ export function resetSettings() {
 }
 
 /**
- * Apply garage order by rearranging DOM elements
+ * Get the data garage ID for a given UI position (0-3)
+ * UI positions are fixed: garageA, garageB, garageC, garageD
+ * This returns which garage's data should be displayed at that position
+ */
+export function getGarageDataIdFromPosition(position) {
+  const settings = loadSettings();
+  const order = settings.garageOrder;
+  return order[position] || `garage${position + 1}`;
+}
+
+/**
+ * Get the UI position (0-3) for a given data garage ID
+ * This is the inverse of getGarageDataIdFromPosition
+ */
+export function getPositionFromGarageDataId(garageId) {
+  const settings = loadSettings();
+  const order = settings.garageOrder;
+  const position = order.indexOf(garageId);
+  return position >= 0 ? position : parseInt(garageId.replace('garage', '')) - 1;
+}
+
+/**
+ * Apply garage order by updating titles (not moving DOM elements)
+ * DOM positions remain fixed: garageA, garageB, garageC, garageD
+ * Only the displayed titles and data change based on the order
  */
 export function applyGarageOrder(order) {
   const garagesContainer = document.querySelector('.garages');
   if (!garagesContainer) return;
 
-  // Get all garage elements
-  const garageElements = {};
-  order.forEach(id => {
-    const element = document.getElementById(id);
-    if (element) {
-      garageElements[id] = element;
+  // Fixed UI positions (DOM IDs)
+  const uiPositions = ['garageA', 'garageB', 'garageC', 'garageD'];
+
+  // Update the <h2> garage titles to reflect the order
+  uiPositions.forEach((uiId, index) => {
+    const dataGarageId = order[index];
+    const garageLetter = dataGarageId.replace('garage', '');
+    const garageElement = document.getElementById(uiId);
+
+    if (garageElement) {
+      const titleElement = garageElement.querySelector('.garage-title');
+      if (titleElement) {
+        titleElement.textContent = `GARAGE-${garageLetter}`;
+      }
     }
   });
 
-  // Remove all garages from container
-  Object.values(garageElements).forEach(element => {
-    element.remove();
-  });
-
-  // Re-add garages in new order
-  order.forEach(id => {
-    if (garageElements[id]) {
-      garagesContainer.appendChild(garageElements[id]);
-    }
-  });
-
-  console.log('[INFO] Garage order applied:', order);
+  console.log('[INFO] Garage order applied (titles updated):', order);
 }
 
 /**
