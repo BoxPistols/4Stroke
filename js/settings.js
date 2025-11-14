@@ -95,6 +95,10 @@ export function applyGarageOrder(order) {
   // Update the <h2> garage titles to reflect the order
   uiPositions.forEach((uiId, index) => {
     const dataGarageId = order[index];
+
+    // Skip if garage ID is invalid or undefined
+    if (!dataGarageId || typeof dataGarageId !== 'string') return;
+
     const garageLetter = dataGarageId.replace('garage', '');
     const garageElement = document.getElementById(uiId);
 
