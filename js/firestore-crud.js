@@ -11,13 +11,28 @@ import {
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 /**
+ * Convert garage ID to numeric format for Firestore storage
+ * Supports both lettered IDs (garageA-D) and numeric IDs (garage1-4)
+ */
+function normalizeGarageId(garageId) {
+  // Handle lettered IDs: garageA -> garage1, garageB -> garage2, etc.
+  if (garageId.match(/^garage[A-D]$/)) {
+    const num = garageId.charCodeAt(6) - 64; // 'A' is 65, so A=1, B=2, C=3, D=4
+    return `garage${num}`;
+  }
+  // Already numeric ID
+  return garageId;
+}
+
+/**
  * ユーザーのガレージドキュメント参照を取得
  * @param {string} userId - ユーザーID
- * @param {string} garageId - ガレージID (garage1, garage2, garage3, garage4)
+ * @param {string} garageId - ガレージID (supports both garage1-4 and garageA-D)
  * @returns {DocumentReference} ドキュメント参照
  */
 function getUserDocRef(userId, garageId) {
-  return doc(db, 'users', userId, 'garages', garageId);
+  const normalizedId = normalizeGarageId(garageId);
+  return doc(db, 'users', userId, 'garages', normalizedId);
 }
 
 /**
@@ -55,7 +70,7 @@ export async function loadGarageData(userId, garageId) {
 /**
  * 全ガレージデータを読み込み（4つ）- 並列処理で高速化
  * @param {string} userId - ユーザーID
- * @returns {Promise<Object>} 全ガレージデータ
+ * @returns {Promise<Object>} 全ガレージデータ (lettered keys: garageA, garageB, garageC, garageD)
  */
 export async function loadAllGarages(userId) {
   console.log('📖 全ガレージデータ読み込み開始...');
@@ -72,7 +87,13 @@ export async function loadAllGarages(userId) {
     const [garage1, garage2, garage3, garage4] = await Promise.all(garagePromises);
 
     console.log('✅ 全ガレージ読み込み完了');
-    return { garage1, garage2, garage3, garage4 };
+    // Return with lettered keys to match UI layer
+    return { 
+      garageA: garage1, 
+      garageB: garage2, 
+      garageC: garage3, 
+      garageD: garage4 
+    };
   } catch (error) {
     console.error('❌ 全ガレージ読み込み失敗:', error);
     throw error;
