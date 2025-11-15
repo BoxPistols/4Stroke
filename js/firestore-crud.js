@@ -88,11 +88,11 @@ export async function loadAllGarages(userId) {
 
     console.log('✅ 全ガレージ読み込み完了');
     // Return with lettered keys to match UI layer
-    return { 
-      garageA: garage1, 
-      garageB: garage2, 
-      garageC: garage3, 
-      garageD: garage4 
+    return {
+      garageA: garage1,
+      garageB: garage2,
+      garageC: garage3,
+      garageD: garage4
     };
   } catch (error) {
     console.error('❌ 全ガレージ読み込み失敗:', error);

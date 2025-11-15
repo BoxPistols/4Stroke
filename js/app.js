@@ -68,6 +68,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       for (let i = 1; i <= 4; i++) {
         const letteredId = `garage${String.fromCharCode(64 + i)}`; // garageA, garageB, etc.
         const garage = garages[letteredId];
+        const uiPosition = i - 1; // UI position (0-3)
 
         // Set title
         const titleInput = document.querySelector(`#${letteredId} .stroke-title`);
@@ -104,6 +105,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         saveTimer = setTimeout(async () => {
           const uiPosition = Math.floor(i / 4); // UI position (0-3)
           const strokeNum = (i % 4) + 1;
+          const garageNum = uiPosition + 1; // Garage number (1-4)
           const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
           const fieldKey = `stroke${strokeNum}`;
 
@@ -146,6 +148,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             // Trigger save
             const uiPosition = Math.floor(i / 4); // UI position (0-3)
             const strokeNum = (i % 4) + 1;
+            const garageNum = uiPosition + 1; // Garage number (1-4)
             const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
             const fieldKey = `stroke${strokeNum}`;
 
@@ -194,6 +197,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (confirm("Delete this stroke?")) {
           const uiPosition = Math.floor(i / 4); // UI position (0-3)
           const strokeNum = (i % 4) + 1;
+          const garageNum = uiPosition + 1; // Garage number (1-4)
           const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
           const fieldKey = `stroke${strokeNum}`;
 
