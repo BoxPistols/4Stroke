@@ -258,7 +258,7 @@ async function syncToMainView(noteIndex, content) {
 async function saveNoteToStorage(noteIndex, content) {
   const garageNum = Math.floor((noteIndex - 1) / 4) + 1;
   const strokeNum = ((noteIndex - 1) % 4) + 1;
-  const garageId = `garage${garageNum}`;
+  const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
   const fieldKey = `stroke${strokeNum}`;
 
   try {

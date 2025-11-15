@@ -62,10 +62,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       // Populate UI
       for (let i = 1; i <= 4; i++) {
-        const garage = garages[`garage${i}`];
+        const letteredId = `garage${String.fromCharCode(64 + i)}`; // garageA, garageB, etc.
+        const garage = garages[letteredId];
 
         // Set title
-        const titleInput = document.querySelector(`#garage${String.fromCharCode(64 + i)} .stroke-title`);
+        const titleInput = document.querySelector(`#${letteredId} .stroke-title`);
         if (titleInput) {
           titleInput.value = garage.title || '';
         }
@@ -99,7 +100,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         saveTimer = setTimeout(async () => {
           const garageNum = Math.floor(i / 4) + 1;
           const strokeNum = (i % 4) + 1;
-          const garageId = `garage${garageNum}`;
+          const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
           const fieldKey = `stroke${strokeNum}`;
 
           try {
@@ -141,7 +142,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             // Trigger save
             const garageNum = Math.floor(i / 4) + 1;
             const strokeNum = (i % 4) + 1;
-            const garageId = `garage${garageNum}`;
+            const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
             const fieldKey = `stroke${strokeNum}`;
 
             await Storage.saveStroke(userId, garageId, fieldKey, elm.value);
@@ -166,7 +167,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       input.addEventListener("keyup", (event) => {
         clearTimeout(saveTimer);
         saveTimer = setTimeout(async () => {
-          const garageId = `garage${i + 1}`;
+          const garageId = `garage${String.fromCharCode(65 + i)}`; // garageA, garageB, etc.
           try {
             await Storage.saveTitle(userId, garageId, event.target.value);
             autoSave();
@@ -189,7 +190,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (confirm("Delete this stroke?")) {
           const garageNum = Math.floor(i / 4) + 1;
           const strokeNum = (i % 4) + 1;
-          const garageId = `garage${garageNum}`;
+          const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
           const fieldKey = `stroke${strokeNum}`;
 
           try {
@@ -218,7 +219,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         if (confirm(`Delete "${titleInput.value}"?`)) {
-          const garageId = `garage${i + 1}`;
+          const garageId = `garage${String.fromCharCode(65 + i)}`; // garageA, garageB, etc.
 
           try {
             await Storage.saveTitle(userId, garageId, '');
@@ -242,7 +243,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const garageName = btn.value.replace("Delete /", "").trim();
 
         if (confirm(`Delete ${garageName}?`)) {
-          const garageId = `garage${garageIndex + 1}`;
+          const garageId = `garage${String.fromCharCode(65 + garageIndex)}`; // garageA, garageB, etc.
 
           try {
             await Storage.deleteGarage(userId, garageId);

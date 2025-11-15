@@ -82,6 +82,42 @@ describe('Storage Service', () => {
         stroke4: 'G2 Stroke 4',
       });
     });
+
+    it('should load garage data with lettered ID (garageA)', () => {
+      localStorage.setItem('stroke-title1', 'Test Garage A');
+      localStorage.setItem('stroke1', 'Stroke 1');
+      localStorage.setItem('stroke2', 'Stroke 2');
+      localStorage.setItem('stroke3', 'Stroke 3');
+      localStorage.setItem('stroke4', 'Stroke 4');
+
+      const data = LocalStorage.loadGarageData('garageA');
+
+      expect(data).toEqual({
+        title: 'Test Garage A',
+        stroke1: 'Stroke 1',
+        stroke2: 'Stroke 2',
+        stroke3: 'Stroke 3',
+        stroke4: 'Stroke 4',
+      });
+    });
+
+    it('should load garage data with lettered ID (garageC)', () => {
+      localStorage.setItem('stroke-title3', 'Test Garage C');
+      localStorage.setItem('stroke9', 'C Stroke 1');
+      localStorage.setItem('stroke10', 'C Stroke 2');
+      localStorage.setItem('stroke11', 'C Stroke 3');
+      localStorage.setItem('stroke12', 'C Stroke 4');
+
+      const data = LocalStorage.loadGarageData('garageC');
+
+      expect(data).toEqual({
+        title: 'Test Garage C',
+        stroke1: 'C Stroke 1',
+        stroke2: 'C Stroke 2',
+        stroke3: 'C Stroke 3',
+        stroke4: 'C Stroke 4',
+      });
+    });
   });
 
   describe('LocalStorage - loadAllGarages', () => {
@@ -94,10 +130,10 @@ describe('Storage Service', () => {
       const garages = await LocalStorage.loadAllGarages();
 
       expect(Object.keys(garages)).toHaveLength(4);
-      expect(garages.garage1.title).toBe('Garage 1');
-      expect(garages.garage2.title).toBe('Garage 2');
-      expect(garages.garage3.title).toBe('Garage 3');
-      expect(garages.garage4.title).toBe('Garage 4');
+      expect(garages.garageA.title).toBe('Garage 1');
+      expect(garages.garageB.title).toBe('Garage 2');
+      expect(garages.garageC.title).toBe('Garage 3');
+      expect(garages.garageD.title).toBe('Garage 4');
     });
   });
 
@@ -126,12 +162,32 @@ describe('Storage Service', () => {
       await LocalStorage.saveStroke('garage4', 'stroke4', 'Test Stroke');
       expect(localStorage.getItem('stroke16')).toBe('Test Stroke');
     });
+
+    it('should save title with lettered ID (garageA)', async () => {
+      await LocalStorage.saveStroke('garageA', 'title', 'New Title A');
+      expect(localStorage.getItem('stroke-title1')).toBe('New Title A');
+    });
+
+    it('should save stroke1 with lettered ID (garageB)', async () => {
+      await LocalStorage.saveStroke('garageB', 'stroke1', 'Test Stroke B');
+      expect(localStorage.getItem('stroke5')).toBe('Test Stroke B');
+    });
+
+    it('should save stroke4 for garageD with index 16', async () => {
+      await LocalStorage.saveStroke('garageD', 'stroke4', 'Test Stroke D');
+      expect(localStorage.getItem('stroke16')).toBe('Test Stroke D');
+    });
   });
 
   describe('LocalStorage - saveTitle', () => {
     it('should save title using saveStroke', async () => {
       await LocalStorage.saveTitle('garage2', 'My Title');
       expect(localStorage.getItem('stroke-title2')).toBe('My Title');
+    });
+
+    it('should save title with lettered ID', async () => {
+      await LocalStorage.saveTitle('garageC', 'My Title C');
+      expect(localStorage.getItem('stroke-title3')).toBe('My Title C');
     });
   });
 
@@ -140,6 +196,12 @@ describe('Storage Service', () => {
       localStorage.setItem('stroke1', 'Test');
       await LocalStorage.deleteStroke('garage1', 'stroke1');
       expect(localStorage.getItem('stroke1')).toBe('');
+    });
+
+    it('should delete stroke with lettered ID', async () => {
+      localStorage.setItem('stroke9', 'Test');
+      await LocalStorage.deleteStroke('garageC', 'stroke1');
+      expect(localStorage.getItem('stroke9')).toBe('');
     });
   });
 
@@ -175,6 +237,22 @@ describe('Storage Service', () => {
       expect(localStorage.getItem('stroke11')).toBe('');
       expect(localStorage.getItem('stroke12')).toBe('');
     });
+
+    it('should delete garage with lettered ID (garageB)', async () => {
+      localStorage.setItem('stroke-title2', 'GB');
+      localStorage.setItem('stroke5', 'S1');
+      localStorage.setItem('stroke6', 'S2');
+      localStorage.setItem('stroke7', 'S3');
+      localStorage.setItem('stroke8', 'S4');
+
+      await LocalStorage.deleteGarage('garageB');
+
+      expect(localStorage.getItem('stroke-title2')).toBe('');
+      expect(localStorage.getItem('stroke5')).toBe('');
+      expect(localStorage.getItem('stroke6')).toBe('');
+      expect(localStorage.getItem('stroke7')).toBe('');
+      expect(localStorage.getItem('stroke8')).toBe('');
+    });
   });
 
   describe('Storage - Unified API in Local Mode', () => {
@@ -185,11 +263,16 @@ describe('Storage Service', () => {
     it('should use LocalStorage for loadAllGarages', async () => {
       localStorage.setItem('stroke-title1', 'Test');
       const garages = await Storage.loadAllGarages();
-      expect(garages.garage1.title).toBe('Test');
+      expect(garages.garageA.title).toBe('Test');
     });
 
     it('should use LocalStorage for saveStroke', async () => {
       await Storage.saveStroke(null, 'garage1', 'stroke1', 'Value');
+      expect(localStorage.getItem('stroke1')).toBe('Value');
+    });
+
+    it('should use LocalStorage for saveStroke with lettered ID', async () => {
+      await Storage.saveStroke(null, 'garageA', 'stroke1', 'Value');
       expect(localStorage.getItem('stroke1')).toBe('Value');
     });
 
@@ -198,16 +281,33 @@ describe('Storage Service', () => {
       expect(localStorage.getItem('stroke-title1')).toBe('Title');
     });
 
+    it('should use LocalStorage for saveTitle with lettered ID', async () => {
+      await Storage.saveTitle(null, 'garageB', 'Title');
+      expect(localStorage.getItem('stroke-title2')).toBe('Title');
+    });
+
     it('should use LocalStorage for deleteStroke', async () => {
       localStorage.setItem('stroke1', 'Test');
       await Storage.deleteStroke(null, 'garage1', 'stroke1');
       expect(localStorage.getItem('stroke1')).toBe('');
     });
 
+    it('should use LocalStorage for deleteStroke with lettered ID', async () => {
+      localStorage.setItem('stroke9', 'Test');
+      await Storage.deleteStroke(null, 'garageC', 'stroke1');
+      expect(localStorage.getItem('stroke9')).toBe('');
+    });
+
     it('should use LocalStorage for deleteGarage', async () => {
       localStorage.setItem('stroke-title1', 'Test');
       await Storage.deleteGarage(null, 'garage1');
       expect(localStorage.getItem('stroke-title1')).toBe('');
+    });
+
+    it('should use LocalStorage for deleteGarage with lettered ID', async () => {
+      localStorage.setItem('stroke-title4', 'Test');
+      await Storage.deleteGarage(null, 'garageD');
+      expect(localStorage.getItem('stroke-title4')).toBe('');
     });
   });
 
