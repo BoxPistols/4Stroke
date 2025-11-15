@@ -34,6 +34,31 @@ export function isLocalMode() {
 }
 
 /**
+ * Convert garage ID to numeric index
+ * Supports both lettered IDs (garageA-D) and numeric IDs (garage1-4)
+ */
+function garageIdToNumber(garageId) {
+  // Handle lettered IDs: garageA -> 1, garageB -> 2, etc.
+  if (garageId.match(/^garage[A-D]$/)) {
+    return garageId.charCodeAt(6) - 64; // 'A' is 65, so A=1, B=2, C=3, D=4
+  }
+  // Handle numeric IDs: garage1 -> 1, garage2 -> 2, etc.
+  if (garageId.match(/^garage[1-4]$/)) {
+    return parseInt(garageId.replace('garage', ''));
+  }
+  // Fallback: try to parse any number
+  const num = parseInt(garageId.replace('garage', ''));
+  return isNaN(num) ? 1 : num;
+}
+
+/**
+ * Convert numeric index to lettered garage ID
+ */
+function numberToGarageId(num) {
+  return `garage${String.fromCharCode(64 + num)}`; // 1 -> A, 2 -> B, etc.
+}
+
+/**
  * Local Storage implementation
  */
 export const LocalStorage = {
@@ -41,7 +66,7 @@ export const LocalStorage = {
    * Load garage data from localStorage
    */
   loadGarageData(garageId) {
-    const garageNum = parseInt(garageId.replace('garage', ''));
+    const garageNum = garageIdToNumber(garageId);
     return {
       title: localStorage.getItem(`stroke-title${garageNum}`) || '',
       stroke1: localStorage.getItem(`stroke${(garageNum - 1) * 4 + 1}`) || '',
@@ -57,7 +82,8 @@ export const LocalStorage = {
   async loadAllGarages() {
     const garages = {};
     for (let i = 1; i <= 4; i++) {
-      garages[`garage${i}`] = this.loadGarageData(`garage${i}`);
+      const letteredId = numberToGarageId(i);
+      garages[letteredId] = this.loadGarageData(letteredId);
     }
     return garages;
   },
@@ -66,7 +92,7 @@ export const LocalStorage = {
    * Save stroke to localStorage
    */
   async saveStroke(garageId, fieldKey, value) {
-    const garageNum = parseInt(garageId.replace('garage', ''));
+    const garageNum = garageIdToNumber(garageId);
 
     if (fieldKey === 'title') {
       localStorage.setItem(`stroke-title${garageNum}`, value);
@@ -96,7 +122,7 @@ export const LocalStorage = {
    * Delete entire garage from localStorage
    */
   async deleteGarage(garageId) {
-    const garageNum = parseInt(garageId.replace('garage', ''));
+    const garageNum = garageIdToNumber(garageId);
 
     localStorage.setItem(`stroke-title${garageNum}`, '');
     for (let i = 1; i <= 4; i++) {

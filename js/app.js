@@ -64,17 +64,13 @@ document.addEventListener("DOMContentLoaded", async function () {
       console.log('[INFO] Loading data...');
       const garages = await Storage.loadAllGarages(userId);
 
-      // UI positions are fixed: garageA, garageB, garageC, garageD
-      const uiPositions = ['garageA', 'garageB', 'garageC', 'garageD'];
-
-      // Populate UI based on garage order
-      for (let uiPosition = 0; uiPosition < 4; uiPosition++) {
-        // Get which garage's data should be displayed at this UI position
-        const dataGarageId = getGarageDataIdFromPosition(uiPosition);
-        const garage = garages[dataGarageId];
+      // Populate UI
+      for (let i = 1; i <= 4; i++) {
+        const letteredId = `garage${String.fromCharCode(64 + i)}`; // garageA, garageB, etc.
+        const garage = garages[letteredId];
 
         // Set title
-        const titleInput = document.querySelector(`#${uiPositions[uiPosition]} .stroke-title`);
+        const titleInput = document.querySelector(`#${letteredId} .stroke-title`);
         if (titleInput) {
           titleInput.value = garage.title || '';
         }
@@ -108,8 +104,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         saveTimer = setTimeout(async () => {
           const uiPosition = Math.floor(i / 4); // UI position (0-3)
           const strokeNum = (i % 4) + 1;
-          // Map UI position to actual data garage ID
-          const garageId = getGarageDataIdFromPosition(uiPosition);
+          const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
           const fieldKey = `stroke${strokeNum}`;
 
           try {
@@ -151,8 +146,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             // Trigger save
             const uiPosition = Math.floor(i / 4); // UI position (0-3)
             const strokeNum = (i % 4) + 1;
-            // Map UI position to actual data garage ID
-            const garageId = getGarageDataIdFromPosition(uiPosition);
+            const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
             const fieldKey = `stroke${strokeNum}`;
 
             await Storage.saveStroke(userId, garageId, fieldKey, elm.value);
@@ -177,8 +171,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       input.addEventListener("keyup", (event) => {
         clearTimeout(saveTimer);
         saveTimer = setTimeout(async () => {
-          // Map UI position to actual data garage ID
-          const garageId = getGarageDataIdFromPosition(i);
+          const garageId = `garage${String.fromCharCode(65 + i)}`; // garageA, garageB, etc.
           try {
             await Storage.saveTitle(userId, garageId, event.target.value);
             autoSave();
@@ -201,8 +194,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (confirm("Delete this stroke?")) {
           const uiPosition = Math.floor(i / 4); // UI position (0-3)
           const strokeNum = (i % 4) + 1;
-          // Map UI position to actual data garage ID
-          const garageId = getGarageDataIdFromPosition(uiPosition);
+          const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
           const fieldKey = `stroke${strokeNum}`;
 
           try {
@@ -231,8 +223,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         if (confirm(`Delete "${titleInput.value}"?`)) {
-          // Map UI position to actual data garage ID
-          const garageId = getGarageDataIdFromPosition(i);
+          const garageId = `garage${String.fromCharCode(65 + i)}`; // garageA, garageB, etc.
 
           try {
             await Storage.saveTitle(userId, garageId, '');
@@ -256,8 +247,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const garageName = btn.value.replace("Delete /", "").trim();
 
         if (confirm(`Delete ${garageName}?`)) {
-          // Map UI position to actual data garage ID
-          const garageId = getGarageDataIdFromPosition(garageIndex);
+          const garageId = `garage${String.fromCharCode(65 + garageIndex)}`; // garageA, garageB, etc.
 
           try {
             await Storage.deleteGarage(userId, garageId);

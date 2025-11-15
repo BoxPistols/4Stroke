@@ -266,9 +266,7 @@ async function saveNoteToStorage(noteIndex, content) {
   // noteIndex is 1-16, representing UI positions
   const uiPosition = Math.floor((noteIndex - 1) / 4); // 0-3
   const strokeNum = ((noteIndex - 1) % 4) + 1;
-
-  // Map UI position to actual data garage ID
-  const garageId = getGarageDataIdFromPosition(uiPosition);
+  const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
   const fieldKey = `stroke${strokeNum}`;
 
   try {
