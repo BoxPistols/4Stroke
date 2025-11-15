@@ -34,33 +34,28 @@ export function isLocalMode() {
 }
 
 /**
- * Helper function to convert lettered garage ID to numeric index
- * @param {string} garageId - Either 'garageA-D' or 'garage1-4'
- * @returns {number} Numeric index (1-4)
+ * Convert garage ID to numeric index
+ * Supports both lettered IDs (garageA-D) and numeric IDs (garage1-4)
  */
-function getGarageNumber(garageId) {
-  // Extract the suffix after 'garage'
-  const suffix = garageId.replace('garage', '');
-  
-  // If it's already a number, use it
-  const numericValue = parseInt(suffix, 10);
-  if (!isNaN(numericValue)) {
-    return numericValue;
+function garageIdToNumber(garageId) {
+  // Handle lettered IDs: garageA -> 1, garageB -> 2, etc.
+  if (garageId.match(/^garage[A-D]$/)) {
+    return garageId.charCodeAt(6) - 64; // 'A' is 65, so A=1, B=2, C=3, D=4
   }
-  
-  // If it's a letter (A-D), convert to number (1-4)
-  const letterMap = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
-  return letterMap[suffix.toUpperCase()] || 1;
+  // Handle numeric IDs: garage1 -> 1, garage2 -> 2, etc.
+  if (garageId.match(/^garage[1-4]$/)) {
+    return parseInt(garageId.replace('garage', ''));
+  }
+  // Fallback: try to parse any number
+  const num = parseInt(garageId.replace('garage', ''));
+  return isNaN(num) ? 1 : num;
 }
 
 /**
- * Helper function to convert numeric index to lettered garage ID
- * @param {number} garageNum - Numeric index (1-4)
- * @returns {string} Lettered garage ID (garageA-D)
+ * Convert numeric index to lettered garage ID
  */
-function getGarageLetterId(garageNum) {
-  const letters = ['A', 'B', 'C', 'D'];
-  return `garage${letters[garageNum - 1] || 'A'}`;
+function numberToGarageId(num) {
+  return `garage${String.fromCharCode(64 + num)}`; // 1 -> A, 2 -> B, etc.
 }
 
 /**
@@ -71,7 +66,7 @@ export const LocalStorage = {
    * Load garage data from localStorage
    */
   loadGarageData(garageId) {
-    const garageNum = getGarageNumber(garageId);
+    const garageNum = garageIdToNumber(garageId);
     return {
       title: localStorage.getItem(`stroke-title${garageNum}`) || '',
       stroke1: localStorage.getItem(`stroke${(garageNum - 1) * 4 + 1}`) || '',
@@ -87,8 +82,8 @@ export const LocalStorage = {
   async loadAllGarages() {
     const garages = {};
     for (let i = 1; i <= 4; i++) {
-      const letterId = getGarageLetterId(i);
-      garages[letterId] = this.loadGarageData(letterId);
+      const letteredId = numberToGarageId(i);
+      garages[letteredId] = this.loadGarageData(letteredId);
     }
     return garages;
   },
@@ -97,7 +92,7 @@ export const LocalStorage = {
    * Save stroke to localStorage
    */
   async saveStroke(garageId, fieldKey, value) {
-    const garageNum = getGarageNumber(garageId);
+    const garageNum = garageIdToNumber(garageId);
 
     if (fieldKey === 'title') {
       localStorage.setItem(`stroke-title${garageNum}`, value);
@@ -127,7 +122,7 @@ export const LocalStorage = {
    * Delete entire garage from localStorage
    */
   async deleteGarage(garageId) {
-    const garageNum = getGarageNumber(garageId);
+    const garageNum = garageIdToNumber(garageId);
 
     localStorage.setItem(`stroke-title${garageNum}`, '');
     for (let i = 1; i <= 4; i++) {
