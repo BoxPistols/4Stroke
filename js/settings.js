@@ -59,34 +59,64 @@ export function resetSettings() {
 }
 
 /**
- * Apply garage order by rearranging DOM elements
+ * Get the data garage ID for a given UI position (0-3)
+ * UI positions are fixed: garageA, garageB, garageC, garageD
+ * This returns which garage's data should be displayed at that position
+ */
+export function getGarageDataIdFromPosition(position) {
+  const settings = loadSettings();
+  const order = settings.garageOrder;
+  return order[position] || DEFAULT_SETTINGS.garageOrder[position];
+}
+
+/**
+ * Get the UI position (0-3) for a given data garage ID
+ * This is the inverse of getGarageDataIdFromPosition
+ */
+export function getPositionFromGarageDataId(garageId) {
+  const settings = loadSettings();
+  const order = settings.garageOrder;
+  const position = order.indexOf(garageId);
+  if (position >= 0) {
+    return position;
+  }
+  // Fallback for lettered IDs like 'garageA'
+  const garageLetter = garageId.replace('garage', '');
+  const fallbackPosition = garageLetter.charCodeAt(0) - 65; // 'A' is 65
+  return (fallbackPosition >= 0 && fallbackPosition < 4) ? fallbackPosition : -1;
+}
+
+/**
+ * Apply garage order by updating titles (not moving DOM elements)
+ * DOM positions remain fixed: garageA, garageB, garageC, garageD
+ * Only the displayed titles and data change based on the order
  */
 export function applyGarageOrder(order) {
   const garagesContainer = document.querySelector('.garages');
   if (!garagesContainer) return;
 
-  // Get all garage elements
-  const garageElements = {};
-  order.forEach(id => {
-    const element = document.getElementById(id);
-    if (element) {
-      garageElements[id] = element;
+  // Fixed UI positions (DOM IDs)
+  const uiPositions = ['garageA', 'garageB', 'garageC', 'garageD'];
+
+  // Update the <h2> garage titles to reflect the order
+  uiPositions.forEach((uiId, index) => {
+    const dataGarageId = order[index];
+
+    // Skip if garage ID is invalid or undefined
+    if (!dataGarageId || typeof dataGarageId !== 'string') return;
+
+    const garageLetter = dataGarageId.replace('garage', '');
+    const garageElement = document.getElementById(uiId);
+
+    if (garageElement) {
+      const titleElement = garageElement.querySelector('.garage-title');
+      if (titleElement) {
+        titleElement.textContent = `GARAGE-${garageLetter}`;
+      }
     }
   });
 
-  // Remove all garages from container
-  Object.values(garageElements).forEach(element => {
-    element.remove();
-  });
-
-  // Re-add garages in new order
-  order.forEach(id => {
-    if (garageElements[id]) {
-      garagesContainer.appendChild(garageElements[id]);
-    }
-  });
-
-  console.log('[INFO] Garage order applied:', order);
+  console.log('[INFO] Garage order applied (titles updated):', order);
 }
 
 /**
@@ -204,11 +234,15 @@ function populateSettingsForm() {
 
 /**
  * Setup drag and drop for garage order
+ * Supports both mouse (desktop) and touch (mobile) events
  */
 function setupDragAndDrop(container) {
   let draggedItem = null;
+  let touchStartY = 0;
+  let touchCurrentY = 0;
 
   container.querySelectorAll('.garage-order-item').forEach(item => {
+    // Mouse drag events (desktop)
     item.addEventListener('dragstart', (e) => {
       draggedItem = item;
       item.classList.add('dragging');
@@ -232,6 +266,45 @@ function setupDragAndDrop(container) {
         }
       }
     });
+
+    // Touch events (mobile)
+    item.addEventListener('touchstart', (e) => {
+      draggedItem = item;
+      touchStartY = e.touches[0].clientY;
+      item.classList.add('dragging');
+      e.preventDefault();
+    });
+
+    item.addEventListener('touchmove', (e) => {
+      if (!draggedItem) return;
+
+      touchCurrentY = e.touches[0].clientY;
+      const touch = e.touches[0];
+
+      // Find element at touch position
+      const elementAtPoint = document.elementFromPoint(touch.clientX, touch.clientY);
+      const targetItem = elementAtPoint?.closest('.garage-order-item');
+
+      if (targetItem && targetItem !== draggedItem) {
+        const rect = targetItem.getBoundingClientRect();
+        const midpoint = rect.top + rect.height / 2;
+
+        if (touch.clientY < midpoint) {
+          container.insertBefore(draggedItem, targetItem);
+        } else {
+          container.insertBefore(draggedItem, targetItem.nextSibling);
+        }
+      }
+
+      e.preventDefault();
+    });
+
+    item.addEventListener('touchend', () => {
+      if (draggedItem) {
+        draggedItem.classList.remove('dragging');
+        draggedItem = null;
+      }
+    });
   });
 }
 
@@ -241,18 +314,50 @@ function setupDragAndDrop(container) {
 function setupOrderButtons() {
   document.querySelectorAll('.order-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const index = parseInt(e.target.dataset.index);
+      e.preventDefault();
+      e.stopPropagation();
+
       const container = document.getElementById('garage-order-list');
       const items = Array.from(container.querySelectorAll('.garage-order-item'));
+      const currentItem = e.target.closest('.garage-order-item');
+      const currentIndex = items.indexOf(currentItem);
 
-      if (e.target.classList.contains('up') && index > 0) {
-        container.insertBefore(items[index], items[index - 1]);
-      } else if (e.target.classList.contains('down') && index < items.length - 1) {
-        container.insertBefore(items[index + 1], items[index]);
+      if (e.target.classList.contains('up') && currentIndex > 0) {
+        // Move item up (swap with previous item)
+        container.insertBefore(currentItem, items[currentIndex - 1]);
+      } else if (e.target.classList.contains('down') && currentIndex < items.length - 1) {
+        // Move item down (insert after next item)
+        container.insertBefore(currentItem, items[currentIndex + 2] || null);
       }
 
-      populateSettingsForm(); // Refresh buttons
+      // Update button states after reordering
+      updateOrderButtonStates();
     });
+  });
+}
+
+/**
+ * Update the enabled/disabled state of order buttons
+ */
+function updateOrderButtonStates() {
+  const container = document.getElementById('garage-order-list');
+  if (!container) return;
+
+  const items = Array.from(container.querySelectorAll('.garage-order-item'));
+
+  items.forEach((item, index) => {
+    const upBtn = item.querySelector('.order-btn.up');
+    const downBtn = item.querySelector('.order-btn.down');
+
+    if (upBtn) {
+      upBtn.disabled = index === 0;
+      upBtn.dataset.index = index;
+    }
+
+    if (downBtn) {
+      downBtn.disabled = index === items.length - 1;
+      downBtn.dataset.index = index;
+    }
   });
 }
 

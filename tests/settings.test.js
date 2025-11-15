@@ -48,10 +48,18 @@ function setupDOM() {
       </div>
     </div>
     <div class="garages">
-      <div class="garage" id="garageA"></div>
-      <div class="garage" id="garageB"></div>
-      <div class="garage" id="garageC"></div>
-      <div class="garage" id="garageD"></div>
+      <div class="garage" id="garageA">
+        <h2 class="garage-title">GARAGE-A</h2>
+      </div>
+      <div class="garage" id="garageB">
+        <h2 class="garage-title">GARAGE-B</h2>
+      </div>
+      <div class="garage" id="garageC">
+        <h2 class="garage-title">GARAGE-C</h2>
+      </div>
+      <div class="garage" id="garageD">
+        <h2 class="garage-title">GARAGE-D</h2>
+      </div>
     </div>
     <div id="confirm-modal" class="modal confirm-modal">
       <div class="modal-content">
@@ -177,18 +185,24 @@ describe('Settings Module', () => {
   });
 
   describe('Garage Order', () => {
-    it('should apply garage order by rearranging DOM', () => {
+    it('should apply garage order by updating titles (DOM positions remain fixed)', () => {
       const newOrder = ['garageD', 'garageC', 'garageB', 'garageA'];
 
       applyGarageOrder(newOrder);
 
+      // DOM element positions should remain fixed
       const container = document.querySelector('.garages');
       const garages = Array.from(container.children);
+      expect(garages[0].id).toBe('garageA');
+      expect(garages[1].id).toBe('garageB');
+      expect(garages[2].id).toBe('garageC');
+      expect(garages[3].id).toBe('garageD');
 
-      expect(garages[0].id).toBe('garageD');
-      expect(garages[1].id).toBe('garageC');
-      expect(garages[2].id).toBe('garageB');
-      expect(garages[3].id).toBe('garageA');
+      // But titles should reflect the new order
+      expect(garages[0].querySelector('.garage-title').textContent).toBe('GARAGE-D');
+      expect(garages[1].querySelector('.garage-title').textContent).toBe('GARAGE-C');
+      expect(garages[2].querySelector('.garage-title').textContent).toBe('GARAGE-B');
+      expect(garages[3].querySelector('.garage-title').textContent).toBe('GARAGE-A');
     });
 
     it('should handle partial order arrays', () => {
@@ -378,8 +392,13 @@ describe('Settings Module', () => {
       const container = document.querySelector('.garages');
       const garages = Array.from(container.children);
 
-      expect(garages[0].id).toBe('garageB');
-      expect(garages[1].id).toBe('garageA');
+      // DOM positions remain fixed
+      expect(garages[0].id).toBe('garageA');
+      expect(garages[1].id).toBe('garageB');
+
+      // But titles reflect the custom order
+      expect(garages[0].querySelector('.garage-title').textContent).toBe('GARAGE-B');
+      expect(garages[1].querySelector('.garage-title').textContent).toBe('GARAGE-A');
     });
 
     it('should setup shortcuts on init', () => {

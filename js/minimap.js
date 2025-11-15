@@ -3,6 +3,7 @@
 // with drag & drop functionality to swap note contents
 
 import { Storage } from './storage-service.js';
+import { getGarageDataIdFromPosition, loadSettings } from './settings.js';
 
 // Note metadata
 const GARAGE_NAMES = ['GARAGE-A', 'GARAGE-B', 'GARAGE-C', 'GARAGE-D'];
@@ -98,10 +99,16 @@ function createNoteCard(garageIndex, strokeIndex, noteIndex) {
   const mainTextarea = document.getElementById(`stroke${noteIndex}`);
   const currentValue = mainTextarea ? mainTextarea.value : '';
 
+  // Get the garage name based on garage order
+  // garageIndex is the UI position (0-3)
+  const dataGarageId = getGarageDataIdFromPosition(garageIndex);
+  const garageLetter = dataGarageId.replace('garage', '');
+  const garageName = `GARAGE-${garageLetter}`;
+
   card.innerHTML = `
     <div class="minimap-note-header">
       <div class="note-label">
-        <span class="garage-name">${GARAGE_NAMES[garageIndex]}</span>
+        <span class="garage-name">${garageName}</span>
         <span class="note-title">${NOTE_TITLES[strokeIndex]}</span>
       </div>
       <span class="drag-handle">⋮⋮</span>
@@ -256,7 +263,8 @@ async function syncToMainView(noteIndex, content) {
  * Save note to storage
  */
 async function saveNoteToStorage(noteIndex, content) {
-  const garageNum = Math.floor((noteIndex - 1) / 4) + 1;
+  // noteIndex is 1-16, representing UI positions
+  const uiPosition = Math.floor((noteIndex - 1) / 4); // 0-3
   const strokeNum = ((noteIndex - 1) % 4) + 1;
   const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
   const fieldKey = `stroke${strokeNum}`;

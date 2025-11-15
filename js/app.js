@@ -12,7 +12,10 @@ import {
   saveSettingsFromForm,
   resetSettings,
   resetSettingsWithConfirmation,
-  showConfirmation
+  showConfirmation,
+  getGarageDataIdFromPosition,
+  getPositionFromGarageDataId,
+  loadSettings
 } from './settings.js';
 
 // Minimap import
@@ -54,6 +57,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   /**
    * Load data from storage (Local or Firestore)
+   * Uses garage order mapping to display data at correct UI positions
    */
   async function loadData(userId) {
     try {
@@ -73,7 +77,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         // Set strokes
         for (let j = 1; j <= 4; j++) {
-          const strokeIndex = (i - 1) * 4 + j;
+          const strokeIndex = uiPosition * 4 + j;
           const textarea = handleTextArea[strokeIndex - 1];
           if (textarea) {
             textarea.value = garage[`stroke${j}`] || '';
@@ -98,7 +102,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Debounce (wait 500ms after continuous input)
         clearTimeout(saveTimer);
         saveTimer = setTimeout(async () => {
-          const garageNum = Math.floor(i / 4) + 1;
+          const uiPosition = Math.floor(i / 4); // UI position (0-3)
           const strokeNum = (i % 4) + 1;
           const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
           const fieldKey = `stroke${strokeNum}`;
@@ -140,7 +144,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             elm.setSelectionRange(newCursorPos, newCursorPos);
 
             // Trigger save
-            const garageNum = Math.floor(i / 4) + 1;
+            const uiPosition = Math.floor(i / 4); // UI position (0-3)
             const strokeNum = (i % 4) + 1;
             const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
             const fieldKey = `stroke${strokeNum}`;
@@ -188,7 +192,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         if (confirm("Delete this stroke?")) {
-          const garageNum = Math.floor(i / 4) + 1;
+          const uiPosition = Math.floor(i / 4); // UI position (0-3)
           const strokeNum = (i % 4) + 1;
           const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
           const fieldKey = `stroke${strokeNum}`;
@@ -354,9 +358,12 @@ document.addEventListener("DOMContentLoaded", async function () {
   function setupKeyboardNavigation() {
     let currentGarageIndex = 0;
 
+    // Fixed UI positions (DOM order is always the same)
+    const uiPositions = ['garageA', 'garageB', 'garageC', 'garageD'];
+
     // Get current garage index based on scroll position
-    function getCurrentGarageIndex(garages) {
-      const garageElements = garages.map(id => document.getElementById(id));
+    function getCurrentGarageIndex() {
+      const garageElements = uiPositions.map(id => document.getElementById(id));
       const scrollContainer = document.querySelector('.garages-container');
 
       if (!scrollContainer) return 0;
@@ -381,14 +388,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     // Navigate to specific garage
-    function navigateToGarage(index, garages) {
-      if (index < 0 || index >= garages.length) return;
+    function navigateToGarage(index) {
+      if (index < 0 || index >= uiPositions.length) return;
 
-      const targetGarage = document.getElementById(garages[index]);
+      const targetGarage = document.getElementById(uiPositions[index]);
       if (targetGarage) {
         targetGarage.scrollIntoView({ behavior: 'smooth', block: 'start' });
         currentGarageIndex = index;
-        console.log(`[INFO] Navigated to ${garages[index]}`);
+        console.log(`[INFO] Navigated to ${uiPositions[index]}`);
       }
     }
 
@@ -399,23 +406,19 @@ document.addEventListener("DOMContentLoaded", async function () {
         return;
       }
 
-      // Load current garage order from settings each time
-      const settings = loadSettings();
-      const garages = settings.garageOrder;
-
       // Get current garage index
-      currentGarageIndex = getCurrentGarageIndex(garages);
+      currentGarageIndex = getCurrentGarageIndex();
 
       switch (event.key) {
         case 'ArrowLeft':
         case 'ArrowUp':
           event.preventDefault();
-          navigateToGarage(currentGarageIndex - 1, garages);
+          navigateToGarage(currentGarageIndex - 1);
           break;
         case 'ArrowRight':
         case 'ArrowDown':
           event.preventDefault();
-          navigateToGarage(currentGarageIndex + 1, garages);
+          navigateToGarage(currentGarageIndex + 1);
           break;
       }
     });
