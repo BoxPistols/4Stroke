@@ -217,6 +217,9 @@
   gap: 12px;
   cursor: move;
   transition: all var(--transition-fast);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none; // Prevent default touch behaviors
 
   &:hover {
     background: rgba(0, 0, 0, 0.4);
@@ -225,13 +228,18 @@
 
   &.dragging {
     opacity: 0.5;
-    transform: rotate(2deg);
+    transform: rotate(2deg) scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
   }
 
   .drag-handle {
     color: rgba(255, 255, 255, 0.5);
     font-size: 20px;
     cursor: grab;
+    padding: 4px;
+    min-width: 32px; // Larger touch target
+    text-align: center;
 
     &:active {
       cursor: grabbing;
@@ -258,21 +266,44 @@
     border-radius: var(--radius-sm);
     color: white;
     cursor: pointer;
-    width: 28px;
-    height: 28px;
-    font-size: 16px;
+    width: 36px; // Larger for better touch targets
+    height: 36px;
+    font-size: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
 
     &:hover:not(:disabled) {
       background: rgba(255, 255, 255, 0.3);
     }
 
+    &:active:not(:disabled) {
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(0.95);
+    }
+
     &:disabled {
       opacity: 0.3;
       cursor: not-allowed;
+    }
+  }
+
+  // Mobile-specific adjustments
+  @media (max-width: 768px) {
+    padding: 16px;
+    gap: 16px;
+
+    .drag-handle {
+      font-size: 24px;
+      min-width: 40px;
+    }
+
+    .order-btn {
+      width: 44px; // Even larger on mobile
+      height: 44px;
+      font-size: 20px;
     }
   }
 }
