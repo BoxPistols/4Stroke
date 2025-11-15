@@ -77,7 +77,13 @@ export function getPositionFromGarageDataId(garageId) {
   const settings = loadSettings();
   const order = settings.garageOrder;
   const position = order.indexOf(garageId);
-  return position >= 0 ? position : parseInt(garageId.replace('garage', '')) - 1;
+  if (position >= 0) {
+    return position;
+  }
+  // Fallback for lettered IDs like 'garageA'
+  const garageLetter = garageId.replace('garage', '');
+  const fallbackPosition = garageLetter.charCodeAt(0) - 65; // 'A' is 65
+  return (fallbackPosition >= 0 && fallbackPosition < 4) ? fallbackPosition : -1;
 }
 
 /**
