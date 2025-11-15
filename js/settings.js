@@ -66,7 +66,7 @@ export function resetSettings() {
 export function getGarageDataIdFromPosition(position) {
   const settings = loadSettings();
   const order = settings.garageOrder;
-  return order[position] || `garage${position + 1}`;
+  return order[position] || DEFAULT_SETTINGS.garageOrder[position];
 }
 
 /**
