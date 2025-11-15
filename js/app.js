@@ -61,13 +61,21 @@ document.addEventListener("DOMContentLoaded", async function () {
    */
   async function loadData(userId) {
     try {
-      console.log('[INFO] Loading data...');
+      console.log('[INFO] Loading data...', { userId, mode: getStorageMode() });
       const garages = await Storage.loadAllGarages(userId);
+      console.log('[INFO] Garages loaded:', garages);
 
       // Populate UI
       for (let i = 1; i <= 4; i++) {
         const letteredId = `garage${String.fromCharCode(64 + i)}`; // garageA, garageB, etc.
         const garage = garages[letteredId];
+
+        // Safety check: skip if garage data is missing
+        if (!garage) {
+          console.warn(`[WARNING] No data for ${letteredId}`);
+          continue;
+        }
+
         const uiPosition = i - 1; // UI position (0-3)
 
         // Set title
@@ -89,7 +97,12 @@ document.addEventListener("DOMContentLoaded", async function () {
       console.log('[SUCCESS] Data loaded');
     } catch (error) {
       console.error('[ERROR] Data load failed:', error);
-      alert('Failed to load data. Please refresh the page.');
+      console.error('[ERROR] Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
+      alert(`Failed to load data. Please refresh the page.\n\nError: ${error.message}`);
     }
   }
 
