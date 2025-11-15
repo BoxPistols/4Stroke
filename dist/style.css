@@ -841,11 +841,15 @@ input.stroke-title {
   gap: var(--grid-gap);
   margin: var(--spacing-md) 0;
   width: 100%;
+  height: calc(92vh - 140px);
   border-radius: var(--radius-md);
 }
 .garages .garage-strokes .garage-stroke-box {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 100%;
+  height: 100%;
   margin: 0;
   padding: var(--spacing-vh-sm) var(--spacing-vw-sm);
   box-sizing: border-box;
@@ -896,11 +900,10 @@ input.stroke-title {
   border-color: var(--color1);
 }
 .garages textarea {
+  flex: 1;
   overflow: auto;
   width: 100%;
   max-width: 100%;
-  height: auto;
-  min-height: 60%;
   margin: auto;
   padding: 0.5ch 1ch;
   box-sizing: border-box;
@@ -950,8 +953,12 @@ input.stroke-title {
     width: 100%;
   }
   .garage-strokes .garage-stroke-box {
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
     max-width: 100%;
+    height: auto !important;
+    min-height: 400px;
     padding: 12px;
     box-sizing: border-box;
   }
@@ -985,15 +992,19 @@ input.stroke-title {
     width: 100%;
   }
   .garage-strokes .garage-stroke-box {
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
     max-width: 100%;
+    height: auto !important;
+    min-height: 350px;
     margin: 0 !important;
     padding: 16px !important;
     border-radius: 8px !important;
     box-sizing: border-box;
   }
   textarea {
-    min-height: 120px !important;
+    flex: 1 !important;
     font-size: 1rem !important;
     width: 100% !important;
     max-width: 100%;
@@ -1013,6 +1024,10 @@ input.stroke-title {
     gap: 12px !important;
   }
   .garage-strokes .garage-stroke-box {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 300px;
     padding: 12px !important;
     border-radius: 6px !important;
     width: 100% !important;
@@ -1020,7 +1035,7 @@ input.stroke-title {
     box-sizing: border-box;
   }
   textarea {
-    min-height: 100px !important;
+    flex: 1 !important;
     padding: 8px 10px !important;
     width: 100% !important;
     max-width: 100%;
@@ -1224,6 +1239,9 @@ input.stroke-title {
   gap: 12px;
   cursor: move;
   transition: all var(--transition-fast);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
 }
 .garage-order-item:hover {
   background: rgba(0, 0, 0, 0.4);
@@ -1231,12 +1249,17 @@ input.stroke-title {
 }
 .garage-order-item.dragging {
   opacity: 0.5;
-  transform: rotate(2deg);
+  transform: rotate(2deg) scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
 }
 .garage-order-item .drag-handle {
   color: rgba(255, 255, 255, 0.5);
   font-size: 20px;
   cursor: grab;
+  padding: 4px;
+  min-width: 32px;
+  text-align: center;
 }
 .garage-order-item .drag-handle:active {
   cursor: grabbing;
@@ -1259,20 +1282,40 @@ input.stroke-title {
   border-radius: var(--radius-sm);
   color: white;
   cursor: pointer;
-  width: 28px;
-  height: 28px;
-  font-size: 16px;
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
 }
 .garage-order-item .order-btn:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.3);
 }
+.garage-order-item .order-btn:active:not(:disabled) {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(0.95);
+}
 .garage-order-item .order-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+@media (max-width: 768px) {
+  .garage-order-item {
+    padding: 16px;
+    gap: 16px;
+  }
+  .garage-order-item .drag-handle {
+    font-size: 24px;
+    min-width: 40px;
+  }
+  .garage-order-item .order-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
 }
 
 .modal-actions {

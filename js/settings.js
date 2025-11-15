@@ -234,11 +234,15 @@ function populateSettingsForm() {
 
 /**
  * Setup drag and drop for garage order
+ * Supports both mouse (desktop) and touch (mobile) events
  */
 function setupDragAndDrop(container) {
   let draggedItem = null;
+  let touchStartY = 0;
+  let touchCurrentY = 0;
 
   container.querySelectorAll('.garage-order-item').forEach(item => {
+    // Mouse drag events (desktop)
     item.addEventListener('dragstart', (e) => {
       draggedItem = item;
       item.classList.add('dragging');
@@ -262,6 +266,45 @@ function setupDragAndDrop(container) {
         }
       }
     });
+
+    // Touch events (mobile)
+    item.addEventListener('touchstart', (e) => {
+      draggedItem = item;
+      touchStartY = e.touches[0].clientY;
+      item.classList.add('dragging');
+      e.preventDefault();
+    });
+
+    item.addEventListener('touchmove', (e) => {
+      if (!draggedItem) return;
+
+      touchCurrentY = e.touches[0].clientY;
+      const touch = e.touches[0];
+
+      // Find element at touch position
+      const elementAtPoint = document.elementFromPoint(touch.clientX, touch.clientY);
+      const targetItem = elementAtPoint?.closest('.garage-order-item');
+
+      if (targetItem && targetItem !== draggedItem) {
+        const rect = targetItem.getBoundingClientRect();
+        const midpoint = rect.top + rect.height / 2;
+
+        if (touch.clientY < midpoint) {
+          container.insertBefore(draggedItem, targetItem);
+        } else {
+          container.insertBefore(draggedItem, targetItem.nextSibling);
+        }
+      }
+
+      e.preventDefault();
+    });
+
+    item.addEventListener('touchend', () => {
+      if (draggedItem) {
+        draggedItem.classList.remove('dragging');
+        draggedItem = null;
+      }
+    });
   });
 }
 
@@ -271,18 +314,50 @@ function setupDragAndDrop(container) {
 function setupOrderButtons() {
   document.querySelectorAll('.order-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const index = parseInt(e.target.dataset.index);
+      e.preventDefault();
+      e.stopPropagation();
+
       const container = document.getElementById('garage-order-list');
       const items = Array.from(container.querySelectorAll('.garage-order-item'));
+      const currentItem = e.target.closest('.garage-order-item');
+      const currentIndex = items.indexOf(currentItem);
 
-      if (e.target.classList.contains('up') && index > 0) {
-        container.insertBefore(items[index], items[index - 1]);
-      } else if (e.target.classList.contains('down') && index < items.length - 1) {
-        container.insertBefore(items[index + 1], items[index]);
+      if (e.target.classList.contains('up') && currentIndex > 0) {
+        // Move item up (swap with previous item)
+        container.insertBefore(currentItem, items[currentIndex - 1]);
+      } else if (e.target.classList.contains('down') && currentIndex < items.length - 1) {
+        // Move item down (insert after next item)
+        container.insertBefore(currentItem, items[currentIndex + 2] || null);
       }
 
-      populateSettingsForm(); // Refresh buttons
+      // Update button states after reordering
+      updateOrderButtonStates();
     });
+  });
+}
+
+/**
+ * Update the enabled/disabled state of order buttons
+ */
+function updateOrderButtonStates() {
+  const container = document.getElementById('garage-order-list');
+  if (!container) return;
+
+  const items = Array.from(container.querySelectorAll('.garage-order-item'));
+
+  items.forEach((item, index) => {
+    const upBtn = item.querySelector('.order-btn.up');
+    const downBtn = item.querySelector('.order-btn.down');
+
+    if (upBtn) {
+      upBtn.disabled = index === 0;
+      upBtn.dataset.index = index;
+    }
+
+    if (downBtn) {
+      downBtn.disabled = index === items.length - 1;
+      downBtn.dataset.index = index;
+    }
   });
 }
 
