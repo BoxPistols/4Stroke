@@ -4,6 +4,10 @@
 
 import { Storage } from './storage-service.js';
 import { getGarageDataIdFromPosition, loadSettings } from './settings.js';
+import { TIMINGS, GARAGE } from './constants.js';
+import { debounce } from './utils/debounce.js';
+import { DOM, showAutoSaveMessage } from './utils/dom-cache.js';
+import { getGarageLetter, getNotePosition, numberToGarageId } from './utils/garage-id-utils.js';
 
 // Note metadata
 const GARAGE_NAMES = ['GARAGE-A', 'GARAGE-B', 'GARAGE-C', 'GARAGE-D'];
@@ -16,8 +20,8 @@ let currentUserId = null;
  * Open minimap view
  */
 export function openMinimapView() {
-  const minimapView = document.getElementById('minimap-view');
-  const toggleBtn = document.getElementById('minimap-toggle-btn');
+  const minimapView = DOM.minimapView;
+  const toggleBtn = DOM.minimapToggleBtn;
 
   if (minimapView) {
     minimapView.classList.add('active');
@@ -31,8 +35,8 @@ export function openMinimapView() {
  * Close minimap view
  */
 export function closeMinimapView() {
-  const minimapView = document.getElementById('minimap-view');
-  const toggleBtn = document.getElementById('minimap-toggle-btn');
+  const minimapView = DOM.minimapView;
+  const toggleBtn = DOM.minimapToggleBtn;
 
   if (minimapView) {
     minimapView.classList.remove('active');
@@ -45,7 +49,7 @@ export function closeMinimapView() {
  * Toggle minimap view
  */
 export function toggleMinimapView() {
-  const minimapView = document.getElementById('minimap-view');
+  const minimapView = DOM.minimapView;
   if (minimapView && minimapView.classList.contains('active')) {
     closeMinimapView();
   } else {
@@ -64,15 +68,15 @@ export function setMinimapUserId(userId) {
  * Populate minimap grid with all 16 notes
  */
 function populateMinimapGrid() {
-  const grid = document.getElementById('minimap-grid');
+  const grid = DOM.minimapGrid;
   if (!grid) return;
 
   grid.innerHTML = '';
 
   // Create 16 note cards (4 garages x 4 strokes)
-  for (let garageIndex = 0; garageIndex < 4; garageIndex++) {
-    for (let strokeIndex = 0; strokeIndex < 4; strokeIndex++) {
-      const noteIndex = garageIndex * 4 + strokeIndex + 1;
+  for (let garageIndex = 0; garageIndex < GARAGE.COUNT; garageIndex++) {
+    for (let strokeIndex = 0; strokeIndex < GARAGE.STROKES_PER_GARAGE; strokeIndex++) {
+      const noteIndex = garageIndex * GARAGE.STROKES_PER_GARAGE + strokeIndex + 1;
       const noteCard = createNoteCard(garageIndex, strokeIndex, noteIndex);
       grid.appendChild(noteCard);
     }
@@ -96,13 +100,13 @@ function createNoteCard(garageIndex, strokeIndex, noteIndex) {
   card.dataset.noteIndex = noteIndex;
 
   // Get current value from main textarea
-  const mainTextarea = document.getElementById(`stroke${noteIndex}`);
+  const mainTextarea = DOM.getTextarea(noteIndex);
   const currentValue = mainTextarea ? mainTextarea.value : '';
 
   // Get the garage name based on garage order
   // garageIndex is the UI position (0-3)
   const dataGarageId = getGarageDataIdFromPosition(garageIndex);
-  const garageLetter = dataGarageId.replace('garage', '');
+  const garageLetter = getGarageLetter(dataGarageId);
   const garageName = `GARAGE-${garageLetter}`;
 
   card.innerHTML = `
@@ -127,7 +131,7 @@ function createNoteCard(garageIndex, strokeIndex, noteIndex) {
   if (textarea) {
     textarea.addEventListener('input', debounce((e) => {
       syncToMainView(noteIndex, e.target.value);
-    }, 500));
+    }, TIMINGS.DEBOUNCE_DELAY));
   }
 
   return card;
@@ -226,8 +230,8 @@ async function handleDrop(e) {
     targetTextarea.value = draggedContent;
 
     // Swap contents in main view
-    const mainDraggedTextarea = document.getElementById(`stroke${draggedIndex}`);
-    const mainTargetTextarea = document.getElementById(`stroke${targetIndex}`);
+    const mainDraggedTextarea = DOM.getTextarea(draggedIndex);
+    const mainTargetTextarea = DOM.getTextarea(targetIndex);
 
     if (mainDraggedTextarea && mainTargetTextarea) {
       mainDraggedTextarea.value = targetContent;
@@ -251,7 +255,7 @@ async function handleDrop(e) {
  * Sync minimap textarea to main view
  */
 async function syncToMainView(noteIndex, content) {
-  const mainTextarea = document.getElementById(`stroke${noteIndex}`);
+  const mainTextarea = DOM.getTextarea(noteIndex);
   if (mainTextarea) {
     mainTextarea.value = content;
     await saveNoteToStorage(noteIndex, content);
@@ -261,12 +265,12 @@ async function syncToMainView(noteIndex, content) {
 
 /**
  * Save note to storage
+ * FIXED: garageNum was undefined - now using getNotePosition utility
  */
 async function saveNoteToStorage(noteIndex, content) {
   // noteIndex is 1-16, representing UI positions
-  const uiPosition = Math.floor((noteIndex - 1) / 4); // 0-3
-  const strokeNum = ((noteIndex - 1) % 4) + 1;
-  const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
+  const { garageNum, strokeNum } = getNotePosition(noteIndex);
+  const garageId = numberToGarageId(garageNum);
   const fieldKey = `stroke${strokeNum}`;
 
   try {
@@ -277,38 +281,10 @@ async function saveNoteToStorage(noteIndex, content) {
 }
 
 /**
- * Show auto-save message
- */
-function showAutoSaveMessage() {
-  const message = document.querySelector('#message');
-  if (message) {
-    message.classList.remove('is-hidden');
-    setTimeout(() => {
-      message.classList.add('is-hidden');
-    }, 1200);
-  }
-}
-
-/**
- * Debounce utility
- */
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
-
-/**
  * Refresh minimap view (reload data from main view)
  */
 export function refreshMinimapView() {
-  const minimapView = document.getElementById('minimap-view');
+  const minimapView = DOM.minimapView;
   if (minimapView && minimapView.classList.contains('active')) {
     populateMinimapGrid();
   }
@@ -320,9 +296,9 @@ export function refreshMinimapView() {
 export function initializeMinimap(userId) {
   currentUserId = userId;
 
-  const toggleBtn = document.getElementById('minimap-toggle-btn');
-  const closeBtn = document.getElementById('minimap-close-btn');
-  const minimapView = document.getElementById('minimap-view');
+  const toggleBtn = DOM.minimapToggleBtn;
+  const closeBtn = DOM.minimapCloseBtn;
+  const minimapView = DOM.minimapView;
 
   if (toggleBtn) {
     toggleBtn.addEventListener('click', toggleMinimapView);

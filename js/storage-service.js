@@ -1,5 +1,8 @@
 // Storage Service - Unified interface for Local Storage and Firestore
 
+import { garageIdToNumber, numberToGarageId } from './utils/garage-id-utils.js';
+import { GARAGE } from './constants.js';
+
 const STORAGE_MODE_KEY = 'storage_mode';
 const MODE_LOCAL = 'local';
 const MODE_ONLINE = 'online';
@@ -34,31 +37,6 @@ export function isLocalMode() {
 }
 
 /**
- * Convert garage ID to numeric index
- * Supports both lettered IDs (garageA-D) and numeric IDs (garage1-4)
- */
-function garageIdToNumber(garageId) {
-  // Handle lettered IDs: garageA -> 1, garageB -> 2, etc.
-  if (garageId.match(/^garage[A-D]$/)) {
-    return garageId.charCodeAt(6) - 64; // 'A' is 65, so A=1, B=2, C=3, D=4
-  }
-  // Handle numeric IDs: garage1 -> 1, garage2 -> 2, etc.
-  if (garageId.match(/^garage[1-4]$/)) {
-    return parseInt(garageId.replace('garage', ''));
-  }
-  // Fallback: try to parse any number
-  const num = parseInt(garageId.replace('garage', ''));
-  return isNaN(num) ? 1 : num;
-}
-
-/**
- * Convert numeric index to lettered garage ID
- */
-function numberToGarageId(num) {
-  return `garage${String.fromCharCode(64 + num)}`; // 1 -> A, 2 -> B, etc.
-}
-
-/**
  * Local Storage implementation
  */
 export const LocalStorage = {
@@ -81,7 +59,7 @@ export const LocalStorage = {
    */
   async loadAllGarages() {
     const garages = {};
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= GARAGE.COUNT; i++) {
       const letteredId = numberToGarageId(i);
       garages[letteredId] = this.loadGarageData(letteredId);
     }
@@ -125,8 +103,8 @@ export const LocalStorage = {
     const garageNum = garageIdToNumber(garageId);
 
     localStorage.setItem(`stroke-title${garageNum}`, '');
-    for (let i = 1; i <= 4; i++) {
-      const index = (garageNum - 1) * 4 + i;
+    for (let i = 1; i <= GARAGE.STROKES_PER_GARAGE; i++) {
+      const index = (garageNum - 1) * GARAGE.STROKES_PER_GARAGE + i;
       localStorage.setItem(`stroke${index}`, '');
     }
     console.log(`[SUCCESS] Deleted garage: ${garageId}`);

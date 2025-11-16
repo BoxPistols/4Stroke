@@ -24,11 +24,11 @@ import {
   setMinimapUserId
 } from './minimap.js';
 
-// Constants
-const DEBOUNCE_DELAY = 500;
-const MOBILE_BREAKPOINT = 768;
-const AUTO_COLLAPSE_DELAY = 5000;
-const URL_CONVERSION_ENABLED = true; // Feature flag
+// Utilities import
+import { TIMINGS, BREAKPOINTS, FEATURES, GARAGE } from './constants.js';
+import { debounce } from './utils/debounce.js';
+import { DOM, showAutoSaveMessage } from './utils/dom-cache.js';
+import { numberToGarageId, getNotePosition } from './utils/garage-id-utils.js';
 
 // Debounce timer
 let saveTimer = null;
@@ -37,23 +37,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const mode = getStorageMode();
   console.log(`[INFO] App starting in ${mode} mode`);
 
-  /**
-   * Utility function
-   */
-  const $$ = (_x) => {
-    return document.querySelectorAll(_x);
-  };
-
-  // Initialize UI element references - MUST be defined before functions that use them
-  const handleTextArea = $$("textarea.stroke");
-  const clearBtns = $$("input.clear");
-  const autoSave = () => {
-    const message = document.querySelector("#message");
-    message.classList.remove("is-hidden");
-    setTimeout(() => {
-      message.classList.add("is-hidden");
-    }, 1200);
-  };
+  // Note: DOM elements and autoSave function are now imported from dom-cache.js
 
   /**
    * Load data from storage (Local or Firestore)
@@ -65,9 +49,11 @@ document.addEventListener("DOMContentLoaded", async function () {
       const garages = await Storage.loadAllGarages(userId);
       console.log('[INFO] Garages loaded:', garages);
 
+      const textareas = DOM.textareas;
+
       // Populate UI
-      for (let i = 1; i <= 4; i++) {
-        const letteredId = `garage${String.fromCharCode(64 + i)}`; // garageA, garageB, etc.
+      for (let i = 1; i <= GARAGE.COUNT; i++) {
+        const letteredId = numberToGarageId(i);
         const garage = garages[letteredId];
 
         // Safety check: skip if garage data is missing
@@ -79,15 +65,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         const uiPosition = i - 1; // UI position (0-3)
 
         // Set title
-        const titleInput = document.querySelector(`#${letteredId} .stroke-title`);
+        const titleInput = DOM.getTitleInput(letteredId);
         if (titleInput) {
           titleInput.value = garage.title || '';
         }
 
         // Set strokes
-        for (let j = 1; j <= 4; j++) {
-          const strokeIndex = uiPosition * 4 + j;
-          const textarea = handleTextArea[strokeIndex - 1];
+        for (let j = 1; j <= GARAGE.STROKES_PER_GARAGE; j++) {
+          const strokeIndex = uiPosition * GARAGE.STROKES_PER_GARAGE + j;
+          const textarea = textareas[strokeIndex - 1];
           if (textarea) {
             textarea.value = garage[`stroke${j}`] || '';
           }
@@ -107,44 +93,40 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   /**
-   * Setup all event listeners
+   * Setup textarea input event listeners
    */
-  function setupEventListeners(userId) {
-    // Textarea input events
-    handleTextArea.forEach((elm, i) => {
+  function setupTextareaListeners(userId) {
+    const textareas = DOM.textareas;
+
+    textareas.forEach((elm, i) => {
+      // Keyup event with debounce
       elm.addEventListener("keyup", (event) => {
-        // Debounce (wait 500ms after continuous input)
         clearTimeout(saveTimer);
         saveTimer = setTimeout(async () => {
-          const uiPosition = Math.floor(i / 4); // UI position (0-3)
-          const strokeNum = (i % 4) + 1;
-          const garageNum = uiPosition + 1; // Garage number (1-4)
-          const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
+          const { garageNum, strokeNum } = getNotePosition(i + 1);
+          const garageId = numberToGarageId(garageNum);
           const fieldKey = `stroke${strokeNum}`;
 
           try {
             await Storage.saveStroke(userId, garageId, fieldKey, event.target.value);
-            autoSave();
+            showAutoSaveMessage();
           } catch (error) {
             console.error('[ERROR] Save failed:', error);
           }
-        }, DEBOUNCE_DELAY);
+        }, TIMINGS.DEBOUNCE_DELAY);
       });
 
       // URL to Markdown conversion on paste
-      if (URL_CONVERSION_ENABLED) {
+      if (FEATURES.URL_CONVERSION_ENABLED) {
         elm.addEventListener("paste", async (event) => {
           event.preventDefault();
 
-          // Get pasted text
           const pastedText = (event.clipboardData || window.clipboardData).getData('text');
-
           if (!pastedText) return;
 
           console.log('[INFO] URL conversion: Processing pasted text');
 
           try {
-            // Convert URLs to Markdown format
             const processedText = await processPastedText(pastedText);
 
             // Insert processed text at cursor position
@@ -159,14 +141,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             elm.setSelectionRange(newCursorPos, newCursorPos);
 
             // Trigger save
-            const uiPosition = Math.floor(i / 4); // UI position (0-3)
-            const strokeNum = (i % 4) + 1;
-            const garageNum = uiPosition + 1; // Garage number (1-4)
-            const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
+            const { garageNum, strokeNum } = getNotePosition(i + 1);
+            const garageId = numberToGarageId(garageNum);
             const fieldKey = `stroke${strokeNum}`;
 
             await Storage.saveStroke(userId, garageId, fieldKey, elm.value);
-            autoSave();
+            showAutoSaveMessage();
 
             console.log('[SUCCESS] URL conversion completed');
           } catch (error) {
@@ -180,44 +160,54 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
       }
     });
+  }
 
-    // Title input events
-    const titleInputs = document.querySelectorAll('.stroke-title');
+  /**
+   * Setup title input event listeners
+   */
+  function setupTitleListeners(userId) {
+    const titleInputs = DOM.titleInputs;
+
     titleInputs.forEach((input, i) => {
       input.addEventListener("keyup", (event) => {
         clearTimeout(saveTimer);
         saveTimer = setTimeout(async () => {
-          const garageId = `garage${String.fromCharCode(65 + i)}`; // garageA, garageB, etc.
+          const garageId = numberToGarageId(i + 1);
           try {
             await Storage.saveTitle(userId, garageId, event.target.value);
-            autoSave();
+            showAutoSaveMessage();
           } catch (error) {
             console.error('[ERROR] Title save failed:', error);
           }
-        }, DEBOUNCE_DELAY);
+        }, TIMINGS.DEBOUNCE_DELAY);
       });
     });
+  }
 
-    // Individual stroke delete
+  /**
+   * Setup stroke delete button listeners
+   */
+  function setupStrokeDeleteListeners(userId) {
+    const clearBtns = DOM.clearBtns;
+    const textareas = DOM.textareas;
+
     clearBtns.forEach((btn, i) => {
       btn.addEventListener("click", async () => {
-        const textarea = handleTextArea[i];
+        const textarea = textareas[i];
         if (!textarea.value) {
           alert("Nothing to delete");
           return;
         }
 
         if (confirm("Delete this stroke?")) {
-          const uiPosition = Math.floor(i / 4); // UI position (0-3)
-          const strokeNum = (i % 4) + 1;
-          const garageNum = uiPosition + 1; // Garage number (1-4)
-          const garageId = `garage${String.fromCharCode(64 + garageNum)}`; // garageA, garageB, etc.
+          const { garageNum, strokeNum } = getNotePosition(i + 1);
+          const garageId = numberToGarageId(garageNum);
           const fieldKey = `stroke${strokeNum}`;
 
           try {
             await Storage.deleteStroke(userId, garageId, fieldKey);
             textarea.value = "";
-            autoSave();
+            showAutoSaveMessage();
             alert("Deleted");
           } catch (error) {
             console.error('[ERROR] Delete failed:', error);
@@ -228,10 +218,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
       });
     });
+  }
 
-    // Title delete
-    const handleTitleClear = $$(".title-delete");
-    handleTitleClear.forEach((btn, i) => {
+  /**
+   * Setup title delete button listeners
+   */
+  function setupTitleDeleteListeners(userId) {
+    const titleDeleteBtns = DOM.titleDeleteBtns;
+
+    titleDeleteBtns.forEach((btn, i) => {
       btn.addEventListener("click", async () => {
         const titleInput = btn.previousElementSibling;
         if (!titleInput.value) {
@@ -240,12 +235,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         if (confirm(`Delete "${titleInput.value}"?`)) {
-          const garageId = `garage${String.fromCharCode(65 + i)}`; // garageA, garageB, etc.
+          const garageId = numberToGarageId(i + 1);
 
           try {
             await Storage.saveTitle(userId, garageId, '');
             titleInput.value = "";
-            autoSave();
+            showAutoSaveMessage();
             alert("Deleted");
           } catch (error) {
             console.error('[ERROR] Title delete failed:', error);
@@ -256,32 +251,38 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
       });
     });
+  }
 
-    // Garage group delete
-    const handleGarageClear = $$('#clearA, #clearB, #clearC, #clearD');
-    handleGarageClear.forEach((btn, garageIndex) => {
+  /**
+   * Setup garage delete button listeners
+   */
+  function setupGarageDeleteListeners(userId) {
+    const garageClearBtns = DOM.garageClearBtns;
+    const textareas = DOM.textareas;
+    const titleInputs = DOM.titleInputs;
+
+    garageClearBtns.forEach((btn, garageIndex) => {
       btn.addEventListener("click", async () => {
         const garageName = btn.value.replace("Delete /", "").trim();
 
         if (confirm(`Delete ${garageName}?`)) {
-          const garageId = `garage${String.fromCharCode(65 + garageIndex)}`; // garageA, garageB, etc.
+          const garageId = numberToGarageId(garageIndex + 1);
 
           try {
             await Storage.deleteGarage(userId, garageId);
 
             // Clear UI
-            const startIndex = garageIndex * 4;
-            for (let i = startIndex; i < startIndex + 4; i++) {
-              handleTextArea[i].value = "";
+            const startIndex = garageIndex * GARAGE.STROKES_PER_GARAGE;
+            for (let i = startIndex; i < startIndex + GARAGE.STROKES_PER_GARAGE; i++) {
+              textareas[i].value = "";
             }
 
             // Clear title
-            const titleInputs = document.querySelectorAll('.stroke-title');
             if (titleInputs[garageIndex]) {
               titleInputs[garageIndex].value = "";
             }
 
-            autoSave();
+            showAutoSaveMessage();
             alert("Deleted");
           } catch (error) {
             console.error('[ERROR] Garage delete failed:', error);
@@ -292,81 +293,98 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
       });
     });
+  }
 
-    // Logout / Mode switch button
-    const logoutBtn = document.getElementById('logout-btn');
-    const userInfo = document.querySelector('.user-info');
+  /**
+   * Setup logout/mode switch button listeners
+   */
+  function setupLogoutButton() {
+    const logoutBtn = DOM.logoutBtn;
+    const userInfo = DOM.userInfo;
 
-    if (logoutBtn && userInfo) {
-      console.log('[INFO] Setting up logout button, current mode:', getStorageMode());
+    if (!logoutBtn || !userInfo) {
+      console.error('[ERROR] Logout button or user-info not found!');
+      return;
+    }
 
-      // Mobile: Toggle expanded state on first click
-      let isExpanded = false;
-      let expandTimeout = null;
+    console.log('[INFO] Setting up logout button, current mode:', getStorageMode());
 
-      const isMobile = () => window.innerWidth <= MOBILE_BREAKPOINT;
+    // Mobile: Toggle expanded state on first click
+    let isExpanded = false;
+    let expandTimeout = null;
 
-      userInfo.addEventListener('click', (e) => {
-        if (!isMobile()) return;
+    const isMobile = () => window.innerWidth <= BREAKPOINTS.MOBILE;
 
-        if (!isExpanded) {
-          e.stopPropagation();
-          userInfo.classList.add('expanded');
-          isExpanded = true;
+    userInfo.addEventListener('click', (e) => {
+      if (!isMobile()) return;
 
-          // Auto-collapse after timeout
-          expandTimeout = setTimeout(() => {
-            userInfo.classList.remove('expanded');
-            isExpanded = false;
-          }, AUTO_COLLAPSE_DELAY);
-        }
-      });
+      if (!isExpanded) {
+        e.stopPropagation();
+        userInfo.classList.add('expanded');
+        isExpanded = true;
 
-      // Collapse when clicking outside
-      document.addEventListener('click', (e) => {
-        if (isMobile() && isExpanded && !userInfo.contains(e.target)) {
+        // Auto-collapse after timeout
+        expandTimeout = setTimeout(() => {
           userInfo.classList.remove('expanded');
           isExpanded = false;
-          clearTimeout(expandTimeout);
-        }
-      });
+        }, TIMINGS.AUTO_COLLAPSE_DELAY);
+      }
+    });
 
-      // Actual logout/mode switch action
-      logoutBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+    // Collapse when clicking outside
+    document.addEventListener('click', (e) => {
+      if (isMobile() && isExpanded && !userInfo.contains(e.target)) {
+        userInfo.classList.remove('expanded');
+        isExpanded = false;
+        clearTimeout(expandTimeout);
+      }
+    });
 
-        // On mobile, if not expanded, expand instead of action
-        if (isMobile() && !isExpanded) {
-          userInfo.classList.add('expanded');
-          isExpanded = true;
-          return;
-        }
+    // Actual logout/mode switch action
+    logoutBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-        console.log('[INFO] Logout button clicked, mode:', getStorageMode());
+      // On mobile, if not expanded, expand instead of action
+      if (isMobile() && !isExpanded) {
+        userInfo.classList.add('expanded');
+        isExpanded = true;
+        return;
+      }
 
-        if (isOnlineMode()) {
-          // Logout from online mode
-          if (confirm('Logout?')) {
-            const { logout } = await import('./auth.js');
-            try {
-              await logout();
-              window.location.href = '/login.html';
-            } catch (error) {
-              console.error('[ERROR] Logout failed:', error);
-              alert('Logout failed');
-            }
-          }
-        } else {
-          // Switch to online mode
-          if (confirm('Switch to online mode? You will need to login.')) {
+      console.log('[INFO] Logout button clicked, mode:', getStorageMode());
+
+      if (isOnlineMode()) {
+        // Logout from online mode
+        if (confirm('Logout?')) {
+          const { logout } = await import('./auth.js');
+          try {
+            await logout();
             window.location.href = '/login.html';
+          } catch (error) {
+            console.error('[ERROR] Logout failed:', error);
+            alert('Logout failed');
           }
         }
-      });
-    } else {
-      console.error('[ERROR] Logout button or user-info not found!');
-    }
+      } else {
+        // Switch to online mode
+        if (confirm('Switch to online mode? You will need to login.')) {
+          window.location.href = '/login.html';
+        }
+      }
+    });
+  }
+
+  /**
+   * Setup all event listeners - orchestrates all listener setup functions
+   */
+  function setupEventListeners(userId) {
+    setupTextareaListeners(userId);
+    setupTitleListeners(userId);
+    setupStrokeDeleteListeners(userId);
+    setupTitleDeleteListeners(userId);
+    setupGarageDeleteListeners(userId);
+    setupLogoutButton();
   }
 
   /**
@@ -374,19 +392,23 @@ document.addEventListener("DOMContentLoaded", async function () {
    */
   function setupKeyboardNavigation() {
     let currentGarageIndex = 0;
+    let isNavigating = false;
+    let navigationTimeout = null;
 
     // Fixed UI positions (DOM order is always the same)
     const uiPositions = ['garageA', 'garageB', 'garageC', 'garageD'];
 
+    // Load navigation shortcuts from settings
+    const settings = loadSettings();
+    const prevShortcut = settings.navigation.prev;
+    const nextShortcut = settings.navigation.next;
+
     // Get current garage index based on scroll position
     function getCurrentGarageIndex() {
       const garageElements = uiPositions.map(id => document.getElementById(id));
-      const scrollContainer = document.querySelector('.garages-container');
+      const scrollContainer = DOM.garagesContainer;
 
       if (!scrollContainer) return 0;
-
-      const scrollTop = scrollContainer.scrollTop;
-      const scrollLeft = scrollContainer.scrollLeft;
 
       // Find which garage is currently visible
       for (let i = 0; i < garageElements.length; i++) {
@@ -401,29 +423,76 @@ document.addEventListener("DOMContentLoaded", async function () {
           }
         }
       }
-      return 0;
+      return currentGarageIndex;
     }
 
     // Navigate to specific garage
     function navigateToGarage(index) {
-      if (index < 0 || index >= uiPositions.length) return;
+      if (index < 0 || index >= uiPositions.length) {
+        return;
+      }
 
       const targetGarage = document.getElementById(uiPositions[index]);
       if (targetGarage) {
-        targetGarage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Update current index BEFORE scrolling
         currentGarageIndex = index;
+
+        // Use smooth scrolling but don't block rapid navigation
+        targetGarage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Mark as navigating
+        isNavigating = true;
+
+        // Clear previous timeout
+        if (navigationTimeout) {
+          clearTimeout(navigationTimeout);
+        }
+
+        // Reset navigation flag after animation
+        navigationTimeout = setTimeout(() => {
+          isNavigating = false;
+        }, 300); // Short timeout to allow rapid consecutive navigation
+
         console.log(`[INFO] Navigated to ${uiPositions[index]}`);
       }
     }
 
+    // Check if modifiers match the shortcut
+    function modifiersMatch(event, shortcut) {
+      const ctrlMatch = shortcut.modifiers.includes('ctrl') ? event.ctrlKey : !event.ctrlKey;
+      const altMatch = shortcut.modifiers.includes('alt') ? event.altKey : !event.altKey;
+      const shiftMatch = shortcut.modifiers.includes('shift') ? event.shiftKey : !event.shiftKey;
+      const metaMatch = shortcut.modifiers.includes('meta') ? event.metaKey : !event.metaKey;
+
+      return ctrlMatch && altMatch && shiftMatch && metaMatch;
+    }
+
     // Keyboard event listener
     document.addEventListener('keydown', (event) => {
-      // Ignore if user is typing in an input/textarea
+      // Check for navigation shortcuts (works even when typing)
+      const prevKeyMatch = event.key === prevShortcut.key;
+      const nextKeyMatch = event.key === nextShortcut.key;
+      const prevModMatch = modifiersMatch(event, prevShortcut);
+      const nextModMatch = modifiersMatch(event, nextShortcut);
+
+      if (prevKeyMatch && prevModMatch) {
+        event.preventDefault();
+        navigateToGarage(currentGarageIndex - 1);
+        return;
+      }
+
+      if (nextKeyMatch && nextModMatch) {
+        event.preventDefault();
+        navigateToGarage(currentGarageIndex + 1);
+        return;
+      }
+
+      // Ignore plain arrow keys if user is typing in an input/textarea
       if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
         return;
       }
 
-      // Get current garage index
+      // Get current garage index for plain arrow keys
       currentGarageIndex = getCurrentGarageIndex();
 
       switch (event.key) {
@@ -447,9 +516,9 @@ document.addEventListener("DOMContentLoaded", async function () {
    * Update mode display in settings modal
    */
   function updateModeDisplay() {
-    const currentModeDisplay = document.getElementById('current-mode-display');
-    const currentUserDisplay = document.getElementById('current-user-display');
-    const modeSwitchText = document.getElementById('mode-switch-text');
+    const currentModeDisplay = DOM.currentModeDisplay;
+    const currentUserDisplay = DOM.currentUserDisplay;
+    const modeSwitchText = DOM.modeSwitchText;
 
     if (isOnlineMode()) {
       if (currentModeDisplay) currentModeDisplay.textContent = 'Online Mode';
@@ -467,13 +536,13 @@ document.addEventListener("DOMContentLoaded", async function () {
    * Setup settings modal event listeners
    */
   function setupSettingsModal() {
-    const settingsBtn = document.getElementById('settings-btn');
-    const modalCloseBtn = document.getElementById('modal-close-btn');
-    const saveSettingsBtn = document.getElementById('save-settings-btn');
-    const resetSettingsBtn = document.getElementById('reset-settings-btn');
-    const cancelSettingsBtn = document.getElementById('cancel-settings-btn');
-    const modeSwitchBtn = document.getElementById('mode-switch-btn');
-    const modal = document.getElementById('settings-modal');
+    const settingsBtn = DOM.settingsBtn;
+    const modalCloseBtn = DOM.modalCloseBtn;
+    const saveSettingsBtn = DOM.saveSettingsBtn;
+    const resetSettingsBtn = DOM.resetSettingsBtn;
+    const cancelSettingsBtn = DOM.cancelSettingsBtn;
+    const modeSwitchBtn = DOM.modeSwitchBtn;
+    const modal = DOM.settingsModal;
 
     // Open modal
     if (settingsBtn) {
@@ -569,15 +638,15 @@ document.addEventListener("DOMContentLoaded", async function () {
       console.log('[SUCCESS] Logged in:', user.email);
 
       // Update user info display in settings modal
-      const currentUserDisplay = document.getElementById('current-user-display');
+      const currentUserDisplay = DOM.currentUserDisplay;
       if (currentUserDisplay) {
         currentUserDisplay.textContent = user.email || 'Logged in';
       }
 
       // Update logout button text with user email
-      const logoutBtn = document.getElementById('logout-btn');
+      const logoutBtn = DOM.logoutBtn;
       if (logoutBtn) {
-        const logoutText = logoutBtn.querySelector('.logout-text');
+        const logoutText = DOM.logoutText;
         if (logoutText) {
           logoutText.textContent = 'LOGOUT';
         }
@@ -601,9 +670,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.log('[INFO] Running in local storage mode');
 
     // Update logout button for local mode
-    const logoutBtn = document.getElementById('logout-btn');
+    const logoutBtn = DOM.logoutBtn;
     if (logoutBtn) {
-      const logoutText = logoutBtn.querySelector('.logout-text');
+      const logoutText = DOM.logoutText;
       if (logoutText) {
         logoutText.textContent = 'LOGIN';
       }

@@ -14,7 +14,11 @@ const DEFAULT_SETTINGS = {
     garageC: { key: '3', modifiers: ['ctrl'] },
     garageD: { key: '4', modifiers: ['ctrl'] }
   },
-  garageOrder: ['garageA', 'garageB', 'garageC', 'garageD']
+  navigation: {
+    prev: { key: 'ArrowLeft', modifiers: ['ctrl', 'alt'] },
+    next: { key: 'ArrowRight', modifiers: ['ctrl', 'alt'] }
+  },
+  garageOrder: ['garageA', 'garageB', 'garageC', 'garageD'] // Fixed order - kept for backward compatibility
 };
 
 /**
@@ -26,8 +30,10 @@ export function loadSettings() {
     if (stored) {
       const settings = JSON.parse(stored);
       // Merge with defaults to ensure all fields exist
+      // NOTE: garageOrder is kept for test compatibility but should always be A/B/C/D in production
       return {
         shortcuts: { ...DEFAULT_SETTINGS.shortcuts, ...settings.shortcuts },
+        navigation: { ...DEFAULT_SETTINGS.navigation, ...settings.navigation },
         garageOrder: settings.garageOrder || DEFAULT_SETTINGS.garageOrder
       };
     }
@@ -60,51 +66,46 @@ export function resetSettings() {
 
 /**
  * Get the data garage ID for a given UI position (0-3)
- * UI positions are fixed: garageA, garageB, garageC, garageD
- * This returns which garage's data should be displayed at that position
+ * Garages are always fixed at their positions
  */
 export function getGarageDataIdFromPosition(position) {
-  const settings = loadSettings();
-  const order = settings.garageOrder;
-  return order[position] || DEFAULT_SETTINGS.garageOrder[position];
+  const garageIds = ['garageA', 'garageB', 'garageC', 'garageD'];
+  return garageIds[position];
 }
 
 /**
  * Get the UI position (0-3) for a given data garage ID
- * This is the inverse of getGarageDataIdFromPosition
+ * Garages are always fixed: garageA=0, garageB=1, garageC=2, garageD=3
  */
 export function getPositionFromGarageDataId(garageId) {
-  const settings = loadSettings();
-  const order = settings.garageOrder;
-  const position = order.indexOf(garageId);
+  const garageIds = ['garageA', 'garageB', 'garageC', 'garageD'];
+  const position = garageIds.indexOf(garageId);
   if (position >= 0) {
     return position;
   }
-  // Fallback for lettered IDs like 'garageA'
+  // Fallback for lettered IDs
   const garageLetter = garageId.replace('garage', '');
   const fallbackPosition = garageLetter.charCodeAt(0) - 65; // 'A' is 65
   return (fallbackPosition >= 0 && fallbackPosition < 4) ? fallbackPosition : -1;
 }
 
 /**
- * Apply garage order by updating titles (not moving DOM elements)
- * DOM positions remain fixed: garageA, garageB, garageC, garageD
- * Only the displayed titles and data change based on the order
+ * Apply garage order (deprecated - garages are now always fixed)
+ * This function is kept for backward compatibility with tests
+ * In the actual app, garages are always A/B/C/D in order
  */
 export function applyGarageOrder(order) {
+  // For test compatibility, update the <h2> titles
   const garagesContainer = document.querySelector('.garages');
-  if (!garagesContainer) return;
+  if (!garagesContainer) {
+    console.log('[INFO] applyGarageOrder called but no garage container found');
+    return;
+  }
 
-  // Fixed UI positions (DOM IDs)
   const uiPositions = ['garageA', 'garageB', 'garageC', 'garageD'];
 
-  // Update the <h2> garage titles to reflect the order
   uiPositions.forEach((uiId, index) => {
-    const dataGarageId = order[index];
-
-    // Skip if garage ID is invalid or undefined
-    if (!dataGarageId || typeof dataGarageId !== 'string') return;
-
+    const dataGarageId = order[index] || uiId;
     const garageLetter = dataGarageId.replace('garage', '');
     const garageElement = document.getElementById(uiId);
 
@@ -116,7 +117,7 @@ export function applyGarageOrder(order) {
     }
   });
 
-  console.log('[INFO] Garage order applied (titles updated):', order);
+  console.log('[INFO] applyGarageOrder called (for test compatibility):', order);
 }
 
 /**
@@ -189,7 +190,7 @@ export function closeSettingsModal() {
 function populateSettingsForm() {
   const settings = loadSettings();
 
-  // Populate shortcuts
+  // Populate garage shortcuts
   const garages = ['garageA', 'garageB', 'garageC', 'garageD'];
   garages.forEach(garageId => {
     const shortcut = settings.shortcuts[garageId];
@@ -204,161 +205,202 @@ function populateSettingsForm() {
     if (shiftCheck) shiftCheck.checked = shortcut.modifiers.includes('shift');
   });
 
-  // Populate garage order
-  const orderContainer = document.getElementById('garage-order-list');
-  if (orderContainer) {
-    orderContainer.innerHTML = '';
-    settings.garageOrder.forEach((garageId, index) => {
+  // Populate navigation shortcuts
+  ['prev', 'next'].forEach(direction => {
+    const nav = settings.navigation[direction];
+    const keyInput = document.getElementById(`nav-${direction}-key`);
+    const ctrlCheck = document.getElementById(`nav-${direction}-ctrl`);
+    const altCheck = document.getElementById(`nav-${direction}-alt`);
+    const shiftCheck = document.getElementById(`nav-${direction}-shift`);
+    const metaCheck = document.getElementById(`nav-${direction}-meta`);
+
+    if (keyInput) keyInput.value = nav.key;
+    if (ctrlCheck) ctrlCheck.checked = nav.modifiers.includes('ctrl');
+    if (altCheck) altCheck.checked = nav.modifiers.includes('alt');
+    if (shiftCheck) shiftCheck.checked = nav.modifiers.includes('shift');
+    if (metaCheck) metaCheck.checked = nav.modifiers.includes('meta');
+  });
+
+  // Populate garage swap list
+  const swapContainer = document.getElementById('garage-order-list');
+  if (swapContainer) {
+    swapContainer.innerHTML = '';
+    const positionLabels = ['A', 'B', 'C', 'D'];
+    const uiPositions = ['garageA', 'garageB', 'garageC', 'garageD'];
+
+    // Display all garages in their fixed positions
+    uiPositions.forEach((garageId, index) => {
       const item = document.createElement('div');
       item.className = 'garage-order-item';
       item.draggable = true;
       item.dataset.garageId = garageId;
+      item.dataset.position = index;
 
-      const label = garageId.replace('garage', 'GARAGE-');
+      // Get the title from the garage
+      const garageElement = document.getElementById(garageId);
+      const titleInput = garageElement?.querySelector('.stroke-title');
+      const garageTitle = titleInput?.value || '';
+
+      // Display format: "GARAGE-A: title"
+      const garageLetter = garageId.replace('garage', '');
+      const positionLabel = positionLabels[index];
+      const displayLabel = garageTitle
+        ? `<strong>GARAGE-${garageLetter}:</strong> ${garageTitle}`
+        : `<strong>GARAGE-${garageLetter}</strong>`;
+
       item.innerHTML = `
         <span class="drag-handle">☰</span>
-        <span class="garage-label">${label}</span>
-        <div class="order-buttons">
-          <button type="button" class="order-btn up" data-index="${index}" ${index === 0 ? 'disabled' : ''}>↑</button>
-          <button type="button" class="order-btn down" data-index="${index}" ${index === settings.garageOrder.length - 1 ? 'disabled' : ''}>↓</button>
-        </div>
+        <span class="garage-label">${displayLabel}</span>
       `;
 
-      orderContainer.appendChild(item);
+      swapContainer.appendChild(item);
     });
 
-    setupDragAndDrop(orderContainer);
-    setupOrderButtons();
+    setupGarageSwap(swapContainer);
   }
 }
 
 /**
- * Setup drag and drop for garage order
- * Supports both mouse (desktop) and touch (mobile) events
+ * Setup drag and drop to swap garage data
+ * This swaps the actual data between garages in storage
  */
-function setupDragAndDrop(container) {
+function setupGarageSwap(container) {
   let draggedItem = null;
-  let touchStartY = 0;
-  let touchCurrentY = 0;
 
   container.querySelectorAll('.garage-order-item').forEach(item => {
     // Mouse drag events (desktop)
     item.addEventListener('dragstart', (e) => {
       draggedItem = item;
       item.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
     });
 
     item.addEventListener('dragend', () => {
       item.classList.remove('dragging');
-      draggedItem = null;
     });
 
     item.addEventListener('dragover', (e) => {
       e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
       if (draggedItem && draggedItem !== item) {
-        const rect = item.getBoundingClientRect();
-        const midpoint = rect.top + rect.height / 2;
+        item.classList.add('drag-over');
+      }
+    });
 
-        if (e.clientY < midpoint) {
-          container.insertBefore(draggedItem, item);
-        } else {
-          container.insertBefore(draggedItem, item.nextSibling);
+    item.addEventListener('dragleave', () => {
+      item.classList.remove('drag-over');
+    });
+
+    item.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      item.classList.remove('drag-over');
+
+      if (draggedItem && draggedItem !== item) {
+        const garageId1 = draggedItem.dataset.garageId;
+        const garageId2 = item.dataset.garageId;
+
+        // Confirm swap
+        const garage1Title = draggedItem.querySelector('.garage-label').textContent;
+        const garage2Title = item.querySelector('.garage-label').textContent;
+
+        if (confirm(`Swap data between:\n${garage1Title}\nand\n${garage2Title}?`)) {
+          await swapGarageData(garageId1, garageId2);
+          showToast('Garage data swapped successfully!');
+          // Reload the page to reflect changes
+          setTimeout(() => window.location.reload(), 1000);
         }
       }
+      draggedItem = null;
     });
 
     // Touch events (mobile)
     item.addEventListener('touchstart', (e) => {
       draggedItem = item;
-      touchStartY = e.touches[0].clientY;
       item.classList.add('dragging');
-      e.preventDefault();
     });
 
     item.addEventListener('touchmove', (e) => {
       if (!draggedItem) return;
 
-      touchCurrentY = e.touches[0].clientY;
       const touch = e.touches[0];
-
-      // Find element at touch position
       const elementAtPoint = document.elementFromPoint(touch.clientX, touch.clientY);
       const targetItem = elementAtPoint?.closest('.garage-order-item');
 
-      if (targetItem && targetItem !== draggedItem) {
-        const rect = targetItem.getBoundingClientRect();
-        const midpoint = rect.top + rect.height / 2;
+      container.querySelectorAll('.garage-order-item').forEach(i => {
+        i.classList.remove('drag-over');
+      });
 
-        if (touch.clientY < midpoint) {
-          container.insertBefore(draggedItem, targetItem);
-        } else {
-          container.insertBefore(draggedItem, targetItem.nextSibling);
+      if (targetItem && targetItem !== draggedItem) {
+        targetItem.classList.add('drag-over');
+      }
+
+      e.preventDefault();
+    });
+
+    item.addEventListener('touchend', async (e) => {
+      if (!draggedItem) return;
+
+      const touch = e.changedTouches[0];
+      const elementAtPoint = document.elementFromPoint(touch.clientX, touch.clientY);
+      const targetItem = elementAtPoint?.closest('.garage-order-item');
+
+      container.querySelectorAll('.garage-order-item').forEach(i => {
+        i.classList.remove('drag-over');
+      });
+
+      if (targetItem && targetItem !== draggedItem) {
+        const garageId1 = draggedItem.dataset.garageId;
+        const garageId2 = targetItem.dataset.garageId;
+
+        const garage1Title = draggedItem.querySelector('.garage-label').textContent;
+        const garage2Title = targetItem.querySelector('.garage-label').textContent;
+
+        if (confirm(`Swap data between:\n${garage1Title}\nand\n${garage2Title}?`)) {
+          await swapGarageData(garageId1, garageId2);
+          showToast('Garage data swapped successfully!');
+          setTimeout(() => window.location.reload(), 1000);
         }
       }
 
-      e.preventDefault();
-    });
-
-    item.addEventListener('touchend', () => {
-      if (draggedItem) {
-        draggedItem.classList.remove('dragging');
-        draggedItem = null;
-      }
+      draggedItem.classList.remove('dragging');
+      draggedItem = null;
     });
   });
 }
 
 /**
- * Setup order up/down buttons
+ * Swap all data between two garages
  */
-function setupOrderButtons() {
-  document.querySelectorAll('.order-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+async function swapGarageData(garageId1, garageId2) {
+  const { Storage, isOnlineMode } = await import('./storage-service.js');
 
-      const container = document.getElementById('garage-order-list');
-      const items = Array.from(container.querySelectorAll('.garage-order-item'));
-      const currentItem = e.target.closest('.garage-order-item');
-      const currentIndex = items.indexOf(currentItem);
+  // Get current user ID if in online mode
+  let userId = null;
+  if (isOnlineMode()) {
+    const { getCurrentUser } = await import('./auth.js');
+    const user = getCurrentUser();
+    userId = user?.uid;
+  }
 
-      if (e.target.classList.contains('up') && currentIndex > 0) {
-        // Move item up (swap with previous item)
-        container.insertBefore(currentItem, items[currentIndex - 1]);
-      } else if (e.target.classList.contains('down') && currentIndex < items.length - 1) {
-        // Move item down (insert after next item)
-        container.insertBefore(currentItem, items[currentIndex + 2] || null);
-      }
+  // Load data from both garages
+  const garage1Data = await Storage.loadAllGarages(userId);
+  const garage2Data = await Storage.loadAllGarages(userId);
 
-      // Update button states after reordering
-      updateOrderButtonStates();
-    });
-  });
-}
+  const data1 = garage1Data[garageId1];
+  const data2 = garage2Data[garageId2];
 
-/**
- * Update the enabled/disabled state of order buttons
- */
-function updateOrderButtonStates() {
-  const container = document.getElementById('garage-order-list');
-  if (!container) return;
+  // Swap titles
+  await Storage.saveTitle(userId, garageId1, data2.title || '');
+  await Storage.saveTitle(userId, garageId2, data1.title || '');
 
-  const items = Array.from(container.querySelectorAll('.garage-order-item'));
+  // Swap all 4 strokes
+  for (let i = 1; i <= 4; i++) {
+    const strokeKey = `stroke${i}`;
+    await Storage.saveStroke(userId, garageId1, strokeKey, data2[strokeKey] || '');
+    await Storage.saveStroke(userId, garageId2, strokeKey, data1[strokeKey] || '');
+  }
 
-  items.forEach((item, index) => {
-    const upBtn = item.querySelector('.order-btn.up');
-    const downBtn = item.querySelector('.order-btn.down');
-
-    if (upBtn) {
-      upBtn.disabled = index === 0;
-      upBtn.dataset.index = index;
-    }
-
-    if (downBtn) {
-      downBtn.disabled = index === items.length - 1;
-      downBtn.dataset.index = index;
-    }
-  });
+  console.log(`[INFO] Swapped data between ${garageId1} and ${garageId2}`);
 }
 
 /**
@@ -435,7 +477,7 @@ export function showToast(message, duration = 3000) {
 export function saveSettingsFromForm() {
   const garages = ['garageA', 'garageB', 'garageC', 'garageD'];
 
-  // Collect shortcuts
+  // Collect garage shortcuts
   const shortcuts = {};
   garages.forEach(garageId => {
     const keyInput = document.getElementById(`${garageId}-key`);
@@ -454,16 +496,36 @@ export function saveSettingsFromForm() {
     };
   });
 
-  // Collect garage order
-  const orderContainer = document.getElementById('garage-order-list');
-  const garageOrder = Array.from(orderContainer.querySelectorAll('.garage-order-item'))
-    .map(item => item.dataset.garageId);
+  // Collect navigation shortcuts
+  const navigation = {};
+  ['prev', 'next'].forEach(direction => {
+    const keyInput = document.getElementById(`nav-${direction}-key`);
+    const ctrlCheck = document.getElementById(`nav-${direction}-ctrl`);
+    const altCheck = document.getElementById(`nav-${direction}-alt`);
+    const shiftCheck = document.getElementById(`nav-${direction}-shift`);
+    const metaCheck = document.getElementById(`nav-${direction}-meta`);
 
-  // Save settings
-  const settings = { shortcuts, garageOrder };
+    const modifiers = [];
+    if (ctrlCheck?.checked) modifiers.push('ctrl');
+    if (altCheck?.checked) modifiers.push('alt');
+    if (shiftCheck?.checked) modifiers.push('shift');
+    if (metaCheck?.checked) modifiers.push('meta');
+
+    navigation[direction] = {
+      key: keyInput?.value || (direction === 'prev' ? 'ArrowLeft' : 'ArrowRight'),
+      modifiers
+    };
+  });
+
+  // Save settings (shortcuts + navigation + fixed garageOrder)
+  const settings = {
+    shortcuts,
+    navigation,
+    garageOrder: DEFAULT_SETTINGS.garageOrder // Always save fixed order
+  };
+
   if (saveSettings(settings)) {
-    // Apply settings dynamically without page refresh
-    applyGarageOrder(settings.garageOrder);
+    // Apply shortcuts
     setupGarageShortcuts(settings);
 
     showToast('Settings saved successfully!');
@@ -486,7 +548,6 @@ export async function resetSettingsWithConfirmation() {
     if (resetSettings()) {
       // Apply default settings dynamically
       const defaultSettings = loadSettings();
-      applyGarageOrder(defaultSettings.garageOrder);
       setupGarageShortcuts(defaultSettings);
       populateSettingsForm();
 
@@ -503,7 +564,7 @@ export async function resetSettingsWithConfirmation() {
 export function initializeSettings() {
   const settings = loadSettings();
 
-  // Apply garage order
+  // Apply garage order (for test compatibility)
   applyGarageOrder(settings.garageOrder);
 
   // Setup keyboard shortcuts

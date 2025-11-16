@@ -257,10 +257,40 @@
         </div>
       </section>
 
-      <!-- Garage Order -->
+      <!-- Navigation Shortcuts -->
       <section class="settings-section">
-        <h3>Garage Order</h3>
-        <p class="settings-description">Drag and drop to reorder garages. Changes apply immediately.</p>
+        <h3>Navigation Shortcuts</h3>
+        <p class="settings-description">Configure keyboard shortcuts to navigate between garages (works even while typing).</p>
+
+        <div class="shortcut-grid">
+          <div class="shortcut-item">
+            <label>Previous Garage (←)</label>
+            <div class="shortcut-config">
+              <input type="text" id="nav-prev-key" maxlength="15" placeholder="ArrowLeft" class="key-input">
+              <label><input type="checkbox" id="nav-prev-ctrl" checked> Ctrl</label>
+              <label><input type="checkbox" id="nav-prev-alt" checked> Alt</label>
+              <label><input type="checkbox" id="nav-prev-shift"> Shift</label>
+              <label><input type="checkbox" id="nav-prev-meta"> Cmd</label>
+            </div>
+          </div>
+
+          <div class="shortcut-item">
+            <label>Next Garage (→)</label>
+            <div class="shortcut-config">
+              <input type="text" id="nav-next-key" maxlength="15" placeholder="ArrowRight" class="key-input">
+              <label><input type="checkbox" id="nav-next-ctrl" checked> Ctrl</label>
+              <label><input type="checkbox" id="nav-next-alt" checked> Alt</label>
+              <label><input type="checkbox" id="nav-next-shift"> Shift</label>
+              <label><input type="checkbox" id="nav-next-meta"> Cmd</label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Swap Garage Data -->
+      <section class="settings-section">
+        <h3>Swap Garage Data</h3>
+        <p class="settings-description">Drag and drop to swap data between garages. Garages A/B/C/D are fixed positions - only the content (title and notes) will be exchanged.</p>
 
         <div id="garage-order-list" class="garage-order-list">
           <!-- Will be populated by JavaScript -->

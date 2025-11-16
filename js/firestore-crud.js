@@ -9,20 +9,8 @@ import {
   collection,
   writeBatch
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-
-/**
- * Convert garage ID to numeric format for Firestore storage
- * Supports both lettered IDs (garageA-D) and numeric IDs (garage1-4)
- */
-function normalizeGarageId(garageId) {
-  // Handle lettered IDs: garageA -> garage1, garageB -> garage2, etc.
-  if (garageId.match(/^garage[A-D]$/)) {
-    const num = garageId.charCodeAt(6) - 64; // 'A' is 65, so A=1, B=2, C=3, D=4
-    return `garage${num}`;
-  }
-  // Already numeric ID
-  return garageId;
-}
+import { normalizeGarageId } from './utils/garage-id-utils.js';
+import { GARAGE } from './constants.js';
 
 /**
  * ユーザーのガレージドキュメント参照を取得
@@ -199,16 +187,16 @@ export async function migrateFromLocalStorage(userId) {
     let hasData = false;
 
     // 4つのガレージをループ
-    for (let garageNum = 1; garageNum <= 4; garageNum++) {
+    for (let garageNum = 1; garageNum <= GARAGE.COUNT; garageNum++) {
       const garageId = `garage${garageNum}`;
 
       // localStorageからデータを取得
       // 既存のストレージ構造: stroke1-16, stroke-title1-4
       const title = localStorage.getItem(`stroke-title${garageNum}`) || '';
-      const stroke1 = localStorage.getItem(`stroke${(garageNum - 1) * 4 + 1}`) || '';
-      const stroke2 = localStorage.getItem(`stroke${(garageNum - 1) * 4 + 2}`) || '';
-      const stroke3 = localStorage.getItem(`stroke${(garageNum - 1) * 4 + 3}`) || '';
-      const stroke4 = localStorage.getItem(`stroke${(garageNum - 1) * 4 + 4}`) || '';
+      const stroke1 = localStorage.getItem(`stroke${(garageNum - 1) * GARAGE.STROKES_PER_GARAGE + 1}`) || '';
+      const stroke2 = localStorage.getItem(`stroke${(garageNum - 1) * GARAGE.STROKES_PER_GARAGE + 2}`) || '';
+      const stroke3 = localStorage.getItem(`stroke${(garageNum - 1) * GARAGE.STROKES_PER_GARAGE + 3}`) || '';
+      const stroke4 = localStorage.getItem(`stroke${(garageNum - 1) * GARAGE.STROKES_PER_GARAGE + 4}`) || '';
 
       // データがある場合のみバッチに追加
       if (title || stroke1 || stroke2 || stroke3 || stroke4) {
@@ -257,17 +245,17 @@ export async function backupToLocalStorage(userId) {
   try {
     const garages = await loadAllGarages(userId);
 
-    for (let garageNum = 1; garageNum <= 4; garageNum++) {
+    for (let garageNum = 1; garageNum <= GARAGE.COUNT; garageNum++) {
       const garage = garages[`garage${garageNum}`];
 
       // タイトルを保存
       localStorage.setItem(`stroke-title${garageNum}`, garage.title || '');
 
       // ストロークを保存
-      localStorage.setItem(`stroke${(garageNum - 1) * 4 + 1}`, garage.stroke1 || '');
-      localStorage.setItem(`stroke${(garageNum - 1) * 4 + 2}`, garage.stroke2 || '');
-      localStorage.setItem(`stroke${(garageNum - 1) * 4 + 3}`, garage.stroke3 || '');
-      localStorage.setItem(`stroke${(garageNum - 1) * 4 + 4}`, garage.stroke4 || '');
+      localStorage.setItem(`stroke${(garageNum - 1) * GARAGE.STROKES_PER_GARAGE + 1}`, garage.stroke1 || '');
+      localStorage.setItem(`stroke${(garageNum - 1) * GARAGE.STROKES_PER_GARAGE + 2}`, garage.stroke2 || '');
+      localStorage.setItem(`stroke${(garageNum - 1) * GARAGE.STROKES_PER_GARAGE + 3}`, garage.stroke3 || '');
+      localStorage.setItem(`stroke${(garageNum - 1) * GARAGE.STROKES_PER_GARAGE + 4}`, garage.stroke4 || '');
     }
 
     console.log('✅ バックアップ完了');
