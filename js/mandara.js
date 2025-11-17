@@ -146,7 +146,15 @@ function renderTags() {
   (currentMandara.tags || []).forEach(tag => {
     const tagEl = document.createElement('span');
     tagEl.className = 'tag';
-    tagEl.innerHTML = `${tag} <button class="tag-remove" data-tag="${tag}">×</button>`;
+    tagEl.textContent = tag;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'tag-remove';
+    removeBtn.dataset.tag = tag;
+    removeBtn.textContent = '×';
+    removeBtn.setAttribute('aria-label', `Remove tag ${tag}`);
+
+    tagEl.appendChild(removeBtn);
     container.appendChild(tagEl);
   });
 }
