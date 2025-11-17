@@ -376,6 +376,37 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   /**
+   * Setup expand to Mandara button listeners
+   */
+  function setupExpandToMandaraListeners() {
+    const expandBtns = document.querySelectorAll('.expand-to-mandara-btn');
+
+    expandBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const garageId = btn.dataset.garage;
+        const titleInput = DOM.getTitleInput(garageId);
+        const title = titleInput ? titleInput.value : '';
+
+        // Get Key (stroke1) for this garage
+        const garageNum = garageId.charCodeAt(garageId.length - 1) - 64; // A=1, B=2, etc.
+        const keyTextarea = DOM.textareas[(garageNum - 1) * 4]; // First stroke of this garage
+        const key = keyTextarea ? keyTextarea.value : '';
+
+        // Store data in sessionStorage for Mandara to pick up
+        const data = {
+          garageId,
+          title,
+          key
+        };
+        sessionStorage.setItem('4stroke_expand', JSON.stringify(data));
+
+        // Navigate to mandara.html
+        window.location.href = 'mandara.html?from=4stroke';
+      });
+    });
+  }
+
+  /**
    * Setup all event listeners - orchestrates all listener setup functions
    */
   function setupEventListeners(userId) {
@@ -385,6 +416,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     setupTitleDeleteListeners(userId);
     setupGarageDeleteListeners(userId);
     setupLogoutButton();
+    setupExpandToMandaraListeners();
   }
 
   /**

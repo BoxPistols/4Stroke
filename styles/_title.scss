@@ -117,6 +117,9 @@ input.stroke-title {
 
 .clear-garage-box {
   margin-left:auto;
+  display:flex;
+  gap:8px;
+
   >input[type="button"] {
     // color:tomato;
     border:none;
@@ -127,6 +130,25 @@ input.stroke-title {
     font-size:1em;
 
     @include flex(center, center);
+  }
+
+  .expand-to-mandara-btn {
+    border:none;
+    outline:none;
+    background:var(--btn-secondary-bg);
+    color:var(--color-white);
+    font-family:var(--font-primary);
+    font-size:0.9em;
+    padding:8px 16px;
+    border-radius:var(--radius-sm);
+    cursor:pointer;
+    letter-spacing:var(--letter-spacing-tight);
+    transition:all var(--transition-normal);
+
+    &:hover {
+      opacity:0.8;
+      filter:var(--shadow-button-hover);
+    }
   }
 }
 
@@ -176,8 +198,15 @@ input.stroke-title {
   .clear-garage-box {
     width:100%;
     margin-left:0;
+    flex-direction:column;
 
     >input[type="button"] {
+      width:100%;
+      font-size:0.85em;
+      padding:8px 12px;
+    }
+
+    .expand-to-mandara-btn {
       width:100%;
       font-size:0.85em;
       padding:8px 12px;

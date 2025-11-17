@@ -264,3 +264,103 @@ export async function backupToLocalStorage(userId) {
     throw error;
   }
 }
+
+/**
+ * Load all mandaras for a user
+ * @param {string} userId - ユーザーID
+ * @returns {Promise<Array>} マンダラデータ配列
+ */
+export async function loadAllMandaras(userId) {
+  console.log('📖 全マンダラデータ読み込み開始...');
+
+  try {
+    const { getDocs, query, orderBy } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+    const mandarasRef = collection(db, 'users', userId, 'mandaras');
+    const q = query(mandarasRef, orderBy('updatedAt', 'desc'));
+    const querySnapshot = await getDocs(q);
+
+    const mandaras = [];
+    querySnapshot.forEach((doc) => {
+      mandaras.push({ id: doc.id, ...doc.data() });
+    });
+
+    console.log(`✅ ${mandaras.length}件のマンダラ読み込み完了`);
+    return mandaras;
+  } catch (error) {
+    console.error('❌ マンダラ読み込み失敗:', error);
+    throw error;
+  }
+}
+
+/**
+ * Load single mandara by ID
+ * @param {string} userId - ユーザーID
+ * @param {string} mandaraId - マンダラID
+ * @returns {Promise<Object|null>} マンダラデータ
+ */
+export async function loadMandara(userId, mandaraId) {
+  try {
+    const mandaraRef = doc(db, 'users', userId, 'mandaras', mandaraId);
+    const docSnap = await getDoc(mandaraRef);
+
+    if (docSnap.exists()) {
+      console.log(`✅ マンダラ ${mandaraId} 読み込み成功`);
+      return { id: docSnap.id, ...docSnap.data() };
+    } else {
+      console.log(`ℹ️ マンダラ ${mandaraId} が見つかりません`);
+      return null;
+    }
+  } catch (error) {
+    console.error(`❌ マンダラ ${mandaraId} 読み込み失敗:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Save mandara (create or update)
+ * @param {string} userId - ユーザーID
+ * @param {Object} mandara - マンダラデータ
+ * @returns {Promise<void>}
+ */
+export async function saveMandara(userId, mandara) {
+  try {
+    const mandaraRef = doc(db, 'users', userId, 'mandaras', mandara.id);
+
+    const dataToSave = {
+      ...mandara,
+      updatedAt: new Date()
+    };
+
+    // If creating new, add createdAt
+    if (!mandara.createdAt) {
+      dataToSave.createdAt = new Date();
+    }
+
+    await setDoc(mandaraRef, dataToSave, { merge: true });
+    console.log(`💾 マンダラ ${mandara.id} 保存成功`);
+  } catch (error) {
+    console.error(`❌ マンダラ ${mandara.id} 保存失敗:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Delete mandara
+ * @param {string} userId - ユーザーID
+ * @param {string} mandaraId - マンダラID
+ * @returns {Promise<void>}
+ */
+export async function deleteMandara(userId, mandaraId) {
+  try {
+    const mandaraRef = doc(db, 'users', userId, 'mandaras', mandaraId);
+    await deleteDoc(mandaraRef);
+    console.log(`🗑️ マンダラ ${mandaraId} 削除成功`);
+  } catch (error) {
+    if (error.code === 'not-found') {
+      console.log(`ℹ️ マンダラ ${mandaraId} はすでに削除されています`);
+    } else {
+      console.error(`❌ マンダラ ${mandaraId} 削除失敗:`, error);
+      throw error;
+    }
+  }
+}
