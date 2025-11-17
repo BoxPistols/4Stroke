@@ -115,7 +115,7 @@ async function saveCurrentMandara() {
       }
     }
 
-    currentMandara.updatedAt = new Date().toISOString();
+    currentMandara.updatedAt = new Date();
 
     await Storage.saveMandara(currentUserId, currentMandara);
 
