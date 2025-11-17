@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nFix undefined variables causing data loading failure\n\nFixed critical JavaScript errors that prevented data from loading:\n- Added missing uiPosition variable in loadData function\n- Added missing garageNum calculation in textarea event listeners\n- Added missing garageNum calculation in paste event listeners\n- Added missing garageNum calculation in delete event listeners\n\nThese undefined variables caused the app to fail with \"Failed to load data\" error on production.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push)",
+      "Bash(git fetch:*)",
+      "Bash(git merge:*)",
+      "Bash(git diff:*)",
+      "Bash(git commit:*)",
+      "Bash(cat:*)",
+      "Bash(tree:*)",
+      "Bash(npm test:*)",
+      "Bash(open:*)",
+      "Bash(git restore:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
