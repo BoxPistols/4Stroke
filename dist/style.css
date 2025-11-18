@@ -991,26 +991,26 @@ input.stroke-title {
 }
 @media only screen and (max-width: 768px) {
   .garages-container {
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 80px 0 120px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 60px 0 80px;
   }
   .garages {
-    flex-direction: column;
-    width: 100%;
+    flex-direction: row;
+    width: auto;
     padding: 0;
   }
   .garage {
-    margin: 0 0 20px 0 !important;
-    width: 100% !important;
+    width: 100vw !important;
+    min-width: 100vw !important;
     padding: 16px 12px !important;
-    border-left: none !important;
-    border-right: none !important;
-    border-radius: 0 !important;
+    margin: 0 !important;
+    border-left: 1px solid var(--border-light) !important;
+    border-right: 1px solid var(--border-light) !important;
   }
   .garage-strokes {
     display: grid !important;
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr 1fr !important;
     gap: 12px !important;
     height: auto !important;
     min-height: auto !important;
@@ -1023,15 +1023,15 @@ input.stroke-title {
     width: 100% !important;
     max-width: 100%;
     height: auto !important;
-    min-height: 350px;
+    min-height: 250px;
     margin: 0 !important;
-    padding: 16px !important;
+    padding: 12px !important;
     border-radius: 8px !important;
     box-sizing: border-box;
   }
   textarea {
     flex: 1 !important;
-    font-size: 1rem !important;
+    font-size: 0.9rem !important;
     width: 100% !important;
     max-width: 100%;
     padding: 8px 12px !important;
@@ -1040,32 +1040,22 @@ input.stroke-title {
 }
 @media only screen and (max-width: 480px) {
   .garages-container {
-    padding: 80px 0 120px;
+    padding: 60px 0 80px;
   }
   .garage {
     padding: 12px 8px !important;
-    margin: 0 0 16px 0 !important;
   }
   .garage-strokes {
-    gap: 12px !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
   }
   .garage-strokes .garage-stroke-box {
-    display: flex !important;
-    flex-direction: column !important;
-    height: auto !important;
-    min-height: 300px;
-    padding: 12px !important;
-    border-radius: 6px !important;
-    width: 100% !important;
-    max-width: 100%;
-    box-sizing: border-box;
+    min-height: 200px;
+    padding: 10px !important;
   }
   textarea {
-    flex: 1 !important;
+    font-size: 0.85rem !important;
     padding: 8px 10px !important;
-    width: 100% !important;
-    max-width: 100%;
-    box-sizing: border-box;
   }
   input[type=button] {
     font-size: 0.85rem !important;
