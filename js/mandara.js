@@ -8,6 +8,35 @@ let currentMandara = null;
 let allMandaras = [];
 let saveTimer = null;
 
+// Debug helpers - accessible from browser console
+window.mandaraDebug = {
+  getCurrentMandara: () => currentMandara,
+  getAllMandaras: () => allMandaras,
+  getLocalStorage: () => {
+    const mandarasJson = localStorage.getItem('mandaras');
+    return mandarasJson ? JSON.parse(mandarasJson) : [];
+  },
+  logCurrentState: () => {
+    console.log('=== Mandara Debug State ===');
+    console.log('Current User ID:', currentUserId);
+    console.log('Storage Mode:', getStorageMode());
+    console.log('Current Mandara:', currentMandara);
+    console.log('All Mandaras Count:', allMandaras.length);
+    console.log('LocalStorage Mandaras:', window.mandaraDebug.getLocalStorage());
+  },
+  forceSave: async () => {
+    console.log('[DEBUG] Force saving current mandara...');
+    await saveCurrentMandara();
+  },
+  clearAll: () => {
+    if (confirm('Clear all mandaras from localStorage?')) {
+      localStorage.removeItem('mandaras');
+      console.log('[DEBUG] Cleared all mandaras from localStorage');
+      window.location.reload();
+    }
+  }
+};
+
 // Generate unique ID
 function generateId() {
   return `mandara_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -180,10 +209,16 @@ function renderTags() {
 
 // Add tag
 function addTag(tag) {
-  if (!currentMandara || !tag) return;
+  if (!currentMandara || !tag) {
+    console.log('[INFO] Cannot add tag - no current mandara or empty tag');
+    return;
+  }
 
   const trimmedTag = tag.trim();
-  if (!trimmedTag) return;
+  if (!trimmedTag) {
+    console.log('[INFO] Cannot add tag - empty after trim');
+    return;
+  }
 
   if (!currentMandara.tags) {
     currentMandara.tags = [];
@@ -191,16 +226,26 @@ function addTag(tag) {
 
   if (!currentMandara.tags.includes(trimmedTag)) {
     currentMandara.tags.push(trimmedTag);
+    console.log('[INFO] Tag added:', trimmedTag);
     renderTags();
     saveCurrentMandara();
+  } else {
+    console.log('[INFO] Tag already exists:', trimmedTag);
   }
 }
 
 // Remove tag
 function removeTag(tag) {
-  if (!currentMandara) return;
+  if (!currentMandara) {
+    console.log('[WARN] Cannot remove tag - no current mandara');
+    return;
+  }
 
+  const beforeLength = (currentMandara.tags || []).length;
   currentMandara.tags = (currentMandara.tags || []).filter(t => t !== tag);
+  const afterLength = currentMandara.tags.length;
+
+  console.log('[INFO] Tag removed:', tag, `(${beforeLength} -> ${afterLength})`);
   renderTags();
   saveCurrentMandara();
 }
@@ -227,10 +272,16 @@ function renderTodos() {
 
 // Add todo
 function addTodo(text) {
-  if (!currentMandara || !text) return;
+  if (!currentMandara || !text) {
+    console.log('[INFO] Cannot add todo - no current mandara or empty text');
+    return;
+  }
 
   const trimmedText = text.trim();
-  if (!trimmedText) return;
+  if (!trimmedText) {
+    console.log('[INFO] Cannot add todo - empty after trim');
+    return;
+  }
 
   if (!currentMandara.todos) {
     currentMandara.todos = [];
@@ -243,27 +294,41 @@ function addTodo(text) {
   };
 
   currentMandara.todos.push(todo);
+  console.log('[INFO] Todo added:', todo);
   renderTodos();
   saveCurrentMandara();
 }
 
 // Toggle todo
 function toggleTodo(id) {
-  if (!currentMandara) return;
+  if (!currentMandara) {
+    console.log('[WARN] Cannot toggle todo - no current mandara');
+    return;
+  }
 
   const todo = (currentMandara.todos || []).find(t => t.id === id);
   if (todo) {
     todo.completed = !todo.completed;
+    console.log('[INFO] Todo toggled:', id, 'completed:', todo.completed);
     renderTodos();
     saveCurrentMandara();
+  } else {
+    console.warn('[WARN] Todo not found:', id);
   }
 }
 
 // Remove todo
 function removeTodo(id) {
-  if (!currentMandara) return;
+  if (!currentMandara) {
+    console.log('[WARN] Cannot remove todo - no current mandara');
+    return;
+  }
 
+  const beforeLength = (currentMandara.todos || []).length;
   currentMandara.todos = (currentMandara.todos || []).filter(t => t.id !== id);
+  const afterLength = currentMandara.todos.length;
+
+  console.log('[INFO] Todo removed:', id, `(${beforeLength} -> ${afterLength})`);
   renderTodos();
   saveCurrentMandara();
 }
@@ -460,10 +525,14 @@ function setupEventListeners() {
   if (tagsContainer) {
     tagsContainer.addEventListener('click', (e) => {
       if (e.target.classList.contains('tag-remove')) {
+        console.log('[INFO] Tag remove button clicked:', e.target.dataset.tag);
         const tag = e.target.dataset.tag;
         removeTag(tag);
       }
     });
+    console.log('[INFO] Tags container listener attached');
+  } else {
+    console.warn('[WARN] Tags container not found');
   }
 
   // Todo input
@@ -481,13 +550,25 @@ function setupEventListeners() {
   // Todo actions (delegated)
   const todosContainer = document.getElementById('todos-container');
   if (todosContainer) {
+    // Click events for checkbox and remove button
     todosContainer.addEventListener('click', (e) => {
-      if (e.target.classList.contains('todo-checkbox')) {
-        toggleTodo(e.target.dataset.id);
-      } else if (e.target.classList.contains('todo-remove')) {
+      if (e.target.classList.contains('todo-remove')) {
+        console.log('[INFO] Todo remove button clicked');
         removeTodo(e.target.dataset.id);
       }
     });
+
+    // Change event for checkbox
+    todosContainer.addEventListener('change', (e) => {
+      if (e.target.classList.contains('todo-checkbox')) {
+        console.log('[INFO] Todo checkbox changed');
+        toggleTodo(e.target.dataset.id);
+      }
+    });
+
+    console.log('[INFO] Todo container listeners attached');
+  } else {
+    console.warn('[WARN] Todos container not found');
   }
 
   // New mandara button
