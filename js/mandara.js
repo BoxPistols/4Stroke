@@ -97,6 +97,11 @@ function loadMandaraIntoUI(mandara) {
 
   // TODOs
   renderTodos();
+
+  // Update URL with current mandara ID
+  const newUrl = new URL(window.location);
+  newUrl.searchParams.set('id', mandara.id);
+  window.history.replaceState({}, '', newUrl);
 }
 
 // Save current mandara
@@ -466,10 +471,15 @@ function setupEventListeners() {
   const newMandaraBtn = document.getElementById('new-mandara-btn');
   if (newMandaraBtn) {
     newMandaraBtn.addEventListener('click', async () => {
+      // Save current mandara before creating new one
+      if (currentMandara) {
+        await saveCurrentMandara();
+      }
+
       const newMandara = createNewMandara();
       await Storage.saveMandara(currentUserId, newMandara);
       allMandaras.unshift(newMandara);
-      loadMandaraIntoUI(newMandara);
+      loadMandaraIntoUI(newMandara); // This will update URL automatically
       showToast('新しいマンダラを作成しました');
     });
   }
@@ -603,8 +613,37 @@ async function initializeApp() {
   // Check if coming from 4Stroke
   const urlParams = new URLSearchParams(window.location.search);
   const from4Stroke = urlParams.get('from') === '4stroke';
+  const mandaraId = urlParams.get('id');
 
-  if (from4Stroke) {
+  // If there's a specific mandara ID, load it
+  if (mandaraId) {
+    // Check if mandara is already in the list
+    let mandara = allMandaras.find(m => m.id === mandaraId);
+
+    // If not in list, try to load from storage
+    if (!mandara) {
+      mandara = await Storage.loadMandara(currentUserId, mandaraId);
+      if (mandara) {
+        // Add to list if found
+        allMandaras.unshift(mandara);
+      }
+    }
+
+    if (mandara) {
+      loadMandaraIntoUI(mandara);
+      console.log('[INFO] Loaded mandara from URL:', mandaraId);
+    } else {
+      // Mandara not found, load most recent or create new
+      if (allMandaras.length > 0) {
+        loadMandaraIntoUI(allMandaras[0]);
+      } else {
+        const firstMandara = createNewMandara();
+        await Storage.saveMandara(currentUserId, firstMandara);
+        allMandaras = [firstMandara];
+        loadMandaraIntoUI(firstMandara);
+      }
+    }
+  } else if (from4Stroke) {
     const strokeData = sessionStorage.getItem('4stroke_expand');
     if (strokeData) {
       // Create new mandara from 4Stroke data
@@ -618,7 +657,14 @@ async function initializeApp() {
       allMandaras.unshift(newMandara);
       loadMandaraIntoUI(newMandara);
 
+      // Clear sessionStorage and update URL to prevent data loss on reload
       sessionStorage.removeItem('4stroke_expand');
+      // Update URL to include mandara ID instead of from=4stroke
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.delete('from');
+      newUrl.searchParams.set('id', newMandara.id);
+      window.history.replaceState({}, '', newUrl);
+
       showToast('4STROKEから展開しました');
     }
   } else if (allMandaras.length > 0) {
