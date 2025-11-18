@@ -656,6 +656,78 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.log('[INFO] Settings modal initialized');
   }
 
+  /**
+   * Handle Mandara expansion - populate 4Stroke from Mandara data
+   */
+  function handleMandaraExpand() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const fromMandara = urlParams.get('from') === 'mandara';
+
+    if (!fromMandara) return;
+
+    const expandData = sessionStorage.getItem('mandara_expand');
+    if (!expandData) {
+      console.warn('[WARN] No mandara_expand data found in sessionStorage');
+      return;
+    }
+
+    try {
+      const data = JSON.parse(expandData);
+      console.log('[INFO] Expanding from Mandara:', data);
+
+      // Clear sessionStorage
+      sessionStorage.removeItem('mandara_expand');
+
+      // Remove 'from=mandara' from URL
+      urlParams.delete('from');
+      const newUrl = urlParams.toString() ?
+        `${window.location.pathname}?${urlParams.toString()}` :
+        window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+
+      // Populate the first garage (Garage A) with mandara data
+      const textareas = DOM.textareas;
+
+      // Set center cell (cell 5) as Key (stroke 1)
+      if (textareas[0] && data.center) {
+        textareas[0].value = data.center;
+        textareas[0].dispatchEvent(new Event('keyup', { bubbles: true }));
+      }
+
+      // Set surrounding cells (1-4, 6-9) as other strokes
+      const cellMapping = [1, 2, 3, 4, 6, 7, 8, 9]; // Skip cell 5 (center)
+      cellMapping.forEach((cellNum, idx) => {
+        const textareaIdx = idx + 1; // Skip Key, start from stroke 2
+        if (textareas[textareaIdx] && data.cells && data.cells[cellNum]) {
+          textareas[textareaIdx].value = data.cells[cellNum];
+          textareas[textareaIdx].dispatchEvent(new Event('keyup', { bubbles: true }));
+        }
+      });
+
+      // Set title
+      const titleInput = DOM.getTitleInput('garageA');
+      if (titleInput && data.title) {
+        titleInput.value = data.title;
+        titleInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+
+      console.log('[SUCCESS] Mandara data expanded to 4Stroke');
+
+      // Show success message
+      const message = document.getElementById('message');
+      if (message) {
+        message.textContent = 'Mandaraから展開しました';
+        message.classList.remove('is-hidden');
+        setTimeout(() => {
+          message.classList.add('is-hidden');
+          message.textContent = 'Auto Save...';
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('[ERROR] Failed to expand mandara data:', error);
+    }
+  }
+
   if (isOnlineMode()) {
     // Online mode - require authentication
     const { onAuthChange, getCurrentUser, logout } = await import('./auth.js');
@@ -718,9 +790,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     setupEventListeners(null);
   }
 
-  // CSS Scroll Snap Polyfill
+  // CSS Scroll Snap Polyfill (only if available)
   const init = function () {
-    cssScrollSnapPolyfill();
+    if (typeof cssScrollSnapPolyfill !== 'undefined') {
+      cssScrollSnapPolyfill();
+    }
   };
   init();
 
@@ -737,4 +811,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const currentMode = getStorageMode();
   const userId = isOnlineMode() ? null : null; // Will be set properly in auth callback
   initializeMinimap(userId);
+
+  // Handle Mandara expansion if coming from mandara page
+  handleMandaraExpand();
 });

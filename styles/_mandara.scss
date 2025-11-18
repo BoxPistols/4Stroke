@@ -1,6 +1,16 @@
 // Mandara Page Styles
 @use "mixins/flexbox" as *;
 
+// Override body overflow for Mandara page
+body:has(.mandara-editor) {
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: block;
+  padding: 0;
+  height: auto;
+  min-height: 100vh;
+}
+
 // Mandara Editor
 .mandara-editor {
   padding: var(--spacing-xl);
@@ -297,8 +307,10 @@
       flex-shrink: 0;
       width: 20px;
       height: 20px;
+      margin: 0;
       cursor: pointer;
       accent-color: var(--color-accent);
+      vertical-align: middle;
     }
 
     .todo-text {
@@ -306,7 +318,7 @@
       color: var(--color-white);
       font-size: 15px;
       font-family: var(--font-japanese);
-      line-height: 1.5;
+      line-height: 20px; // Match checkbox height for alignment
 
       &.completed {
         text-decoration: line-through;
@@ -652,6 +664,164 @@
     &:active {
       transform: translateY(0);
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+// Mobile responsive styles
+@media (max-width: 768px) {
+  // Override body for mobile
+  body:has(.mandara-editor) {
+    padding: 0;
+  }
+
+  // Header
+  .header {
+    padding: var(--spacing-md);
+    flex-direction: column;
+    gap: var(--spacing-sm);
+
+    .logo-title {
+      font-size: 1.2rem;
+    }
+  }
+
+  // Navigation
+  .mandara-nav {
+    padding: var(--spacing-sm);
+    overflow-x: auto;
+
+    ul {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: var(--spacing-xs);
+    }
+
+    .new-mandara-btn,
+    .list-view-btn,
+    .search-btn {
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+  }
+
+  // Mandara editor
+  .mandara-editor {
+    padding: var(--spacing-md);
+    margin: var(--spacing-sm);
+  }
+
+  .mandara-header {
+    padding: var(--spacing-md);
+
+    .mandara-title-input {
+      font-size: 1.3rem;
+      padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .mandara-meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-xs);
+      font-size: 0.8rem;
+    }
+  }
+
+  // Grid layout - single column on mobile
+  .mandara-content {
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+
+  .mandara-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm);
+    min-height: auto;
+  }
+
+  .mandara-cell {
+    font-size: 16px;
+    padding: var(--spacing-sm);
+    min-height: 80px;
+
+    &.mandara-center {
+      font-size: 18px;
+    }
+  }
+
+  // Memo area
+  .mandara-memo-area {
+    padding: var(--spacing-md);
+    margin-top: 0;
+  }
+
+  .mandara-memo {
+    min-height: 180px;
+    font-size: 14px;
+    padding: var(--spacing-md);
+  }
+
+  // Tags and todos
+  .tag-input,
+  .todo-input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .tag-item {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  .todo-item {
+    padding: 8px 10px;
+
+    .todo-text {
+      font-size: 14px;
+    }
+  }
+
+  // Actions
+  .mandara-actions {
+    flex-direction: column;
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+    }
+  }
+
+  // List view
+  .list-view {
+    padding: var(--spacing-md);
+  }
+
+  .list-header {
+    h2 {
+      font-size: 1.4rem;
+    }
+  }
+
+  .list-controls {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+
+    .sort-select,
+    .filter-input {
+      width: 100%;
+    }
+  }
+
+  .mandara-list-item {
+    padding: var(--spacing-md);
+
+    .card-title {
+      font-size: 1rem;
+    }
+
+    .card-center {
+      font-size: 13px;
     }
   }
 }

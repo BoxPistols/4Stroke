@@ -508,11 +508,21 @@ function setupEventListeners() {
     memoInput.addEventListener('input', debouncedSave);
   }
 
-  // Tag input
+  // Tag input with IME support
   const tagInput = document.getElementById('tag-input');
   if (tagInput) {
+    let isComposingTag = false;
+
+    tagInput.addEventListener('compositionstart', () => {
+      isComposingTag = true;
+    });
+
+    tagInput.addEventListener('compositionend', () => {
+      isComposingTag = false;
+    });
+
     tagInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' && !isComposingTag) {
         e.preventDefault();
         addTag(tagInput.value);
         tagInput.value = '';
@@ -535,11 +545,21 @@ function setupEventListeners() {
     console.warn('[WARN] Tags container not found');
   }
 
-  // Todo input
+  // Todo input with IME support
   const todoInput = document.getElementById('todo-input');
   if (todoInput) {
+    let isComposingTodo = false;
+
+    todoInput.addEventListener('compositionstart', () => {
+      isComposingTodo = true;
+    });
+
+    todoInput.addEventListener('compositionend', () => {
+      isComposingTodo = false;
+    });
+
     todoInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' && !isComposingTodo) {
         e.preventDefault();
         addTodo(todoInput.value);
         todoInput.value = '';
