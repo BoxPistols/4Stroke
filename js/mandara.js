@@ -120,12 +120,20 @@ async function saveCurrentMandara() {
       }
     }
 
-    currentMandara.updatedAt = new Date();
+    currentMandara.updatedAt = new Date().toISOString();
 
+    // Save entire mandara object (includes tags, todos, cells, memo, etc.)
     await Storage.saveMandara(currentUserId, currentMandara);
 
     // Update updated date display
     document.getElementById('updated-date').textContent = `更新: ${formatDate(currentMandara.updatedAt)}`;
+
+    console.log('[INFO] Saved mandara:', {
+      id: currentMandara.id,
+      title: currentMandara.title,
+      tags: currentMandara.tags?.length || 0,
+      todos: currentMandara.todos?.length || 0
+    });
 
     showAutoSaveMessage();
   } catch (error) {
@@ -151,17 +159,23 @@ function renderTags() {
   (currentMandara.tags || []).forEach(tag => {
     const tagEl = document.createElement('span');
     tagEl.className = 'tag';
-    tagEl.textContent = tag;
+
+    const tagText = document.createElement('span');
+    tagText.textContent = tag;
+    tagEl.appendChild(tagText);
 
     const removeBtn = document.createElement('button');
     removeBtn.className = 'tag-remove';
     removeBtn.dataset.tag = tag;
     removeBtn.textContent = '×';
+    removeBtn.setAttribute('type', 'button');
     removeBtn.setAttribute('aria-label', `Remove tag ${tag}`);
 
     tagEl.appendChild(removeBtn);
     container.appendChild(tagEl);
   });
+
+  console.log('[INFO] Rendered tags:', currentMandara.tags?.length || 0);
 }
 
 // Add tag
@@ -203,10 +217,12 @@ function renderTodos() {
     todoEl.innerHTML = `
       <input type="checkbox" class="todo-checkbox" data-id="${todo.id}" ${todo.completed ? 'checked' : ''}>
       <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
-      <button class="todo-remove" data-id="${todo.id}">×</button>
+      <button type="button" class="todo-remove" data-id="${todo.id}">×</button>
     `;
     container.appendChild(todoEl);
   });
+
+  console.log('[INFO] Rendered todos:', currentMandara.todos?.length || 0);
 }
 
 // Add todo
@@ -254,14 +270,21 @@ function removeTodo(id) {
 
 // Delete current mandara
 async function deleteCurrentMandara() {
-  if (!currentMandara) return;
+  if (!currentMandara) {
+    console.warn('[WARN] No current mandara to delete');
+    return;
+  }
+
+  console.log('[INFO] Attempting to delete mandara:', currentMandara.id);
 
   if (!confirm(`「${currentMandara.title || '無題'}」を削除しますか？`)) {
+    console.log('[INFO] Delete cancelled by user');
     return;
   }
 
   try {
     await Storage.deleteMandara(currentUserId, currentMandara.id);
+    console.log('[SUCCESS] Deleted mandara:', currentMandara.id);
     showToast('削除しました');
 
     // Load all mandaras and show first one or create new
@@ -488,36 +511,52 @@ function setupEventListeners() {
   const deleteBtn = document.getElementById('delete-mandara-btn');
   if (deleteBtn) {
     deleteBtn.addEventListener('click', deleteCurrentMandara);
+    console.log('[INFO] Delete button listener attached');
+  } else {
+    console.warn('[WARN] Delete button not found');
   }
 
   // Expand to 4Stroke button
   const expandBtn = document.getElementById('expand-to-4stroke-btn');
   if (expandBtn) {
     expandBtn.addEventListener('click', expandTo4Stroke);
+    console.log('[INFO] Expand button listener attached');
+  } else {
+    console.warn('[WARN] Expand button not found');
   }
 
   // List view button
   const listViewBtn = document.getElementById('list-view-btn');
   if (listViewBtn) {
     listViewBtn.addEventListener('click', showListView);
+    console.log('[INFO] List view button listener attached');
+  } else {
+    console.warn('[WARN] List view button not found');
   }
 
   // Close list view button
   const listCloseBtn = document.getElementById('list-close-btn');
   if (listCloseBtn) {
     listCloseBtn.addEventListener('click', closeListView);
+    console.log('[INFO] List close button listener attached');
+  } else {
+    console.warn('[WARN] List close button not found');
   }
 
   // Search button
   const searchBtn = document.getElementById('search-btn');
   if (searchBtn) {
     searchBtn.addEventListener('click', () => {
+      console.log('[INFO] Search button clicked');
       showListView();
       const filterInput = document.getElementById('filter-input');
       if (filterInput) {
         filterInput.focus();
       }
     });
+    console.log('[INFO] Search button listener attached');
+  } else {
+    console.warn('[WARN] Search button not found');
   }
 
   // Filter input
