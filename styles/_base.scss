@@ -46,8 +46,8 @@ html {
 
 body {
   display:flex;
-  // overflow-x: scroll;
-  overflow:hidden;
+  overflow-x: auto;  // Enable horizontal scroll for 4Stroke garages
+  overflow-y: hidden;  // Prevent vertical scroll on main page
   min-width:100vw;
   height:100vh;
   // padding:4px 12px;
