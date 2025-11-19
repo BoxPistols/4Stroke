@@ -12,7 +12,9 @@
       "Bash(tree:*)",
       "Bash(npm test:*)",
       "Bash(open:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(git push:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []
