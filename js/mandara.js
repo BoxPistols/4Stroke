@@ -467,25 +467,6 @@ function closeListView() {
   document.getElementById('mandara-editor').style.display = 'block';
 }
 
-// Expand to 4Stroke
-function expandTo4Stroke() {
-  if (!currentMandara) return;
-
-  const center = currentMandara.cells[5] || '';
-  const data = {
-    center,
-    cells: currentMandara.cells,
-    title: currentMandara.title,
-    mandaraId: currentMandara.id
-  };
-
-  // Store in sessionStorage for 4Stroke to pick up
-  sessionStorage.setItem('mandara_expand', JSON.stringify(data));
-
-  // Navigate to main.html
-  window.location.href = 'main.html?from=mandara';
-}
-
 // Setup event listeners
 function setupEventListeners() {
   // Title input
@@ -617,15 +598,6 @@ function setupEventListeners() {
     console.warn('[WARN] Delete button not found');
   }
 
-  // Expand to 4Stroke button
-  const expandBtn = document.getElementById('expand-to-4stroke-btn');
-  if (expandBtn) {
-    expandBtn.addEventListener('click', expandTo4Stroke);
-    console.log('[INFO] Expand button listener attached');
-  } else {
-    console.warn('[WARN] Expand button not found');
-  }
-
   // List view button
   const listViewBtn = document.getElementById('list-view-btn');
   if (listViewBtn) {
@@ -750,9 +722,8 @@ async function initializeApp() {
   // Load all mandaras
   await loadAllMandaras();
 
-  // Check if coming from 4Stroke
+  // Check URL parameters
   const urlParams = new URLSearchParams(window.location.search);
-  const from4Stroke = urlParams.get('from') === '4stroke';
   const mandaraId = urlParams.get('id');
 
   // If there's a specific mandara ID, load it
@@ -782,30 +753,6 @@ async function initializeApp() {
         allMandaras = [firstMandara];
         loadMandaraIntoUI(firstMandara);
       }
-    }
-  } else if (from4Stroke) {
-    const strokeData = sessionStorage.getItem('4stroke_expand');
-    if (strokeData) {
-      // Create new mandara from 4Stroke data
-      const data = JSON.parse(strokeData);
-      const newMandara = createNewMandara();
-      newMandara.title = data.title || '';
-      newMandara.cells[5] = data.key || '';
-      newMandara.linkedGarageId = data.garageId;
-
-      await Storage.saveMandara(currentUserId, newMandara);
-      allMandaras.unshift(newMandara);
-      loadMandaraIntoUI(newMandara);
-
-      // Clear sessionStorage and update URL to prevent data loss on reload
-      sessionStorage.removeItem('4stroke_expand');
-      // Update URL to include mandara ID instead of from=4stroke
-      const newUrl = new URL(window.location);
-      newUrl.searchParams.delete('from');
-      newUrl.searchParams.set('id', newMandara.id);
-      window.history.replaceState({}, '', newUrl);
-
-      showToast('4STROKEから展開しました');
     }
   } else if (allMandaras.length > 0) {
     // Load most recent mandara

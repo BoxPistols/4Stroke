@@ -527,62 +527,6 @@ test.describe('Mandara Feature - Comprehensive Tests', () => {
     });
   });
 
-  test.describe('Test 8: 4Stroke Integration', () => {
-
-    test('8.1 Expand from 4Stroke to Mandara', async ({ page }) => {
-      // Go to main page
-      await page.goto('/main.html');
-
-      // Fill garage A title and key cell
-      const titleInput = page.locator('#garage-title-garageA');
-      await titleInput.fill('プロジェクトX');
-
-      // Find the first textarea (Key cell in garage A)
-      const keyCell = page.locator('#garageA textarea').first();
-      await keyCell.fill('革新的アイデア');
-
-      // Click expand to mandara button for garage A
-      const expandBtn = page.locator('[data-garage="garageA"].expand-to-mandara-btn');
-      await expandBtn.click();
-
-      // Wait for navigation to mandara page
-      await page.waitForURL(/mandara\.html/);
-
-      // Verify data is transferred
-      await expect(page.locator('#mandara-title')).toHaveValue('プロジェクトX');
-      await expect(page.locator('#cell-5')).toHaveValue('革新的アイデア');
-    });
-
-    test('8.2 URL parameter changes from "from=4stroke" to "id=mandara_xxx"', async ({ page }) => {
-      // Set up session storage to simulate coming from 4Stroke
-      await page.goto('/mandara.html');
-      await page.evaluate(() => {
-        sessionStorage.setItem('4stroke_expand', JSON.stringify({
-          garageId: 'garageA',
-          title: 'テスト展開',
-          key: 'キーワード'
-        }));
-      });
-
-      // Navigate with from=4stroke parameter
-      await page.goto('/mandara.html?from=4stroke');
-      await page.waitForTimeout(500);
-
-      // Verify title and center cell are populated
-      await expect(page.locator('#mandara-title')).toHaveValue('テスト展開');
-      await expect(page.locator('#cell-5')).toHaveValue('キーワード');
-
-      // Wait for auto-save and URL update
-      await waitForAutoSave();
-
-      // Verify URL changed to id parameter
-      await page.waitForURL(/\?id=mandara_/);
-      const url = page.url();
-      expect(url).toMatch(/\?id=mandara_\d+/);
-      expect(url).not.toContain('from=4stroke');
-    });
-  });
-
   test.describe('Edge Cases and Error Handling', () => {
 
     test('Empty tag input should not create tag', async ({ page }) => {

@@ -761,23 +761,6 @@ input.stroke-title {
     * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
   */
 }
-.clear-garage-box .expand-to-mandara-btn {
-  border: none;
-  outline: none;
-  background: var(--btn-secondary-bg);
-  color: var(--color-white);
-  font-family: var(--font-primary);
-  font-size: 0.9em;
-  padding: 8px 16px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  letter-spacing: var(--letter-spacing-tight);
-  transition: all var(--transition-normal);
-}
-.clear-garage-box .expand-to-mandara-btn:hover {
-  opacity: 0.8;
-  filter: var(--shadow-button-hover);
-}
 
 @media only screen and (max-width: 768px) {
   header.header {
@@ -819,11 +802,6 @@ input.stroke-title {
     flex-direction: column;
   }
   .clear-garage-box > input[type=button] {
-    width: 100%;
-    font-size: 0.85em;
-    padding: 8px 12px;
-  }
-  .clear-garage-box .expand-to-mandara-btn {
     width: 100%;
     font-size: 0.85em;
     padding: 8px 12px;
