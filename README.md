@@ -38,6 +38,52 @@ python3 -m http.server 8000
 - [セットアップガイド](./SETUP.md) - ローカル開発とデプロイ手順
 - [Firebase完全ガイド](./docs/FIREBASE_SETUP_GUIDE.md) - ゼロからのFirebaseセットアップ
 - [Netlifyデプロイガイド](./docs/NETLIFY_DEPLOY.md) - 本番環境へのデプロイ手順
+- [テストアーキテクチャ](./docs/TEST_ARCHITECTURE.md) - テスト設計とベストプラクティス
+- [Mandaraマニュアルテスト](./MANDARA_TEST.md) - Mandara機能の手動テスト手順
+
+## 🧪 テスト
+
+### 自動テスト
+
+```bash
+# E2Eテスト（Playwright）
+npm run test:e2e
+
+# Mandara機能のテスト
+npm run test:e2e -- e2e/mandara.spec.js
+
+# UIモードで実行
+npm run test:e2e:ui
+
+# ユニットテスト（Vitest）
+npm run test
+
+# カバレッジ付きテスト
+npm run test:coverage
+```
+
+### 手動テスト
+
+```bash
+# ローカルサーバー起動
+npx serve -s . -l 8000
+
+# ブラウザで開く
+http://localhost:8000/mandara.html
+
+# ブラウザコンソール（F12）でデバッグ
+mandaraDebug.logCurrentState()
+```
+
+### Claude Codeコマンド
+
+```
+/test-mandara        # Mandaraテストを実行
+/debug-tests         # テスト失敗のデバッグ
+/manual-test-guide   # マニュアルテストガイド
+```
+
+詳細は [TEST_ARCHITECTURE.md](./docs/TEST_ARCHITECTURE.md) を参照。
 
 ## Dev from
 

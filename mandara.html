@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4STROKE MANDARA</title>
+  <link rel="icon" sizes="16x16" href="favicon.ico">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yakuhanjp@3.4.1/dist/css/yakuhanrp.min.css">
+  <link rel="stylesheet" href="dist/style.css">
+  <script type="module" src="js/mandara.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="logo-img"><img src="./img/logo.svg"></div>
+    <h1 class="logo-title">4STROKE MANDARA</h1>
+    <div class="is-hidden" id="message">Auto Save...</div>
+  </header>
+
+  <nav class="garages-nav mandara-nav">
+    <ul>
+      <li><a href="main.html">4STROKES</a></li>
+      <li><button id="new-mandara-btn" class="new-mandara-btn" title="New Mandara">NEW</button></li>
+      <li><button id="list-view-btn" class="list-view-btn" title="List View">LIST</button></li>
+      <li><button id="search-btn" class="search-btn" title="Search">SEARCH</button></li>
+      <li class="user-info">
+        <button id="logout-btn" class="logout-btn" title="Logout / Switch Mode">
+          <span class="logout-text">LOGOUT</span>
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Mandara Editor View -->
+  <div id="mandara-editor" class="mandara-editor">
+    <div class="mandara-header">
+      <input type="text" id="mandara-title" class="mandara-title-input" placeholder="タイトル">
+      <div class="mandara-meta">
+        <span id="created-date" class="meta-date">作成: -</span>
+        <span id="updated-date" class="meta-date">更新: -</span>
+      </div>
+    </div>
+
+    <div class="mandara-content">
+      <!-- 9-grid Mandara -->
+      <div class="mandara-grid">
+        <textarea id="cell-1" class="mandara-cell" data-cell="1" placeholder="1"></textarea>
+        <textarea id="cell-2" class="mandara-cell" data-cell="2" placeholder="2"></textarea>
+        <textarea id="cell-3" class="mandara-cell" data-cell="3" placeholder="3"></textarea>
+        <textarea id="cell-4" class="mandara-cell" data-cell="4" placeholder="4"></textarea>
+        <textarea id="cell-5" class="mandara-cell mandara-center" data-cell="5" placeholder="中心キーワード"></textarea>
+        <textarea id="cell-6" class="mandara-cell" data-cell="6" placeholder="6"></textarea>
+        <textarea id="cell-7" class="mandara-cell" data-cell="7" placeholder="7"></textarea>
+        <textarea id="cell-8" class="mandara-cell" data-cell="8" placeholder="8"></textarea>
+        <textarea id="cell-9" class="mandara-cell" data-cell="9" placeholder="9"></textarea>
+      </div>
+
+      <!-- Memo Area -->
+      <div class="mandara-memo-area">
+        <h3 class="memo-title">備考メモ</h3>
+        <textarea id="mandara-memo" class="mandara-memo" placeholder="備考やメモを入力..."></textarea>
+
+        <!-- Tags -->
+        <div class="tags-section">
+          <h4>タグ</h4>
+          <div id="tags-container" class="tags-container"></div>
+          <input type="text" id="tag-input" class="tag-input" placeholder="タグを追加 (Enter)">
+        </div>
+
+        <!-- TODOs -->
+        <div class="todos-section">
+          <h4>TODO</h4>
+          <div id="todos-container" class="todos-container"></div>
+          <input type="text" id="todo-input" class="todo-input" placeholder="TODOを追加 (Enter)">
+        </div>
+
+        <!-- Actions -->
+        <div class="mandara-actions">
+          <button id="delete-mandara-btn" class="btn btn-danger">削除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- List View -->
+  <div id="list-view" class="list-view is-hidden">
+    <div class="list-header">
+      <h2>マンダラ一覧</h2>
+      <button class="list-close-btn" id="list-close-btn">CLOSE</button>
+    </div>
+
+    <div class="list-controls">
+      <select id="sort-select" class="sort-select">
+        <option value="updated-desc">更新日時 (新しい順)</option>
+        <option value="updated-asc">更新日時 (古い順)</option>
+        <option value="created-desc">作成日時 (新しい順)</option>
+        <option value="created-asc">作成日時 (古い順)</option>
+        <option value="title-asc">タイトル (A-Z)</option>
+        <option value="title-desc">タイトル (Z-A)</option>
+      </select>
+
+      <input type="text" id="filter-input" class="filter-input" placeholder="検索 (タイトル、タグ、内容)">
+    </div>
+
+    <div id="mandara-list" class="mandara-list">
+      <!-- Will be populated by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Success Toast -->
+  <div id="success-toast" class="toast">
+    <span id="success-toast-message">保存しました</span>
+  </div>
+</body>
+</html>

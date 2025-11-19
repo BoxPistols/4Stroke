@@ -1,0 +1,29 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection
+    match /users/{userId} {
+      // Allow users to read/write their own data
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // Garages subcollection
+      match /garages/{garageId} {
+        // Allow users to read/write their own garages
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // Mandaras subcollection (NEW)
+      match /mandaras/{mandaraId} {
+        // Allow users to read/write their own mandaras
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+
+        // Validate mandara data structure
+        allow create, update: if request.auth != null
+          && request.auth.uid == userId
+          && request.resource.data.keys().hasAll(['title', 'cells', 'memo', 'tags', 'todos'])
+          && request.resource.data.cells.keys().hasAll(['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+      }
+    }
+  }
+}

@@ -686,9 +686,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     setupEventListeners(null);
   }
 
-  // CSS Scroll Snap Polyfill
+  // CSS Scroll Snap Polyfill (only if available)
   const init = function () {
-    cssScrollSnapPolyfill();
+    if (typeof cssScrollSnapPolyfill !== 'undefined') {
+      cssScrollSnapPolyfill();
+    }
   };
   init();
 
