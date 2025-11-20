@@ -35,9 +35,16 @@ python3 -m http.server 8000
 
 ## 📚 ドキュメント
 
+### セットアップ・デプロイ
 - [セットアップガイド](./SETUP.md) - ローカル開発とデプロイ手順
 - [Firebase完全ガイド](./docs/FIREBASE_SETUP_GUIDE.md) - ゼロからのFirebaseセットアップ
 - [Netlifyデプロイガイド](./docs/NETLIFY_DEPLOY.md) - 本番環境へのデプロイ手順
+
+### データベース・API
+- [Firestoreデータベース構造](./FIRESTORE_DB_STRUCTURE.md) - DB設計とスキーマ定義
+- [Firestore API実践ガイド](./FIRESTORE_API_EXAMPLES.md) - 実装例とベストプラクティス
+
+### テスト
 - [テストアーキテクチャ](./docs/TEST_ARCHITECTURE.md) - テスト設計とベストプラクティス
 - [Mandaraマニュアルテスト](./MANDARA_TEST.md) - Mandara機能の手動テスト手順
 
