@@ -90,16 +90,25 @@
     </div>
 
     <div class="list-controls">
-      <select id="sort-select" class="sort-select">
-        <option value="updated-desc">更新日時 (新しい順)</option>
-        <option value="updated-asc">更新日時 (古い順)</option>
-        <option value="created-desc">作成日時 (新しい順)</option>
-        <option value="created-asc">作成日時 (古い順)</option>
-        <option value="title-asc">タイトル (A-Z)</option>
-        <option value="title-desc">タイトル (Z-A)</option>
-      </select>
+      <div class="list-controls-row">
+        <select id="sort-select" class="sort-select">
+          <option value="updated-desc">更新日時 (新しい順)</option>
+          <option value="updated-asc">更新日時 (古い順)</option>
+          <option value="created-desc">作成日時 (新しい順)</option>
+          <option value="created-asc">作成日時 (古い順)</option>
+          <option value="title-asc">タイトル (A-Z)</option>
+          <option value="title-desc">タイトル (Z-A)</option>
+        </select>
 
-      <input type="text" id="filter-input" class="filter-input" placeholder="検索 (タイトル、タグ、内容)">
+        <input type="text" id="filter-input" class="filter-input" placeholder="検索 (タイトル、タグ、内容)">
+      </div>
+
+      <div class="list-actions">
+        <button type="button" id="select-all-btn" class="btn btn-secondary">全選択</button>
+        <button type="button" id="deselect-all-btn" class="btn btn-secondary">選択解除</button>
+        <button type="button" id="delete-selected-btn" class="btn btn-warning">選択を削除</button>
+        <button type="button" id="delete-all-btn" class="btn btn-danger">全件削除</button>
+      </div>
     </div>
 
     <div id="mandara-list" class="mandara-list">

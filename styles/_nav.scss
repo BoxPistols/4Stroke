@@ -2,7 +2,7 @@
 
 nav.garages-nav {
   position:fixed;
-  z-index:10;
+  z-index:100;
   bottom:-8px;
   right:8px;
 
@@ -107,6 +107,9 @@ nav.garages-nav {
       }
       li:nth-child(4) a::after {
         content:'D';
+      }
+      li:nth-child(5) a::after {
+        content:'MAN';
       }
 
       li a {

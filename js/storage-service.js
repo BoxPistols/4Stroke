@@ -112,6 +112,19 @@ export const LocalStorage = {
   },
 
   /**
+   * Delete multiple mandaras from localStorage
+   */
+  async deleteMandaras(mandaraIds) {
+    if (!mandaraIds || mandaraIds.length === 0) {
+      return;
+    }
+    const mandaras = await this.loadAllMandaras();
+    const filtered = mandaras.filter(m => !mandaraIds.includes(m.id));
+    localStorage.setItem('mandaras', JSON.stringify(filtered));
+    console.log(`[SUCCESS] Deleted ${mandaraIds.length} mandaras from localStorage`);
+  },
+
+  /**
    * Load all garages from localStorage
    */
   async loadAllGarages() {
@@ -277,6 +290,18 @@ export const Storage = {
     } else {
       const { deleteMandara } = await import('./firestore-crud.js');
       return deleteMandara(userId, mandaraId);
+    }
+  },
+
+  /**
+   * Delete multiple mandaras
+   */
+  async deleteMandaras(userId, mandaraIds) {
+    if (isLocalMode()) {
+      return LocalStorage.deleteMandaras(mandaraIds);
+    } else {
+      const { deleteMandaras } = await import('./firestore-crud.js');
+      return deleteMandaras(userId, mandaraIds);
     }
   }
 };

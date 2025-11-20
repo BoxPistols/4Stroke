@@ -368,6 +368,111 @@ async function deleteCurrentMandara() {
   }
 }
 
+// Delete mandara by ID (for list view)
+async function deleteMandara(mandaraId) {
+  const mandara = allMandaras.find(m => m.id === mandaraId);
+  if (!mandara) {
+    console.warn('[WARN] Mandara not found:', mandaraId);
+    return;
+  }
+
+  if (!confirm(`「${mandara.title || '無題'}」を削除しますか？`)) {
+    console.log('[INFO] Delete cancelled by user');
+    return;
+  }
+
+  try {
+    await Storage.deleteMandara(currentUserId, mandaraId);
+    console.log('[SUCCESS] Deleted mandara:', mandaraId);
+    showToast('削除しました');
+
+    // Reload list
+    await loadAllMandaras();
+    renderMandaraList();
+
+    // If deleted mandara was current one, load another or create new
+    if (currentMandara && currentMandara.id === mandaraId) {
+      if (allMandaras.length > 0) {
+        loadMandaraIntoUI(allMandaras[0]);
+      } else {
+        const newMandara = createNewMandara();
+        await Storage.saveMandara(currentUserId, newMandara);
+        allMandaras = [newMandara];
+        loadMandaraIntoUI(newMandara);
+      }
+    }
+  } catch (error) {
+    console.error('[ERROR] Failed to delete mandara:', error);
+    alert('削除に失敗しました');
+  }
+}
+
+// Delete multiple mandaras by IDs
+async function deleteMandaras(mandaraIds) {
+  if (mandaraIds.length === 0) return;
+
+  const count = mandaraIds.length;
+  if (!confirm(`${count}件のマンダラを削除しますか？`)) {
+    console.log('[INFO] Batch delete cancelled by user');
+    return;
+  }
+
+  try {
+    // Use batch delete if available, otherwise delete sequentially
+    await Storage.deleteMandaras(currentUserId, mandaraIds);
+
+    console.log(`[SUCCESS] Deleted ${count} mandaras`);
+    showToast(`${count}件削除しました`);
+
+    // Reload list
+    await loadAllMandaras();
+    renderMandaraList();
+
+    // If current mandara was deleted, load another or create new
+    if (currentMandara && mandaraIds.includes(currentMandara.id)) {
+      if (allMandaras.length > 0) {
+        loadMandaraIntoUI(allMandaras[0]);
+      } else {
+        const newMandara = createNewMandara();
+        await Storage.saveMandara(currentUserId, newMandara);
+        allMandaras = [newMandara];
+        loadMandaraIntoUI(newMandara);
+      }
+    }
+  } catch (error) {
+    console.error('[ERROR] Failed to delete mandaras:', error);
+    alert('削除に失敗しました');
+  }
+}
+
+// Delete all mandaras
+async function deleteAllMandaras() {
+  if (allMandaras.length === 0) {
+    alert('削除するマンダラがありません');
+    return;
+  }
+
+  const count = allMandaras.length;
+  if (!confirm(`全${count}件のマンダラを削除しますか？\n\nこの操作は取り消せません。`)) {
+    console.log('[INFO] Delete all cancelled by user');
+    return;
+  }
+
+  // Double confirmation for safety
+  if (!confirm('本当に全てのマンダラを削除しますか？')) {
+    console.log('[INFO] Delete all cancelled by user (2nd confirm)');
+    return;
+  }
+
+  try {
+    const ids = allMandaras.map(m => m.id);
+    await deleteMandaras(ids);
+  } catch (error) {
+    console.error('[ERROR] Failed to delete all mandaras:', error);
+    alert('削除に失敗しました');
+  }
+}
+
 // Load all mandaras
 async function loadAllMandaras() {
   try {
@@ -436,7 +541,11 @@ function renderMandaraList(filter = '', sortBy = 'updated-desc') {
     const centerText = (mandara.cells && mandara.cells[5]) ? mandara.cells[5] : '中心未設定';
 
     card.innerHTML = `
-      <h3 class="card-title">${mandara.title || '無題'}</h3>
+      <div class="card-header">
+        <input type="checkbox" class="card-checkbox" data-id="${mandara.id}" aria-label="Select ${mandara.title || '無題'}">
+        <h3 class="card-title">${mandara.title || '無題'}</h3>
+        <button type="button" class="card-delete-btn" data-id="${mandara.id}" aria-label="Delete ${mandara.title || '無題'}">×</button>
+      </div>
       <p class="card-center">中心: ${centerText}</p>
       <div class="card-tags">${tagsHtml}</div>
       <div class="card-meta">
@@ -445,9 +554,20 @@ function renderMandaraList(filter = '', sortBy = 'updated-desc') {
       </div>
     `;
 
-    card.addEventListener('click', () => {
-      loadMandaraIntoUI(mandara);
-      closeListView();
+    // Click on card (but not checkbox or delete button) to open
+    card.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('card-checkbox') &&
+          !e.target.classList.contains('card-delete-btn')) {
+        loadMandaraIntoUI(mandara);
+        closeListView();
+      }
+    });
+
+    // Delete button handler
+    const deleteBtn = card.querySelector('.card-delete-btn');
+    deleteBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      await deleteMandara(mandara.id);
     });
 
     listContainer.appendChild(card);
@@ -647,6 +767,44 @@ function setupEventListeners() {
     sortSelect.addEventListener('change', () => {
       renderMandaraList(filterInput ? filterInput.value : '', sortSelect.value);
     });
+  }
+
+  // Select all button
+  const selectAllBtn = document.getElementById('select-all-btn');
+  if (selectAllBtn) {
+    selectAllBtn.addEventListener('click', () => {
+      const checkboxes = document.querySelectorAll('.card-checkbox');
+      checkboxes.forEach(cb => cb.checked = true);
+    });
+  }
+
+  // Deselect all button
+  const deselectAllBtn = document.getElementById('deselect-all-btn');
+  if (deselectAllBtn) {
+    deselectAllBtn.addEventListener('click', () => {
+      const checkboxes = document.querySelectorAll('.card-checkbox');
+      checkboxes.forEach(cb => cb.checked = false);
+    });
+  }
+
+  // Delete selected button
+  const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+  if (deleteSelectedBtn) {
+    deleteSelectedBtn.addEventListener('click', async () => {
+      const checkboxes = document.querySelectorAll('.card-checkbox:checked');
+      const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
+      if (ids.length === 0) {
+        alert('削除するマンダラを選択してください');
+        return;
+      }
+      await deleteMandaras(ids);
+    });
+  }
+
+  // Delete all button
+  const deleteAllBtn = document.getElementById('delete-all-btn');
+  if (deleteAllBtn) {
+    deleteAllBtn.addEventListener('click', deleteAllMandaras);
   }
 
   // Logout button
