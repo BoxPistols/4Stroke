@@ -613,6 +613,9 @@ nav.garages-nav ul li button.active {
   nav.garages-nav ul li:nth-child(4) a::after {
     content: "D";
   }
+  nav.garages-nav ul li:nth-child(5) a::after {
+    content: "MAN";
+  }
   nav.garages-nav ul li a {
     font-size: 0;
     line-height: 0;

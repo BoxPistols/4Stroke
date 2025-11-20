@@ -108,6 +108,9 @@ nav.garages-nav {
       li:nth-child(4) a::after {
         content:'D';
       }
+      li:nth-child(5) a::after {
+        content:'MAN';
+      }
 
       li a {
         font-size:0;
