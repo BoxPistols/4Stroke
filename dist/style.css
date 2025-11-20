@@ -502,7 +502,7 @@ input[type=button] {
 }
 nav.garages-nav {
   position: fixed;
-  z-index: 10;
+  z-index: 100;
   bottom: -8px;
   right: 8px;
   font-family: "Oswald", sans-serif;
@@ -2189,6 +2189,13 @@ body:has(.mandara-editor) {
   background: linear-gradient(135deg, rgb(174, 129, 255), rgb(128, 0, 128));
   box-shadow: 0 6px 12px rgba(174, 129, 255, 0.4);
 }
+.mandara-actions .btn.btn-warning {
+  background: linear-gradient(135deg, rgba(253, 151, 31, 0.9), rgba(230, 126, 34, 0.9));
+}
+.mandara-actions .btn.btn-warning:hover {
+  background: linear-gradient(135deg, rgb(253, 151, 31), rgb(230, 126, 34));
+  box-shadow: 0 6px 12px rgba(253, 151, 31, 0.4);
+}
 .mandara-actions .btn span {
   position: relative;
   z-index: 1;
@@ -2252,6 +2259,12 @@ body:has(.mandara-editor) {
 
 .list-controls {
   display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+.list-controls .list-controls-row {
+  display: flex;
   /**
     * justify-content / Horizontal ===（1st Argument）
     * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
@@ -2271,12 +2284,43 @@ body:has(.mandara-editor) {
     * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
   */
   gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-xl);
 }
 @media (max-width: 768px) {
-  .list-controls {
+  .list-controls .list-controls-row {
     flex-direction: column;
     align-items: stretch;
+  }
+}
+.list-controls .list-actions {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: flex-end;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: center;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+@media (max-width: 768px) {
+  .list-controls .list-actions {
+    justify-content: stretch;
+  }
+  .list-controls .list-actions .btn {
+    flex: 1;
+    min-width: 120px;
   }
 }
 .list-controls .sort-select,
@@ -2366,13 +2410,56 @@ body:has(.mandara-editor) {
 .mandara-card:hover::before {
   opacity: 1;
 }
+.mandara-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+.mandara-card .card-checkbox {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-accent);
+}
+.mandara-card .card-checkbox:hover {
+  transform: scale(1.1);
+}
 .mandara-card .card-title {
   color: var(--color-white);
   font-size: 1.2rem;
   font-weight: bold;
-  margin-bottom: var(--spacing-md);
+  margin: 0;
+  flex: 1;
   font-family: var(--font-japanese);
   line-height: 1.4;
+}
+.mandara-card .card-delete-btn {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 100, 100, 0.5);
+  background: rgba(255, 0, 0, 0.2);
+  color: #ff6b6b;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+.mandara-card .card-delete-btn:hover {
+  background: rgba(255, 0, 0, 0.4);
+  border-color: #ff6b6b;
+  transform: scale(1.1);
+}
+.mandara-card .card-delete-btn:active {
+  transform: scale(0.95);
 }
 .mandara-card .card-center {
   color: rgba(255, 255, 255, 0.8);

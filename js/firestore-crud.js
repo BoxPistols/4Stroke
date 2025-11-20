@@ -364,3 +364,31 @@ export async function deleteMandara(userId, mandaraId) {
     }
   }
 }
+
+/**
+ * Delete multiple mandaras using batch operation
+ * @param {string} userId - ユーザーID
+ * @param {string[]} mandaraIds - マンダラID配列
+ * @returns {Promise<void>}
+ */
+export async function deleteMandaras(userId, mandaraIds) {
+  if (!mandaraIds || mandaraIds.length === 0) {
+    console.log('ℹ️ 削除するマンダラがありません');
+    return;
+  }
+
+  try {
+    const batch = writeBatch(db);
+
+    mandaraIds.forEach(mandaraId => {
+      const mandaraRef = doc(db, 'users', userId, 'mandaras', mandaraId);
+      batch.delete(mandaraRef);
+    });
+
+    await batch.commit();
+    console.log(`🗑️ ${mandaraIds.length}件のマンダラをバッチ削除成功`);
+  } catch (error) {
+    console.error(`❌ バッチ削除失敗:`, error);
+    throw error;
+  }
+}
