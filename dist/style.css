@@ -976,6 +976,7 @@ input.stroke-title {
     overflow-y: hidden;
     padding: 60px 0 80px;
     width: 100vw;
+    scroll-snap-type: x proximity;
   }
   .garages {
     flex-direction: row;
@@ -1041,6 +1042,7 @@ input.stroke-title {
 @media only screen and (max-width: 480px) {
   .garages-container {
     padding: 60px 0 80px;
+    scroll-snap-type: none;
   }
   .garage {
     padding: 12px 8px !important;
