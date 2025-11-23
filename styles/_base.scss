@@ -100,7 +100,14 @@ input[type="button"] {
 
 // Mobile responsive - Breakpoint: 768px
 @media only screen and (max-width: 768px) {
-  body {
-    padding:8px 12px 64px;
+  // Remove body padding on main.html to allow proper horizontal scrolling
+  // Padding is handled by .garages-container and individual .garage elements
+  body.main-page {
+    padding: 0;
+  }
+
+  // Other pages keep padding
+  body:not(.main-page) {
+    padding: 8px 12px 64px;
   }
 }
