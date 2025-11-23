@@ -14,7 +14,8 @@
       "Bash(open:*)",
       "Bash(git restore:*)",
       "Bash(git push:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(git rebase:*)"
     ],
     "deny": [],
     "ask": []
