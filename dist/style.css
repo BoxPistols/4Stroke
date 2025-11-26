@@ -1053,10 +1053,14 @@ input.stroke-title {
     font-size: 0.9rem !important;
     margin-bottom: 6px !important;
   }
+  .garage-head {
+    margin: 0 16px 12px;
+    gap: 8px;
+  }
 }
 @media only screen and (max-width: 480px) {
   .garages-container {
-    padding: 60px 0 80px;
+    padding: 0px 0 64px;
     scroll-snap-type: none;
   }
   .garage {
