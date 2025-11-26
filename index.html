@@ -14,20 +14,32 @@
     }
   </style>
   <script type="module">
-    import { getStorageMode } from './js/storage-service.js';
+    try {
+      const { getStorageMode } = await import('./js/storage-service.js');
 
-    // Check if user has selected a mode
-    const mode = getStorageMode();
+      // Check if user has selected a mode
+      const mode = getStorageMode();
 
-    if (mode === 'local') {
-      // Local mode - go directly to app
-      window.location.href = './main.html';
-    } else if (mode === 'online') {
-      // Online mode - check authentication, handled by main.html
-      window.location.href = './main.html';
-    } else {
-      // No mode selected - show login/mode selection
-      window.location.href = './login.html';
+      console.log('[INDEX] Storage mode:', mode);
+
+      if (mode === 'local') {
+        // Local mode - go directly to app
+        console.log('[INDEX] Redirecting to main.html (local mode)');
+        window.location.replace('main.html');
+      } else if (mode === 'online') {
+        // Online mode - check authentication, handled by main.html
+        console.log('[INDEX] Redirecting to main.html (online mode)');
+        window.location.replace('main.html');
+      } else {
+        // No mode selected - show login/mode selection
+        console.log('[INDEX] Redirecting to login.html (no mode)');
+        window.location.replace('login.html');
+      }
+    } catch (error) {
+      console.error('[INDEX] Error loading storage service:', error);
+      // Default to local mode if there's an error
+      console.log('[INDEX] Defaulting to main.html due to error');
+      window.location.replace('main.html');
     }
   </script>
 </head>

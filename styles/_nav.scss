@@ -62,6 +62,7 @@ nav.garages-nav {
     bottom:0;
     right:0;
     left:0;
+    z-index:200; // Ensure nav is above garages-container
     background:rgba(0, 0, 0, 0.8);
     padding:8px 4px;
     border-radius:0;
