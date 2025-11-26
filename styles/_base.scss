@@ -100,6 +100,11 @@ input[type="button"] {
 
 // Mobile responsive - Breakpoint: 768px
 @media only screen and (max-width: 768px) {
+  // Allow vertical scrolling on mobile
+  body {
+    overflow-y: auto;
+  }
+
   // Remove body padding on main.html to allow proper horizontal scrolling
   // Padding is handled by .garages-container and individual .garage elements
   body.main-page {

@@ -172,7 +172,7 @@
   .garages-container {
     // Keep horizontal scroll
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: auto; // Allow vertical scrolling on mobile
     padding: 60px 0 80px;
     width: 100vw;
     height: 100vh;
