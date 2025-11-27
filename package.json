@@ -8,6 +8,7 @@
     "dev:server": "python3 -m http.server 8888",
     "dev:css": "sass styles/style.scss dist/style.css --no-source-map --watch",
     "build": "sass styles/style.scss dist/style.css --no-source-map",
+    "build:css": "sass styles/style.scss dist/style.css --no-source-map",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
