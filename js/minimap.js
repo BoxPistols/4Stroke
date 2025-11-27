@@ -7,7 +7,7 @@ import { getGarageDataIdFromPosition, loadSettings } from './settings.js';
 import { TIMINGS, GARAGE } from './constants.js';
 import { debounce } from './utils/debounce.js';
 import { DOM, showAutoSaveMessage } from './utils/dom-cache.js';
-import { getGarageLetter, getNotePosition, numberToGarageId } from './utils/garage-id-utils.js';
+import { getGarageLetter, getNotePosition } from './utils/garage-id-utils.js';
 
 // Note metadata
 const GARAGE_NAMES = ['GARAGE-A', 'GARAGE-B', 'GARAGE-C', 'GARAGE-D'];
@@ -265,12 +265,13 @@ async function syncToMainView(noteIndex, content) {
 
 /**
  * Save note to storage
- * FIXED: garageNum was undefined - now using getNotePosition utility
+ * Uses garageOrder mapping to save to the correct garage
  */
 async function saveNoteToStorage(noteIndex, content) {
   // noteIndex is 1-16, representing UI positions
-  const { garageNum, strokeNum } = getNotePosition(noteIndex);
-  const garageId = numberToGarageId(garageNum);
+  const { garageIndex, strokeNum } = getNotePosition(noteIndex);
+  // Use garageOrder mapping to get the correct data garage ID
+  const garageId = getGarageDataIdFromPosition(garageIndex);
   const fieldKey = `stroke${strokeNum}`;
 
   try {

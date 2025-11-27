@@ -66,20 +66,34 @@ export function resetSettings() {
 
 /**
  * Get the data garage ID for a given UI position (0-3)
- * Garages are always fixed at their positions
+ * Uses garageOrder to map UI position to data garage ID
+ *
+ * Example: If garageOrder is ['garageC', 'garageA', 'garageD', 'garageB']
+ * - Position 0 (DOM garageA) -> returns 'garageC' (displays GARAGE-C data)
+ * - Position 1 (DOM garageB) -> returns 'garageA' (displays GARAGE-A data)
+ * - Position 2 (DOM garageC) -> returns 'garageD' (displays GARAGE-D data)
+ * - Position 3 (DOM garageD) -> returns 'garageB' (displays GARAGE-B data)
  */
 export function getGarageDataIdFromPosition(position) {
-  const garageIds = ['garageA', 'garageB', 'garageC', 'garageD'];
-  return garageIds[position];
+  const settings = loadSettings();
+  const garageOrder = settings.garageOrder || ['garageA', 'garageB', 'garageC', 'garageD'];
+  return garageOrder[position] || ['garageA', 'garageB', 'garageC', 'garageD'][position];
 }
 
 /**
  * Get the UI position (0-3) for a given data garage ID
- * Garages are always fixed: garageA=0, garageB=1, garageC=2, garageD=3
+ * Uses garageOrder to find which UI position displays the given garage's data
+ *
+ * Example: If garageOrder is ['garageC', 'garageA', 'garageD', 'garageB']
+ * - 'garageC' -> returns 0 (displayed at DOM garageA position)
+ * - 'garageA' -> returns 1 (displayed at DOM garageB position)
+ * - 'garageD' -> returns 2 (displayed at DOM garageC position)
+ * - 'garageB' -> returns 3 (displayed at DOM garageD position)
  */
 export function getPositionFromGarageDataId(garageId) {
-  const garageIds = ['garageA', 'garageB', 'garageC', 'garageD'];
-  const position = garageIds.indexOf(garageId);
+  const settings = loadSettings();
+  const garageOrder = settings.garageOrder || ['garageA', 'garageB', 'garageC', 'garageD'];
+  const position = garageOrder.indexOf(garageId);
   if (position >= 0) {
     return position;
   }

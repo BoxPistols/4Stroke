@@ -28,7 +28,8 @@ import {
 import { TIMINGS, BREAKPOINTS, FEATURES, GARAGE } from './constants.js';
 import { debounce } from './utils/debounce.js';
 import { DOM, showAutoSaveMessage } from './utils/dom-cache.js';
-import { numberToGarageId, getNotePosition } from './utils/garage-id-utils.js';
+// Note: numberToGarageId and getNotePosition are no longer needed here
+// as we use getGarageDataIdFromPosition for garage order mapping
 
 // Debounce timer
 let saveTimer = null;
@@ -42,6 +43,15 @@ document.addEventListener("DOMContentLoaded", async function () {
   /**
    * Load data from storage (Local or Firestore)
    * Uses garage order mapping to display data at correct UI positions
+   *
+   * The garage order determines which garage data is displayed at each UI position:
+   * - UI positions (DOM elements) are fixed: garageA, garageB, garageC, garageD
+   * - Data displayed at each position depends on garageOrder setting
+   *
+   * Example: If garageOrder is ['garageC', 'garageA', 'garageD', 'garageB']
+   * - Position 0 (DOM garageA) displays GARAGE-C's title and strokes
+   * - Position 1 (DOM garageB) displays GARAGE-A's title and strokes
+   * - etc.
    */
   async function loadData(userId) {
     try {
@@ -50,27 +60,38 @@ document.addEventListener("DOMContentLoaded", async function () {
       console.log('[INFO] Garages loaded:', garages);
 
       const textareas = DOM.textareas;
+      const uiPositionIds = ['garageA', 'garageB', 'garageC', 'garageD'];
 
-      // Populate UI
-      for (let i = 1; i <= GARAGE.COUNT; i++) {
-        const letteredId = numberToGarageId(i);
-        const garage = garages[letteredId];
+      // Populate UI using garage order mapping
+      for (let uiPosition = 0; uiPosition < GARAGE.COUNT; uiPosition++) {
+        // Get which garage data should be displayed at this UI position
+        const dataGarageId = getGarageDataIdFromPosition(uiPosition);
+        const garage = garages[dataGarageId];
+        const uiGarageId = uiPositionIds[uiPosition];
 
         // Safety check: skip if garage data is missing
         if (!garage) {
-          console.warn(`[WARNING] No data for ${letteredId}`);
+          console.warn(`[WARNING] No data for ${dataGarageId}`);
           continue;
         }
 
-        const uiPosition = i - 1; // UI position (0-3)
+        // Update the garage title (h2 element)
+        const garageElement = document.getElementById(uiGarageId);
+        if (garageElement) {
+          const titleElement = garageElement.querySelector('.garage-title');
+          if (titleElement) {
+            const garageLetter = dataGarageId.replace('garage', '');
+            titleElement.textContent = `GARAGE-${garageLetter}`;
+          }
+        }
 
-        // Set title
-        const titleInput = DOM.getTitleInput(letteredId);
+        // Set title input (using UI position's DOM element)
+        const titleInput = DOM.getTitleInput(uiGarageId);
         if (titleInput) {
           titleInput.value = garage.title || '';
         }
 
-        // Set strokes
+        // Set strokes (4 strokes per garage)
         for (let j = 1; j <= GARAGE.STROKES_PER_GARAGE; j++) {
           const strokeIndex = uiPosition * GARAGE.STROKES_PER_GARAGE + j;
           const textarea = textareas[strokeIndex - 1];
@@ -94,17 +115,22 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   /**
    * Setup textarea input event listeners
+   * Uses garageOrder mapping to save data to the correct garage
    */
   function setupTextareaListeners(userId) {
     const textareas = DOM.textareas;
 
     textareas.forEach((elm, i) => {
+      // Calculate UI position and stroke number from textarea index
+      const uiPosition = Math.floor(i / GARAGE.STROKES_PER_GARAGE); // 0-3
+      const strokeNum = (i % GARAGE.STROKES_PER_GARAGE) + 1; // 1-4
+
       // Keyup event with debounce
       elm.addEventListener("keyup", (event) => {
         clearTimeout(saveTimer);
         saveTimer = setTimeout(async () => {
-          const { garageNum, strokeNum } = getNotePosition(i + 1);
-          const garageId = numberToGarageId(garageNum);
+          // Get the data garage ID from UI position using garageOrder mapping
+          const garageId = getGarageDataIdFromPosition(uiPosition);
           const fieldKey = `stroke${strokeNum}`;
 
           try {
@@ -140,9 +166,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             const newCursorPos = start + processedText.length;
             elm.setSelectionRange(newCursorPos, newCursorPos);
 
-            // Trigger save
-            const { garageNum, strokeNum } = getNotePosition(i + 1);
-            const garageId = numberToGarageId(garageNum);
+            // Trigger save - use garageOrder mapping
+            const garageId = getGarageDataIdFromPosition(uiPosition);
             const fieldKey = `stroke${strokeNum}`;
 
             await Storage.saveStroke(userId, garageId, fieldKey, elm.value);
@@ -164,15 +189,19 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   /**
    * Setup title input event listeners
+   * Uses garageOrder mapping to save title to the correct garage
    */
   function setupTitleListeners(userId) {
     const titleInputs = DOM.titleInputs;
 
     titleInputs.forEach((input, i) => {
+      const uiPosition = i; // Title input index corresponds to UI position (0-3)
+
       input.addEventListener("keyup", (event) => {
         clearTimeout(saveTimer);
         saveTimer = setTimeout(async () => {
-          const garageId = numberToGarageId(i + 1);
+          // Get the data garage ID from UI position using garageOrder mapping
+          const garageId = getGarageDataIdFromPosition(uiPosition);
           try {
             await Storage.saveTitle(userId, garageId, event.target.value);
             showAutoSaveMessage();
@@ -186,12 +215,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   /**
    * Setup stroke delete button listeners
+   * Uses garageOrder mapping to delete from the correct garage
    */
   function setupStrokeDeleteListeners(userId) {
     const clearBtns = DOM.clearBtns;
     const textareas = DOM.textareas;
 
     clearBtns.forEach((btn, i) => {
+      // Calculate UI position and stroke number from button index
+      const uiPosition = Math.floor(i / GARAGE.STROKES_PER_GARAGE); // 0-3
+      const strokeNum = (i % GARAGE.STROKES_PER_GARAGE) + 1; // 1-4
+
       btn.addEventListener("click", async () => {
         const textarea = textareas[i];
         if (!textarea.value) {
@@ -200,8 +234,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         if (confirm("Delete this stroke?")) {
-          const { garageNum, strokeNum } = getNotePosition(i + 1);
-          const garageId = numberToGarageId(garageNum);
+          // Get the data garage ID from UI position using garageOrder mapping
+          const garageId = getGarageDataIdFromPosition(uiPosition);
           const fieldKey = `stroke${strokeNum}`;
 
           try {
@@ -222,11 +256,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   /**
    * Setup title delete button listeners
+   * Uses garageOrder mapping to delete from the correct garage
    */
   function setupTitleDeleteListeners(userId) {
     const titleDeleteBtns = DOM.titleDeleteBtns;
 
     titleDeleteBtns.forEach((btn, i) => {
+      const uiPosition = i; // Title delete button index corresponds to UI position (0-3)
+
       btn.addEventListener("click", async () => {
         const titleInput = btn.previousElementSibling;
         if (!titleInput.value) {
@@ -235,7 +272,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         if (confirm(`Delete "${titleInput.value}"?`)) {
-          const garageId = numberToGarageId(i + 1);
+          // Get the data garage ID from UI position using garageOrder mapping
+          const garageId = getGarageDataIdFromPosition(uiPosition);
 
           try {
             await Storage.saveTitle(userId, garageId, '');
@@ -255,6 +293,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   /**
    * Setup garage delete button listeners
+   * Uses garageOrder mapping to delete the correct garage's data
    */
   function setupGarageDeleteListeners(userId) {
     const garageClearBtns = DOM.garageClearBtns;
@@ -262,24 +301,26 @@ document.addEventListener("DOMContentLoaded", async function () {
     const titleInputs = DOM.titleInputs;
 
     garageClearBtns.forEach((btn, garageIndex) => {
+      const uiPosition = garageIndex; // Garage button index corresponds to UI position (0-3)
+
       btn.addEventListener("click", async () => {
-        const garageName = btn.value.replace("Delete /", "").trim();
+        // Get the data garage ID from UI position using garageOrder mapping
+        const garageId = getGarageDataIdFromPosition(uiPosition);
+        const garageLetter = garageId.replace('garage', '');
 
-        if (confirm(`Delete ${garageName}?`)) {
-          const garageId = numberToGarageId(garageIndex + 1);
-
+        if (confirm(`Delete GARAGE-${garageLetter}?`)) {
           try {
             await Storage.deleteGarage(userId, garageId);
 
             // Clear UI
-            const startIndex = garageIndex * GARAGE.STROKES_PER_GARAGE;
+            const startIndex = uiPosition * GARAGE.STROKES_PER_GARAGE;
             for (let i = startIndex; i < startIndex + GARAGE.STROKES_PER_GARAGE; i++) {
               textareas[i].value = "";
             }
 
             // Clear title
-            if (titleInputs[garageIndex]) {
-              titleInputs[garageIndex].value = "";
+            if (titleInputs[uiPosition]) {
+              titleInputs[uiPosition].value = "";
             }
 
             showAutoSaveMessage();

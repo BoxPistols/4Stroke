@@ -15,7 +15,9 @@
       "Bash(git restore:*)",
       "Bash(git push:*)",
       "Bash(git stash:*)",
-      "Bash(git rebase:*)"
+      "Bash(git rebase:*)",
+      "Bash(gh pr list:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
