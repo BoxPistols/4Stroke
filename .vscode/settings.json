@@ -1,5 +1,13 @@
 {
   "html.format.wrapAttributes": "preserve",
   "csscomb.formatOnSave": true,
-  "files.autoSaveDelay": 3000
+  "files.autoSaveDelay": 3000,
+
+  // dist/ をエディタから除外
+  "files.exclude": {
+    "dist": true
+  },
+  "search.exclude": {
+    "dist": true
+  }
 }
