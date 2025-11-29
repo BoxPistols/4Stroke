@@ -17,7 +17,11 @@
       "Bash(git stash:*)",
       "Bash(git rebase:*)",
       "Bash(gh pr list:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(npm install:*)",
+      "Bash(git pull:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr merge:*)"
     ],
     "deny": [],
     "ask": []
