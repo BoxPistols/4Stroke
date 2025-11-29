@@ -1,0 +1,16 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="180" height="180" rx="0" fill="#1a1a2e"/>
+
+  <!-- 4 Circles Logo - centered and scaled -->
+  <g transform="translate(45, 48)">
+    <!-- Top-left: Cyan -->
+    <circle cx="13" cy="13" r="13" fill="#66D9EF"/>
+    <!-- Top-right: Green -->
+    <circle cx="77" cy="13" r="13" fill="#A6E22E"/>
+    <!-- Bottom-left: Orange -->
+    <circle cx="13" cy="71" r="13" fill="#FD971F"/>
+    <!-- Bottom-right: Pink -->
+    <circle cx="77" cy="71" r="13" fill="#F92672"/>
+  </g>
+</svg>
