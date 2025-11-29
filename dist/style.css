@@ -920,7 +920,6 @@ input.stroke-title {
   }
   .garage-head {
     margin: 0 16px 12px;
-    flex-wrap: wrap;
     gap: 8px;
   }
   input.stroke-title {

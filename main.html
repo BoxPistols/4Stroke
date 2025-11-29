@@ -1,366 +1,729 @@
 <!DOCTYPE html>
 <html lang="ja"></html>
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#1a1a2e">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="4STROKES">
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+  />
+  <meta name="apple-mobile-web-app-title" content="4STROKES" />
   <title>4STROKES</title>
-  <link rel="icon" sizes="16x16" href="favicon.ico">
-  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yakuhanjp@3.4.1/dist/css/yakuhanrp.min.css">
-  <link rel="stylesheet" href="dist/style.css">
+  <link rel="icon" sizes="16x16" href="favicon.ico" />
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.json" />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/yakuhanjp@3.4.1/dist/css/yakuhanrp.min.css"
+  />
+  <link rel="stylesheet" href="dist/style.css" />
   <script src="https://bundle.run/css-scroll-snap-polyfill@0.1.2"></script>
   <!-- Firebase App -->
   <script type="module" src="js/app.js"></script>
-
 </head>
 <body class="main-page">
-<a class="js-smooth-scroll" href="#garageA">
-  <header class="header">
-    <div class="logo-img"><img src="./img/logo.svg"></div>
-    <h1 class="logo-title">4STROKES</h1>
-    <div class="is-hidden" id="message">Auto Save...</div>
-  </header>
-</a>
-<nav class="garages-nav">
-  <ul>
-    <li><a class="js-smooth-scroll" href="#garageA">GARAGE-A</a></li>
-    <li><a class="js-smooth-scroll" href="#garageB">GARAGE-B</a></li>
-    <li><a class="js-smooth-scroll" href="#garageC">GARAGE-C</a></li>
-    <li><a class="js-smooth-scroll" href="#garageD">GARAGE-D</a></li>
-    <li><a href="mandara.html" title="Mandara Notes">MANDARA</a></li>
-    <li><button id="minimap-toggle-btn" class="minimap-toggle-btn" title="Minimap View">MAP</button></li>
-    <li><button id="settings-btn" class="settings-btn" title="Settings">SET</button></li>
-    <li class="user-info">
-      <button id="logout-btn" class="logout-btn" title="Logout / Switch Mode">
-        <span class="logout-text">LOGOUT</span>
-      </button>
-    </li>
-  </ul>
-</nav>
-<div class="garages-container">
-  <div class="garages"> 
-    <div class="garage" id="garageA">
-      <h2 class="garage-title garage-titleA">GARAGE-A</h2>
-      <div class="fx garage-head garage-headA">
-        <input class="stroke-title stroke-title1" data-stroke="stroke-title1" name="stroke-title1" value="stroke-title1" autocomplete="off" data-i="1">
-        <div class="title-delete title-delete1">x</div>
-        <div class="clear-garage-box">
-          <input id="clearA" data-clear="clearA" type="button" value="Delete / GARAGE-A">
-        </div>
-      </div>
-      <div class="garage-strokes">
-        <div class="garage-stroke-box">
-          <h3>Key</h3>
-          <textarea class="stroke stroke1" id="stroke1" name="stroke1" data-i="1" data-stroke="A"></textarea>
-          <div class="clear-area">
-            <input class="clear" id="clear1" data-clear="clearA" type="button" value="Delete / Key">
+  <a class="js-smooth-scroll" href="#garageA">
+    <header class="header">
+      <div class="logo-img"><img src="./img/logo.svg" /></div>
+      <h1 class="logo-title">4STROKES</h1>
+      <div class="is-hidden" id="message">Auto Save...</div>
+    </header>
+  </a>
+  <nav class="garages-nav">
+    <ul>
+      <li><a class="js-smooth-scroll" href="#garageA">GARAGE-A</a></li>
+      <li><a class="js-smooth-scroll" href="#garageB">GARAGE-B</a></li>
+      <li><a class="js-smooth-scroll" href="#garageC">GARAGE-C</a></li>
+      <li><a class="js-smooth-scroll" href="#garageD">GARAGE-D</a></li>
+      <li><a href="mandara.html" title="Mandara Notes">MANDARA</a></li>
+      <li>
+        <button
+          id="minimap-toggle-btn"
+          class="minimap-toggle-btn"
+          title="Minimap View"
+        >
+          MAP
+        </button>
+      </li>
+      <li>
+        <button id="settings-btn" class="settings-btn" title="Settings">
+          SET
+        </button>
+      </li>
+      <li class="user-info">
+        <button id="logout-btn" class="logout-btn" title="Logout / Switch Mode">
+          <span class="logout-text">LOGOUT</span>
+        </button>
+      </li>
+    </ul>
+  </nav>
+  <div class="garages-container">
+    <div class="garages">
+      <div class="garage" id="garageA">
+        <h2 class="garage-title garage-titleA">GARAGE-A</h2>
+        <div class="fx garage-head garage-headA">
+          <input
+            class="stroke-title stroke-title1"
+            data-stroke="stroke-title1"
+            name="stroke-title1"
+            value="stroke-title1"
+            autocomplete="off"
+            data-i="1"
+          />
+          <div class="title-delete title-delete1">x</div>
+          <div class="clear-garage-box">
+            <input
+              id="clearA"
+              data-clear="clearA"
+              type="button"
+              value="Del / Grg-A"
+            />
           </div>
         </div>
-        <div class="garage-stroke-box">
-          <h3>Issue</h3>
-          <textarea class="stroke stroke2" id="stroke2" name="stroke2" data-i="2" data-stroke="B"></textarea>
-          <div class="clear-area">
-            <input class="clear" id="clear2" data-clear="clearB" type="button" value="Delete / Issue">
+        <div class="garage-strokes">
+          <div class="garage-stroke-box">
+            <h3>Key</h3>
+            <textarea
+              class="stroke stroke1"
+              id="stroke1"
+              name="stroke1"
+              data-i="1"
+              data-stroke="A"
+            ></textarea>
+            <div class="clear-area">
+              <input
+                class="clear"
+                id="clear1"
+                data-clear="clearA"
+                type="button"
+                value="Delete / Key"
+              />
+            </div>
           </div>
-        </div>
-        <div class="garage-stroke-box">
-          <h3>Action</h3>
-          <textarea class="stroke stroke3" id="stroke3" name="stroke3" data-i="3" data-stroke="C"></textarea>
-          <div class="clear-area">
-            <input class="clear" id="clear3" data-clear="clearC" type="button" value="Delete / Action">
+          <div class="garage-stroke-box">
+            <h3>Issue</h3>
+            <textarea
+              class="stroke stroke2"
+              id="stroke2"
+              name="stroke2"
+              data-i="2"
+              data-stroke="B"
+            ></textarea>
+            <div class="clear-area">
+              <input
+                class="clear"
+                id="clear2"
+                data-clear="clearB"
+                type="button"
+                value="Delete / Issue"
+              />
+            </div>
           </div>
-        </div>
-        <div class="garage-stroke-box">
-          <h3>Publish</h3>
-          <textarea class="stroke stroke4" id="stroke4" name="stroke4" data-i="4" data-stroke="D"></textarea>
-          <div class="clear-area">
-            <input class="clear" id="clear4" data-clear="clearD" type="button" value="Delete / Publish">
+          <div class="garage-stroke-box">
+            <h3>Action</h3>
+            <textarea
+              class="stroke stroke3"
+              id="stroke3"
+              name="stroke3"
+              data-i="3"
+              data-stroke="C"
+            ></textarea>
+            <div class="clear-area">
+              <input
+                class="clear"
+                id="clear3"
+                data-clear="clearC"
+                type="button"
+                value="Delete / Action"
+              />
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
-    <div class="garage" id="garageB">
-      <h2 class="garage-title garage-titleB">GARAGE-B</h2>
-      <div class="fx garage-head garage-headB">
-        <input class="stroke-title stroke-title2" data-stroke="stroke-title2" name="stroke-title2" value="stroke-title2" autocomplete="off" data-i="5">
-        <div class="title-delete title-delete2">x</div>
-        <div class="clear-garage-box">
-          <input id="clearB" data-clear="clearB" type="button" value="Delete / GARAGE-B">
-        </div>
-      </div>
-      <div class="garage-strokes">
-        <div class="garage-stroke-box">
-          <h3>Key</h3>
-          <textarea class="stroke stroke5" id="stroke5" name="stroke5" data-i="5" data-stroke="A"></textarea>
-          <div class="clear-area">
-            <input class="clear" id="clear5" data-clear="clearA" type="button" value="Delete / Key">
-          </div>
-        </div>
-        <div class="garage-stroke-box">
-          <h3>Issue</h3>
-          <textarea class="stroke stroke6" id="stroke6" name="stroke6" data-i="6" data-stroke="B"></textarea>
-          <div class="clear-area">
-            <input class="clear" id="clear6" data-clear="clearB" type="button" value="Delete / Issue">
-          </div>
-        </div>
-        <div class="garage-stroke-box">
-          <h3>Action</h3>
-          <textarea class="stroke stroke7" id="stroke7" name="stroke7" data-i="7" data-stroke="C"></textarea>
-          <div class="clear-area">
-            <input class="clear" id="clear7" data-clear="clearC" type="button" value="Delete / Action">
-          </div>
-        </div>
-        <div class="garage-stroke-box">
-          <h3>Publish</h3>
-          <textarea class="stroke stroke8" id="stroke8" name="stroke8" data-i="8" data-stroke="D"></textarea>
-          <div class="clear-area">
-            <input class="clear" id="clear8" data-clear="clearD" type="button" value="Delete / Publish">
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="garage" id="garageC">
-      <h2 class="garage-title garage-titleC">GARAGE-C</h2>
-      <div class="fx garage-head garage-headC">
-        <input class="stroke-title stroke-title3" data-stroke="stroke-title3" name="stroke-title3" value="stroke-title3" autocomplete="off" data-i="9">
-        <div class="title-delete title-delete3">x</div>
-        <div class="clear-garage-box">
-          <input id="clearC" data-clear="clearC" type="button" value="Delete / GARAGE-C">
-        </div>
-      </div>
-      <div class="garage-strokes">
-        <div class="garage-stroke-box">
-          <h3>Key</h3>
-          <textarea class="stroke stroke9" id="stroke9" name="stroke9" data-i="9" data-stroke="A"></textarea>
-          <div class="clear-area">
-            <input class="clear" id="clear9" data-clear="clearA" type="button" value="Delete / Key">
-          </div>
-        </div>
-        <div class="garage-stroke-box">
-          <h3>Issue</h3>
-          <textarea class="stroke stroke10" id="stroke10" name="stroke10" data-i="10" data-stroke="B"></textarea>
-          <div class="clear-area">
-            <input class="clear" id="clear10" data-clear="clearB" type="button" value="Delete / Issue">
-          </div>
-        </div>
-        <div class="garage-stroke-box">
-          <h3>Action</h3>
-          <textarea class="stroke stroke11" id="stroke11" name="stroke11" data-i="11" data-stroke="C"></textarea>
-          <div class="clear-area">
-            <input class="clear" id="clear11" data-clear="clearC" type="button" value="Delete / Action">
-          </div>
-        </div>
-        <div class="garage-stroke-box">
-          <h3>Publish</h3>
-          <textarea class="stroke stroke12" id="stroke12" name="stroke12" data-i="12" data-stroke="D"></textarea>
-          <div class="clear-area">
-            <input class="clear" id="clear12" data-clear="clearD" type="button" value="Delete / Publish">
+          <div class="garage-stroke-box">
+            <h3>Publish</h3>
+            <textarea
+              class="stroke stroke4"
+              id="stroke4"
+              name="stroke4"
+              data-i="4"
+              data-stroke="D"
+            ></textarea>
+            <div class="clear-area">
+              <input
+                class="clear"
+                id="clear4"
+                data-clear="clearD"
+                type="button"
+                value="Delete / Publish"
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="garage" id="garageD">
-      <h2 class="garage-title garage-titleD">GARAGE-D</h2>
-      <div class="fx garage-head garage-headD">
-        <input class="stroke-title stroke-title4" data-stroke="stroke-title4" name="stroke-title4" value="stroke-title4" autocomplete="off" data-i="13">
-        <div class="title-delete title-delete4">x</div>
-        <div class="clear-garage-box">
-          <input id="clearD" data-clear="clearD" type="button" value="Delete / GARAGE-D">
+      <div class="garage" id="garageB">
+        <h2 class="garage-title garage-titleB">GARAGE-B</h2>
+        <div class="fx garage-head garage-headB">
+          <input
+            class="stroke-title stroke-title2"
+            data-stroke="stroke-title2"
+            name="stroke-title2"
+            value="stroke-title2"
+            autocomplete="off"
+            data-i="5"
+          />
+          <div class="title-delete title-delete2">x</div>
+          <div class="clear-garage-box">
+            <input
+              id="clearB"
+              data-clear="clearB"
+              type="button"
+              value="Del / Grg-B"
+            />
+          </div>
+        </div>
+        <div class="garage-strokes">
+          <div class="garage-stroke-box">
+            <h3>Key</h3>
+            <textarea
+              class="stroke stroke5"
+              id="stroke5"
+              name="stroke5"
+              data-i="5"
+              data-stroke="A"
+            ></textarea>
+            <div class="clear-area">
+              <input
+                class="clear"
+                id="clear5"
+                data-clear="clearA"
+                type="button"
+                value="Delete / Key"
+              />
+            </div>
+          </div>
+          <div class="garage-stroke-box">
+            <h3>Issue</h3>
+            <textarea
+              class="stroke stroke6"
+              id="stroke6"
+              name="stroke6"
+              data-i="6"
+              data-stroke="B"
+            ></textarea>
+            <div class="clear-area">
+              <input
+                class="clear"
+                id="clear6"
+                data-clear="clearB"
+                type="button"
+                value="Delete / Issue"
+              />
+            </div>
+          </div>
+          <div class="garage-stroke-box">
+            <h3>Action</h3>
+            <textarea
+              class="stroke stroke7"
+              id="stroke7"
+              name="stroke7"
+              data-i="7"
+              data-stroke="C"
+            ></textarea>
+            <div class="clear-area">
+              <input
+                class="clear"
+                id="clear7"
+                data-clear="clearC"
+                type="button"
+                value="Delete / Action"
+              />
+            </div>
+          </div>
+          <div class="garage-stroke-box">
+            <h3>Publish</h3>
+            <textarea
+              class="stroke stroke8"
+              id="stroke8"
+              name="stroke8"
+              data-i="8"
+              data-stroke="D"
+            ></textarea>
+            <div class="clear-area">
+              <input
+                class="clear"
+                id="clear8"
+                data-clear="clearD"
+                type="button"
+                value="Delete / Publish"
+              />
+            </div>
+          </div>
         </div>
       </div>
-      <div class="garage-strokes">
-        <div class="garage-stroke-box">
-          <h3>Key</h3>
-          <textarea class="stroke stroke13" id="stroke13" name="stroke13" data-i="13" data-stroke="A"></textarea>
-          <div class="clear-area">
-            <input class="clear" id="clear13" data-clear="clearA" type="button" value="Delete / Key">
+      <div class="garage" id="garageC">
+        <h2 class="garage-title garage-titleC">GARAGE-C</h2>
+        <div class="fx garage-head garage-headC">
+          <input
+            class="stroke-title stroke-title3"
+            data-stroke="stroke-title3"
+            name="stroke-title3"
+            value="stroke-title3"
+            autocomplete="off"
+            data-i="9"
+          />
+          <div class="title-delete title-delete3">x</div>
+          <div class="clear-garage-box">
+            <input
+              id="clearC"
+              data-clear="clearC"
+              type="button"
+              value="Del / Grg-C"
+            />
           </div>
         </div>
-        <div class="garage-stroke-box">
-          <h3>Issue</h3>
-          <textarea class="stroke stroke14" id="stroke14" name="stroke14" data-i="14" data-stroke="B"></textarea>
-          <div class="clear-area">
-            <input class="clear" id="clear14" data-clear="clearB" type="button" value="Delete / Issue">
+        <div class="garage-strokes">
+          <div class="garage-stroke-box">
+            <h3>Key</h3>
+            <textarea
+              class="stroke stroke9"
+              id="stroke9"
+              name="stroke9"
+              data-i="9"
+              data-stroke="A"
+            ></textarea>
+            <div class="clear-area">
+              <input
+                class="clear"
+                id="clear9"
+                data-clear="clearA"
+                type="button"
+                value="Delete / Key"
+              />
+            </div>
+          </div>
+          <div class="garage-stroke-box">
+            <h3>Issue</h3>
+            <textarea
+              class="stroke stroke10"
+              id="stroke10"
+              name="stroke10"
+              data-i="10"
+              data-stroke="B"
+            ></textarea>
+            <div class="clear-area">
+              <input
+                class="clear"
+                id="clear10"
+                data-clear="clearB"
+                type="button"
+                value="Delete / Issue"
+              />
+            </div>
+          </div>
+          <div class="garage-stroke-box">
+            <h3>Action</h3>
+            <textarea
+              class="stroke stroke11"
+              id="stroke11"
+              name="stroke11"
+              data-i="11"
+              data-stroke="C"
+            ></textarea>
+            <div class="clear-area">
+              <input
+                class="clear"
+                id="clear11"
+                data-clear="clearC"
+                type="button"
+                value="Delete / Action"
+              />
+            </div>
+          </div>
+          <div class="garage-stroke-box">
+            <h3>Publish</h3>
+            <textarea
+              class="stroke stroke12"
+              id="stroke12"
+              name="stroke12"
+              data-i="12"
+              data-stroke="D"
+            ></textarea>
+            <div class="clear-area">
+              <input
+                class="clear"
+                id="clear12"
+                data-clear="clearD"
+                type="button"
+                value="Delete / Publish"
+              />
+            </div>
           </div>
         </div>
-        <div class="garage-stroke-box">
-          <h3>Action</h3>
-          <textarea class="stroke stroke15" id="stroke15" name="stroke15" data-i="15" data-stroke="C"></textarea>
-          <div class="clear-area">
-            <input class="clear" id="clear15" data-clear="clearC" type="button" value="Delete / Action">
+      </div>
+      <div class="garage" id="garageD">
+        <h2 class="garage-title garage-titleD">GARAGE-D</h2>
+        <div class="fx garage-head garage-headD">
+          <input
+            class="stroke-title stroke-title4"
+            data-stroke="stroke-title4"
+            name="stroke-title4"
+            value="stroke-title4"
+            autocomplete="off"
+            data-i="13"
+          />
+          <div class="title-delete title-delete4">x</div>
+          <div class="clear-garage-box">
+            <input
+              id="clearD"
+              data-clear="clearD"
+              type="button"
+              value="Del / Grg-D"
+            />
           </div>
         </div>
-        <div class="garage-stroke-box">
-          <h3>Publish</h3>
-          <textarea class="stroke stroke16" id="stroke16" name="stroke16" data-i="16" data-stroke="D"></textarea>
-          <div class="clear-area">
-            <input class="clear" id="clear16" data-clear="clearD" type="button" value="Delete / Publish">
+        <div class="garage-strokes">
+          <div class="garage-stroke-box">
+            <h3>Key</h3>
+            <textarea
+              class="stroke stroke13"
+              id="stroke13"
+              name="stroke13"
+              data-i="13"
+              data-stroke="A"
+            ></textarea>
+            <div class="clear-area">
+              <input
+                class="clear"
+                id="clear13"
+                data-clear="clearA"
+                type="button"
+                value="Delete / Key"
+              />
+            </div>
+          </div>
+          <div class="garage-stroke-box">
+            <h3>Issue</h3>
+            <textarea
+              class="stroke stroke14"
+              id="stroke14"
+              name="stroke14"
+              data-i="14"
+              data-stroke="B"
+            ></textarea>
+            <div class="clear-area">
+              <input
+                class="clear"
+                id="clear14"
+                data-clear="clearB"
+                type="button"
+                value="Delete / Issue"
+              />
+            </div>
+          </div>
+          <div class="garage-stroke-box">
+            <h3>Action</h3>
+            <textarea
+              class="stroke stroke15"
+              id="stroke15"
+              name="stroke15"
+              data-i="15"
+              data-stroke="C"
+            ></textarea>
+            <div class="clear-area">
+              <input
+                class="clear"
+                id="clear15"
+                data-clear="clearC"
+                type="button"
+                value="Delete / Action"
+              />
+            </div>
+          </div>
+          <div class="garage-stroke-box">
+            <h3>Publish</h3>
+            <textarea
+              class="stroke stroke16"
+              id="stroke16"
+              name="stroke16"
+              data-i="16"
+              data-stroke="D"
+            ></textarea>
+            <div class="clear-area">
+              <input
+                class="clear"
+                id="clear16"
+                data-clear="clearD"
+                type="button"
+                value="Delete / Publish"
+              />
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Settings Modal -->
-<div id="settings-modal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Settings</h2>
-      <button class="modal-close" id="modal-close-btn">&times;</button>
-    </div>
-    <div class="modal-body">
-      <!-- Garage Shortcuts -->
-      <section class="settings-section">
-        <h3>Garage Shortcuts</h3>
-        <p class="settings-description">Configure keyboard shortcuts to quickly navigate to each garage.</p>
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button class="modal-close" id="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Garage Shortcuts -->
+        <section class="settings-section">
+          <h3>Garage Shortcuts</h3>
+          <p class="settings-description">
+            Configure keyboard shortcuts to quickly navigate to each garage.
+          </p>
 
-        <div class="shortcut-grid">
-          <div class="shortcut-item">
-            <label>GARAGE-A</label>
-            <div class="shortcut-config">
-              <input type="text" id="garageA-key" maxlength="1" placeholder="1" class="key-input">
-              <label><input type="checkbox" id="garageA-ctrl" checked> Ctrl</label>
-              <label><input type="checkbox" id="garageA-alt"> Alt</label>
-              <label><input type="checkbox" id="garageA-shift"> Shift</label>
+          <div class="shortcut-grid">
+            <div class="shortcut-item">
+              <label>GARAGE-A</label>
+              <div class="shortcut-config">
+                <input
+                  type="text"
+                  id="garageA-key"
+                  maxlength="1"
+                  placeholder="1"
+                  class="key-input"
+                />
+                <label
+                  ><input type="checkbox" id="garageA-ctrl" checked />
+                  Ctrl</label
+                >
+                <label><input type="checkbox" id="garageA-alt" /> Alt</label>
+                <label
+                  ><input type="checkbox" id="garageA-shift" /> Shift</label
+                >
+              </div>
+            </div>
+
+            <div class="shortcut-item">
+              <label>GARAGE-B</label>
+              <div class="shortcut-config">
+                <input
+                  type="text"
+                  id="garageB-key"
+                  maxlength="1"
+                  placeholder="2"
+                  class="key-input"
+                />
+                <label
+                  ><input type="checkbox" id="garageB-ctrl" checked />
+                  Ctrl</label
+                >
+                <label><input type="checkbox" id="garageB-alt" /> Alt</label>
+                <label
+                  ><input type="checkbox" id="garageB-shift" /> Shift</label
+                >
+              </div>
+            </div>
+
+            <div class="shortcut-item">
+              <label>GARAGE-C</label>
+              <div class="shortcut-config">
+                <input
+                  type="text"
+                  id="garageC-key"
+                  maxlength="1"
+                  placeholder="3"
+                  class="key-input"
+                />
+                <label
+                  ><input type="checkbox" id="garageC-ctrl" checked />
+                  Ctrl</label
+                >
+                <label><input type="checkbox" id="garageC-alt" /> Alt</label>
+                <label
+                  ><input type="checkbox" id="garageC-shift" /> Shift</label
+                >
+              </div>
+            </div>
+
+            <div class="shortcut-item">
+              <label>GARAGE-D</label>
+              <div class="shortcut-config">
+                <input
+                  type="text"
+                  id="garageD-key"
+                  maxlength="1"
+                  placeholder="4"
+                  class="key-input"
+                />
+                <label
+                  ><input type="checkbox" id="garageD-ctrl" checked />
+                  Ctrl</label
+                >
+                <label><input type="checkbox" id="garageD-alt" /> Alt</label>
+                <label
+                  ><input type="checkbox" id="garageD-shift" /> Shift</label
+                >
+              </div>
             </div>
           </div>
+        </section>
 
-          <div class="shortcut-item">
-            <label>GARAGE-B</label>
-            <div class="shortcut-config">
-              <input type="text" id="garageB-key" maxlength="1" placeholder="2" class="key-input">
-              <label><input type="checkbox" id="garageB-ctrl" checked> Ctrl</label>
-              <label><input type="checkbox" id="garageB-alt"> Alt</label>
-              <label><input type="checkbox" id="garageB-shift"> Shift</label>
+        <!-- Navigation Shortcuts -->
+        <section class="settings-section">
+          <h3>Navigation Shortcuts</h3>
+          <p class="settings-description">
+            Configure keyboard shortcuts to navigate between garages (works even
+            while typing).
+          </p>
+
+          <div class="shortcut-grid">
+            <div class="shortcut-item">
+              <label>Previous Garage (←)</label>
+              <div class="shortcut-config">
+                <input
+                  type="text"
+                  id="nav-prev-key"
+                  maxlength="15"
+                  placeholder="ArrowLeft"
+                  class="key-input"
+                />
+                <label
+                  ><input type="checkbox" id="nav-prev-ctrl" checked />
+                  Ctrl</label
+                >
+                <label
+                  ><input type="checkbox" id="nav-prev-alt" checked />
+                  Alt</label
+                >
+                <label
+                  ><input type="checkbox" id="nav-prev-shift" /> Shift</label
+                >
+                <label><input type="checkbox" id="nav-prev-meta" /> Cmd</label>
+              </div>
+            </div>
+
+            <div class="shortcut-item">
+              <label>Next Garage (→)</label>
+              <div class="shortcut-config">
+                <input
+                  type="text"
+                  id="nav-next-key"
+                  maxlength="15"
+                  placeholder="ArrowRight"
+                  class="key-input"
+                />
+                <label
+                  ><input type="checkbox" id="nav-next-ctrl" checked />
+                  Ctrl</label
+                >
+                <label
+                  ><input type="checkbox" id="nav-next-alt" checked />
+                  Alt</label
+                >
+                <label
+                  ><input type="checkbox" id="nav-next-shift" /> Shift</label
+                >
+                <label><input type="checkbox" id="nav-next-meta" /> Cmd</label>
+              </div>
             </div>
           </div>
+        </section>
 
-          <div class="shortcut-item">
-            <label>GARAGE-C</label>
-            <div class="shortcut-config">
-              <input type="text" id="garageC-key" maxlength="1" placeholder="3" class="key-input">
-              <label><input type="checkbox" id="garageC-ctrl" checked> Ctrl</label>
-              <label><input type="checkbox" id="garageC-alt"> Alt</label>
-              <label><input type="checkbox" id="garageC-shift"> Shift</label>
+        <!-- Swap Garage Data -->
+        <section class="settings-section">
+          <h3>Swap Garage Data</h3>
+          <p class="settings-description">
+            Drag and drop to swap data between garages. Garages A/B/C/D are
+            fixed positions - only the content (title and notes) will be
+            exchanged.
+          </p>
+
+          <div id="garage-order-list" class="garage-order-list">
+            <!-- Will be populated by JavaScript -->
+          </div>
+        </section>
+
+        <!-- Storage Mode -->
+        <section class="settings-section">
+          <h3>Storage Mode</h3>
+          <p class="settings-description">
+            Choose between local storage and online mode with cloud sync.
+          </p>
+
+          <div class="mode-selector">
+            <div class="mode-info">
+              <strong>Current Mode:</strong>
+              <span id="current-mode-display">Local Mode</span>
             </div>
-          </div>
-
-          <div class="shortcut-item">
-            <label>GARAGE-D</label>
-            <div class="shortcut-config">
-              <input type="text" id="garageD-key" maxlength="1" placeholder="4" class="key-input">
-              <label><input type="checkbox" id="garageD-ctrl" checked> Ctrl</label>
-              <label><input type="checkbox" id="garageD-alt"> Alt</label>
-              <label><input type="checkbox" id="garageD-shift"> Shift</label>
+            <div class="mode-info">
+              <strong>User:</strong>
+              <span id="current-user-display">Not logged in</span>
             </div>
+            <button
+              type="button"
+              id="mode-switch-btn"
+              class="btn btn-secondary"
+            >
+              <span id="mode-switch-text">Switch to Online Mode</span>
+            </button>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- Navigation Shortcuts -->
-      <section class="settings-section">
-        <h3>Navigation Shortcuts</h3>
-        <p class="settings-description">Configure keyboard shortcuts to navigate between garages (works even while typing).</p>
-
-        <div class="shortcut-grid">
-          <div class="shortcut-item">
-            <label>Previous Garage (←)</label>
-            <div class="shortcut-config">
-              <input type="text" id="nav-prev-key" maxlength="15" placeholder="ArrowLeft" class="key-input">
-              <label><input type="checkbox" id="nav-prev-ctrl" checked> Ctrl</label>
-              <label><input type="checkbox" id="nav-prev-alt" checked> Alt</label>
-              <label><input type="checkbox" id="nav-prev-shift"> Shift</label>
-              <label><input type="checkbox" id="nav-prev-meta"> Cmd</label>
-            </div>
-          </div>
-
-          <div class="shortcut-item">
-            <label>Next Garage (→)</label>
-            <div class="shortcut-config">
-              <input type="text" id="nav-next-key" maxlength="15" placeholder="ArrowRight" class="key-input">
-              <label><input type="checkbox" id="nav-next-ctrl" checked> Ctrl</label>
-              <label><input type="checkbox" id="nav-next-alt" checked> Alt</label>
-              <label><input type="checkbox" id="nav-next-shift"> Shift</label>
-              <label><input type="checkbox" id="nav-next-meta"> Cmd</label>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Swap Garage Data -->
-      <section class="settings-section">
-        <h3>Swap Garage Data</h3>
-        <p class="settings-description">Drag and drop to swap data between garages. Garages A/B/C/D are fixed positions - only the content (title and notes) will be exchanged.</p>
-
-        <div id="garage-order-list" class="garage-order-list">
-          <!-- Will be populated by JavaScript -->
-        </div>
-      </section>
-
-      <!-- Storage Mode -->
-      <section class="settings-section">
-        <h3>Storage Mode</h3>
-        <p class="settings-description">Choose between local storage and online mode with cloud sync.</p>
-
-        <div class="mode-selector">
-          <div class="mode-info">
-            <strong>Current Mode:</strong>
-            <span id="current-mode-display">Local Mode</span>
-          </div>
-          <div class="mode-info">
-            <strong>User:</strong>
-            <span id="current-user-display">Not logged in</span>
-          </div>
-          <button type="button" id="mode-switch-btn" class="btn btn-secondary">
-            <span id="mode-switch-text">Switch to Online Mode</span>
+        <div class="modal-actions">
+          <button type="button" id="save-settings-btn" class="btn btn-primary">
+            Save Settings
+          </button>
+          <button
+            type="button"
+            id="reset-settings-btn"
+            class="btn btn-secondary"
+          >
+            Reset to Defaults
+          </button>
+          <button
+            type="button"
+            id="cancel-settings-btn"
+            class="btn btn-tertiary"
+          >
+            Cancel
           </button>
         </div>
-      </section>
-
-      <div class="modal-actions">
-        <button type="button" id="save-settings-btn" class="btn btn-primary">Save Settings</button>
-        <button type="button" id="reset-settings-btn" class="btn btn-secondary">Reset to Defaults</button>
-        <button type="button" id="cancel-settings-btn" class="btn btn-tertiary">Cancel</button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Minimap View -->
-<div id="minimap-view" class="minimap-view">
-  <div class="minimap-header">
-    <h2>ALL NOTES OVERVIEW</h2>
-    <button class="minimap-close-btn" id="minimap-close-btn">CLOSE</button>
-  </div>
-  <div class="minimap-grid" id="minimap-grid">
-    <!-- Will be populated by JavaScript -->
-  </div>
-</div>
-
-<!-- Confirmation Modal -->
-<div id="confirm-modal" class="modal confirm-modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2 id="confirm-title">Confirm</h2>
+  <!-- Minimap View -->
+  <div id="minimap-view" class="minimap-view">
+    <div class="minimap-header">
+      <h2>ALL NOTES OVERVIEW</h2>
+      <button class="minimap-close-btn" id="minimap-close-btn">CLOSE</button>
     </div>
-    <div class="modal-body">
-      <p id="confirm-message">Are you sure?</p>
-    </div>
-    <div class="modal-actions">
-      <button type="button" id="confirm-yes-btn" class="btn btn-primary">Yes</button>
-      <button type="button" id="confirm-no-btn" class="btn btn-tertiary">No</button>
+    <div class="minimap-grid" id="minimap-grid">
+      <!-- Will be populated by JavaScript -->
     </div>
   </div>
-</div>
 
-<!-- Success Toast -->
-<div id="success-toast" class="toast">
-  <span id="success-toast-message">Settings saved successfully!</span>
-</div>
+  <!-- Confirmation Modal -->
+  <div id="confirm-modal" class="modal confirm-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="confirm-title">Confirm</h2>
+      </div>
+      <div class="modal-body">
+        <p id="confirm-message">Are you sure?</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="confirm-yes-btn" class="btn btn-primary">
+          Yes
+        </button>
+        <button type="button" id="confirm-no-btn" class="btn btn-tertiary">
+          No
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Toast -->
+  <div id="success-toast" class="toast">
+    <span id="success-toast-message">Settings saved successfully!</span>
+  </div>
+</body>
