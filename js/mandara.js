@@ -674,14 +674,21 @@ function setupEventListeners() {
     });
   }
 
-  // Tag removal (delegated)
+  // Tag actions (delegated)
   const tagsContainer = document.getElementById("tags-container");
   if (tagsContainer) {
     tagsContainer.addEventListener("click", (e) => {
+      // Remove tag
       if (e.target.classList.contains("tag-remove")) {
         console.log("[INFO] Tag remove button clicked:", e.target.dataset.tag);
         const tag = e.target.dataset.tag;
         removeTag(tag);
+      }
+      // Edit tag
+      else if (e.target.classList.contains("tag-text")) {
+        console.log("[INFO] Tag text clicked for edit");
+        const index = parseInt(e.target.dataset.index);
+        editTag(index);
       }
     });
     console.log("[INFO] Tags container listener attached");
@@ -714,11 +721,17 @@ function setupEventListeners() {
   // Todo actions (delegated)
   const todosContainer = document.getElementById("todos-container");
   if (todosContainer) {
-    // Click events for checkbox and remove button
+    // Click events for checkbox, remove button, and edit
     todosContainer.addEventListener("click", (e) => {
+      // Remove
       if (e.target.classList.contains("todo-remove")) {
         console.log("[INFO] Todo remove button clicked");
         removeTodo(e.target.dataset.id);
+      }
+      // Edit
+      else if (e.target.classList.contains("todo-text")) {
+        console.log("[INFO] Todo text clicked for edit");
+        editTodo(e.target.dataset.id);
       }
     });
 

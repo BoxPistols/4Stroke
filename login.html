@@ -1,131 +1,18 @@
 <!DOCTYPE html>
 <html lang="ja">
-<<<<<<< HEAD
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#1a1a2e">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="4STROKES">
-  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-  <link rel="manifest" href="manifest.json">
-  <title>LOGIN - 4STROKES</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald:200,300,400,500,600,700">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yakuhanjp@3.4.1/dist/css/yakuhanrp.min.css">
-  <style>
-    :root {
-      --color-key: #66d9ef;
-      --color-issue: #a6e22e;
-      --color-action: #fd971f;
-      --color-publish: #f92672;
-      --color-purple: #ae81ff;
-      --color-dark: #272822;
-      --color-white: whitesmoke;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: YakuHanRP, 'Oswald', 'M PLUS Rounded 1c', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    body::before {
-      position: fixed;
-      z-index: -1;
-      top: 0;
-      left: 0;
-      display: block;
-      width: 100vw;
-      height: 100vh;
-      content: "";
-      background-image:
-        linear-gradient(45deg, rgba(128, 0, 128, 0.82), rgba(0, 0, 255, 0.82)),
-        url("https://picsum.photos/1200/800/?image=133");
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: cover;
-      backdrop-filter: blur(6px);
-    }
-
-    .login-container {
-      width: 100%;
-      max-width: 480px;
-      padding: 2.5rem;
-      background: rgba(201, 181, 213, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
-      box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    }
-
-    .login-title {
-      text-align: center;
-      margin-bottom: 0.5rem;
-      color: var(--color-white);
-      font-size: clamp(2rem, 5vw, 3rem);
-      font-weight: 400;
-      letter-spacing: 0.1em;
-      text-shadow:
-        2px 2px 4px rgba(0, 0, 0, 0.5),
-        0 0 10px rgba(174, 129, 255, 0.3);
-      filter: drop-shadow(1px 1px 2px black);
-    }
-
-    .login-subtitle {
-      text-align: center;
-      margin-bottom: 2rem;
-      color: rgba(255, 255, 255, 0.8);
-      font-size: clamp(0.9rem, 2vw, 1.1rem);
-      font-weight: 300;
-      letter-spacing: 0.05em;
-      filter: drop-shadow(1px 1px 1px black);
-    }
-
-    .error-message {
-      background: rgba(249, 38, 114, 0.2);
-      color: var(--color-white);
-      padding: 0.9rem;
-      border-radius: 8px;
-      border-left: 4px solid var(--color-publish);
-      margin-bottom: 1.5rem;
-      display: none;
-      font-size: 0.9rem;
-      filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
-    }
-
-    .error-message.show {
-      display: block;
-      animation: shake 0.5s, fadeIn 0.3s;
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-8px); }
-      75% { transform: translateX(8px); }
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-=======
+  <<<<<<< HEAD
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1a1a2e" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="4STROKES" />
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.json" />
     <title>LOGIN - 4STROKES</title>
     <link
       rel="stylesheet"
@@ -136,345 +23,467 @@
       href="https://cdn.jsdelivr.net/npm/yakuhanjp@3.4.1/dist/css/yakuhanrp.min.css"
     />
     <style>
-      :root {
-        --color-key: #66d9ef;
-        --color-issue: #a6e22e;
-        --color-action: #fd971f;
-        --color-publish: #f92672;
-        --color-purple: #ae81ff;
-        --color-dark: #272822;
-        --color-white: whitesmoke;
->>>>>>> 7ee6b0c (feat: 全体UI / FirestoreタイムスタンプのフォーマットとUIの微調整、およびスクロールバーのスタイルを改善)
-      }
+          :root {
+            --color-key: #66d9ef;
+            --color-issue: #a6e22e;
+            --color-action: #fd971f;
+            --color-publish: #f92672;
+            --color-purple: #ae81ff;
+            --color-dark: #272822;
+            --color-white: whitesmoke;
+          }
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
 
-      body {
-        font-family: YakuHanRP, "Oswald", "M PLUS Rounded 1c", sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        padding: 20px;
-        position: relative;
-        overflow: hidden;
-      }
+          body {
+            font-family: YakuHanRP, 'Oswald', 'M PLUS Rounded 1c', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+          }
 
-      body::before {
-        position: fixed;
-        z-index: -1;
-        top: 0;
-        left: 0;
-        display: block;
-        width: 100vw;
-        height: 100vh;
-        content: "";
-        background-image: linear-gradient(
-            45deg,
-            rgba(128, 0, 128, 0.82),
-            rgba(0, 0, 255, 0.82)
-          ),
-          url("https://picsum.photos/1200/800/?image=133");
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: cover;
-        backdrop-filter: blur(6px);
-      }
+          body::before {
+            position: fixed;
+            z-index: -1;
+            top: 0;
+            left: 0;
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            content: "";
+            background-image:
+              linear-gradient(45deg, rgba(128, 0, 128, 0.82), rgba(0, 0, 255, 0.82)),
+              url("https://picsum.photos/1200/800/?image=133");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            backdrop-filter: blur(6px);
+          }
 
-      .login-container {
-        width: 100%;
-        overflow: auto;
-        max-height: 94vh;
-        max-width: 480px;
-        padding: 2.5rem;
-        background: rgba(201, 181, 213, 0.25);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 12px;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
-          inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        /* scrollbar design */
-        &::-webkit-scrollbar {
-          width: 8px;
-        }
-        &::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.1);
-        }
-        &::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.3);
-          border-radius: 4px;
-        }
-      }
+          .login-container {
+            width: 100%;
+            max-width: 480px;
+            padding: 2.5rem;
+            background: rgba(201, 181, 213, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow:
+              0 8px 32px rgba(0, 0, 0, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+          }
 
-      .login-title {
-        text-align: center;
-        margin-bottom: 0.5rem;
-        color: var(--color-white);
-        font-size: clamp(2rem, 5vw, 3rem);
-        font-weight: 400;
-        letter-spacing: 0.1em;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5),
-          0 0 10px rgba(174, 129, 255, 0.3);
-        filter: drop-shadow(1px 1px 2px black);
-      }
+          .login-title {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            color: var(--color-white);
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-shadow:
+              2px 2px 4px rgba(0, 0, 0, 0.5),
+              0 0 10px rgba(174, 129, 255, 0.3);
+            filter: drop-shadow(1px 1px 2px black);
+          }
 
-      .login-subtitle {
-        text-align: center;
-        margin-bottom: 2rem;
-        color: rgba(255, 255, 255, 0.8);
-        font-size: clamp(0.9rem, 2vw, 1.1rem);
-        font-weight: 300;
-        letter-spacing: 0.05em;
-        filter: drop-shadow(1px 1px 1px black);
-      }
+          .login-subtitle {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            filter: drop-shadow(1px 1px 1px black);
+          }
 
-      .error-message {
-        background: rgba(249, 38, 114, 0.2);
-        color: var(--color-white);
-        padding: 0.9rem;
-        border-radius: 8px;
-        border-left: 4px solid var(--color-publish);
-        margin-bottom: 1.5rem;
-        display: none;
-        font-size: 0.9rem;
-        filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
-      }
+          .error-message {
+            background: rgba(249, 38, 114, 0.2);
+            color: var(--color-white);
+            padding: 0.9rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--color-publish);
+            margin-bottom: 1.5rem;
+            display: none;
+            font-size: 0.9rem;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+          }
 
-      .error-message.show {
-        display: block;
-        animation: shake 0.5s, fadeIn 0.3s;
-      }
+          .error-message.show {
+            display: block;
+            animation: shake 0.5s, fadeIn 0.3s;
+          }
 
-      @keyframes shake {
-        0%,
-        100% {
-          transform: translateX(0);
-        }
-        25% {
-          transform: translateX(-8px);
-        }
-        75% {
-          transform: translateX(8px);
-        }
-      }
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+          }
 
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(-10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+              transform: translateY(-10px);
+      =======
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>LOGIN - 4STROKES</title>
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Oswald:200,300,400,500,600,700"
+          />
+          <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/yakuhanjp@3.4.1/dist/css/yakuhanrp.min.css"
+          />
+          <style>
+            :root {
+              --color-key: #66d9ef;
+              --color-issue: #a6e22e;
+              --color-action: #fd971f;
+              --color-publish: #f92672;
+              --color-purple: #ae81ff;
+              --color-dark: #272822;
+              --color-white: whitesmoke;
+      >>>>>>> 7ee6b0c (feat: 全体UI / FirestoreタイムスタンプのフォーマットとUIの微調整、およびスクロールバーのスタイルを改善)
+            }
 
-      .form-group {
-        margin-bottom: 1.5rem;
-      }
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
 
-      .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: var(--color-white);
-        font-weight: 400;
-        font-size: clamp(0.85rem, 2vw, 0.95rem);
-        letter-spacing: 0.05em;
-        filter: drop-shadow(1px 1px 1px black);
-      }
+            body {
+              font-family: YakuHanRP, "Oswald", "M PLUS Rounded 1c", sans-serif;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              min-height: 100vh;
+              padding: 20px;
+              position: relative;
+              overflow: hidden;
+            }
 
-      .form-group input {
-        width: 100%;
-        padding: 0.9rem;
-        background: rgba(0, 0, 0, 0.35);
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-radius: 8px;
-        color: var(--color-white);
-        font-size: clamp(0.9rem, 2vw, 1rem);
-        font-family: inherit;
-        transition: all 0.3s;
-        filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
-      }
+            body::before {
+              position: fixed;
+              z-index: -1;
+              top: 0;
+              left: 0;
+              display: block;
+              width: 100vw;
+              height: 100vh;
+              content: "";
+              background-image: linear-gradient(
+                  45deg,
+                  rgba(128, 0, 128, 0.82),
+                  rgba(0, 0, 255, 0.82)
+                ),
+                url("https://picsum.photos/1200/800/?image=133");
+              background-repeat: no-repeat;
+              background-position: center;
+              background-size: cover;
+              backdrop-filter: blur(6px);
+            }
 
-      .form-group input::placeholder {
-        color: rgba(255, 255, 255, 0.4);
-      }
+            .login-container {
+              width: 100%;
+              overflow: auto;
+              max-height: 94vh;
+              max-width: 480px;
+              padding: 2.5rem;
+              background: rgba(201, 181, 213, 0.25);
+              border: 1px solid rgba(255, 255, 255, 0.3);
+              border-radius: 12px;
+              backdrop-filter: blur(10px);
+              box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+              /* scrollbar design */
+              &::-webkit-scrollbar {
+                width: 8px;
+              }
+              &::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.1);
+              }
+              &::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 4px;
+              }
+            }
 
-      .form-group input:hover {
-        background: rgba(0, 0, 0, 0.25);
-        border-color: rgba(255, 255, 255, 0.5);
-      }
+            .login-title {
+              text-align: center;
+              margin-bottom: 0.5rem;
+              color: var(--color-white);
+              font-size: clamp(2rem, 5vw, 3rem);
+              font-weight: 400;
+              letter-spacing: 0.1em;
+              text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5),
+                0 0 10px rgba(174, 129, 255, 0.3);
+              filter: drop-shadow(1px 1px 2px black);
+            }
 
-      .form-group input:focus {
-        outline: none;
-        background: rgba(0, 0, 0, 0.5);
-        border-color: var(--color-purple);
-        box-shadow: 0 0 0 3px rgba(174, 129, 255, 0.2);
-      }
+            .login-subtitle {
+              text-align: center;
+              margin-bottom: 2rem;
+              color: rgba(255, 255, 255, 0.8);
+              font-size: clamp(0.9rem, 2vw, 1.1rem);
+              font-weight: 300;
+              letter-spacing: 0.05em;
+              filter: drop-shadow(1px 1px 1px black);
+            }
 
-      .btn {
-        width: 100%;
-        padding: 0.9rem;
-        border: none;
-        border-radius: 8px;
-        font-size: clamp(0.9rem, 2vw, 1rem);
-        font-weight: 500;
-        font-family: "Oswald", sans-serif;
-        letter-spacing: 0.1em;
-        cursor: pointer;
-        transition: all 0.3s;
-        filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.4));
-        text-transform: uppercase;
-      }
+            .error-message {
+              background: rgba(249, 38, 114, 0.2);
+              color: var(--color-white);
+              padding: 0.9rem;
+              border-radius: 8px;
+              border-left: 4px solid var(--color-publish);
+              margin-bottom: 1.5rem;
+              display: none;
+              font-size: 0.9rem;
+              filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+            }
 
-      .btn:active {
-        transform: translateY(1px);
-        filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4));
-      }
+            .error-message.show {
+              display: block;
+              animation: shake 0.5s, fadeIn 0.3s;
+            }
 
-      .btn-primary {
-        background: linear-gradient(
-          135deg,
-          var(--color-purple) 0%,
-          var(--color-publish) 100%
-        );
-        color: white;
-        margin-bottom: 1rem;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-      }
+            @keyframes shake {
+              0%,
+              100% {
+                transform: translateX(0);
+              }
+              25% {
+                transform: translateX(-8px);
+              }
+              75% {
+                transform: translateX(8px);
+              }
+            }
 
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
-        box-shadow: 0 0 20px rgba(174, 129, 255, 0.4);
-      }
+            @keyframes fadeIn {
+              from {
+                opacity: 0;
+                transform: translateY(-10px);
+              }
+              to {
+                opacity: 1;
+                transform: translateY(0);
+              }
+            }
 
-      .btn-secondary {
-        background: rgba(255, 255, 255, 0.15);
-        color: var(--color-white);
-        margin-bottom: 1rem;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-      }
+            .form-group {
+              margin-bottom: 1.5rem;
+            }
 
-      .btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.25);
-        transform: translateY(-2px);
-        filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
-      }
+            .form-group label {
+              display: block;
+              margin-bottom: 0.5rem;
+              color: var(--color-white);
+              font-weight: 400;
+              font-size: clamp(0.85rem, 2vw, 0.95rem);
+              letter-spacing: 0.05em;
+              filter: drop-shadow(1px 1px 1px black);
+            }
 
-      .btn-google {
-        background: rgba(66, 133, 244, 0.9);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-      }
+            .form-group input {
+              width: 100%;
+              padding: 0.9rem;
+              background: rgba(0, 0, 0, 0.35);
+              border: 2px solid rgba(255, 255, 255, 0.3);
+              border-radius: 8px;
+              color: var(--color-white);
+              font-size: clamp(0.9rem, 2vw, 1rem);
+              font-family: inherit;
+              transition: all 0.3s;
+              filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+            }
 
-      .btn-google:hover {
-        background: rgba(66, 133, 244, 1);
-        transform: translateY(-2px);
-        filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
-        box-shadow: 0 0 20px rgba(66, 133, 244, 0.4);
-      }
+            .form-group input::placeholder {
+              color: rgba(255, 255, 255, 0.4);
+            }
 
-      .divider {
-        text-align: center;
-        margin: 1.5rem 0;
-        color: rgba(255, 255, 255, 0.7);
-        position: relative;
-        font-size: clamp(0.85rem, 2vw, 0.95rem);
-        letter-spacing: 0.1em;
-        filter: drop-shadow(1px 1px 1px black);
-      }
+            .form-group input:hover {
+              background: rgba(0, 0, 0, 0.25);
+              border-color: rgba(255, 255, 255, 0.5);
+            }
 
-      .divider::before,
-      .divider::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        width: 40%;
-        height: 1px;
-        background: rgba(255, 255, 255, 0.3);
-      }
+            .form-group input:focus {
+              outline: none;
+              background: rgba(0, 0, 0, 0.5);
+              border-color: var(--color-purple);
+              box-shadow: 0 0 0 3px rgba(174, 129, 255, 0.2);
+            }
 
-      .divider::before {
-        left: 0;
-      }
+            .btn {
+              width: 100%;
+              padding: 0.9rem;
+              border: none;
+              border-radius: 8px;
+              font-size: clamp(0.9rem, 2vw, 1rem);
+              font-weight: 500;
+              font-family: "Oswald", sans-serif;
+              letter-spacing: 0.1em;
+              cursor: pointer;
+              transition: all 0.3s;
+              filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.4));
+              text-transform: uppercase;
+            }
 
-      .divider::after {
-        right: 0;
-      }
+            .btn:active {
+              transform: translateY(1px);
+              filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4));
+            }
 
-      .form-hidden {
-        display: none;
-      }
+            .btn-primary {
+              background: linear-gradient(
+                135deg,
+                var(--color-purple) 0%,
+                var(--color-publish) 100%
+              );
+              color: white;
+              margin-bottom: 1rem;
+              border: 1px solid rgba(255, 255, 255, 0.2);
+            }
 
-      .spinner {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        border-top-color: white;
-        animation: spin 0.6s linear infinite;
-      }
+            .btn-primary:hover {
+              transform: translateY(-2px);
+              filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
+              box-shadow: 0 0 20px rgba(174, 129, 255, 0.4);
+            }
 
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
+            .btn-secondary {
+              background: rgba(255, 255, 255, 0.15);
+              color: var(--color-white);
+              margin-bottom: 1rem;
+              border: 1px solid rgba(255, 255, 255, 0.3);
+            }
 
-      /* Mobile responsive */
-      @media (max-width: 600px) {
-        body {
-          padding: 15px;
-        }
+            .btn-secondary:hover {
+              background: rgba(255, 255, 255, 0.25);
+              transform: translateY(-2px);
+              filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
+            }
 
-        .login-container {
-          padding: 2rem 1.5rem;
-        }
+            .btn-google {
+              background: rgba(66, 133, 244, 0.9);
+              color: white;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 0.5rem;
+              border: 1px solid rgba(255, 255, 255, 0.2);
+            }
 
-        .form-group input,
-        .btn {
-          padding: 0.8rem;
-        }
-      }
+            .btn-google:hover {
+              background: rgba(66, 133, 244, 1);
+              transform: translateY(-2px);
+              filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
+              box-shadow: 0 0 20px rgba(66, 133, 244, 0.4);
+            }
 
-      @media (max-width: 400px) {
-        .login-container {
-          padding: 1.5rem 1rem;
-        }
+            .divider {
+              text-align: center;
+              margin: 1.5rem 0;
+              color: rgba(255, 255, 255, 0.7);
+              position: relative;
+              font-size: clamp(0.85rem, 2vw, 0.95rem);
+              letter-spacing: 0.1em;
+              filter: drop-shadow(1px 1px 1px black);
+            }
 
-        .login-title {
-          margin-bottom: 0.3rem;
-        }
+            .divider::before,
+            .divider::after {
+              content: "";
+              position: absolute;
+              top: 50%;
+              width: 40%;
+              height: 1px;
+              background: rgba(255, 255, 255, 0.3);
+            }
 
-        .login-subtitle {
-          margin-bottom: 1.5rem;
-        }
+            .divider::before {
+              left: 0;
+            }
 
-        .form-group {
-          margin-bottom: 1.2rem;
-        }
-      }
+            .divider::after {
+              right: 0;
+            }
 
-      /* Local mode button */
-      .local-mode-btn {
-        margin-top: 0.5rem;
-      }
+            .form-hidden {
+              display: none;
+            }
 
-      .login-message {
-        font-size: 0.75em;
-        opacity: 0.8;
-        margin-top: 4px;
-      }
+            .spinner {
+              display: inline-block;
+              width: 16px;
+              height: 16px;
+              border: 2px solid rgba(255, 255, 255, 0.3);
+              border-radius: 50%;
+              border-top-color: white;
+              animation: spin 0.6s linear infinite;
+            }
+
+            @keyframes spin {
+              to {
+                transform: rotate(360deg);
+              }
+            }
+
+            /* Mobile responsive */
+            @media (max-width: 600px) {
+              body {
+                padding: 15px;
+              }
+
+              .login-container {
+                padding: 2rem 1.5rem;
+              }
+
+              .form-group input,
+              .btn {
+                padding: 0.8rem;
+              }
+            }
+
+            @media (max-width: 400px) {
+              .login-container {
+                padding: 1.5rem 1rem;
+              }
+
+              .login-title {
+                margin-bottom: 0.3rem;
+              }
+
+              .login-subtitle {
+                margin-bottom: 1.5rem;
+              }
+
+              .form-group {
+                margin-bottom: 1.2rem;
+              }
+            }
+
+            /* Local mode button */
+            .local-mode-btn {
+              margin-top: 0.5rem;
+            }
+
+            .login-message {
+              font-size: 0.75em;
+              opacity: 0.8;
+              margin-top: 4px;
+            }
     </style>
   </head>
   <body>
