@@ -15,6 +15,10 @@ import {
  */
 export async function loginWithGoogle() {
   const provider = new GoogleAuthProvider();
+  // 毎回アカウント選択画面を表示
+  provider.setCustomParameters({
+    prompt: 'select_account'
+  });
   try {
     const result = await signInWithPopup(auth, provider);
     console.log('✅ Google ログイン成功:', result.user.email);
