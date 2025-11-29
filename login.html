@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+<<<<<<< HEAD
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -121,374 +122,582 @@
       from {
         opacity: 0;
         transform: translateY(-10px);
+=======
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LOGIN - 4STROKES</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Oswald:200,300,400,500,600,700"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/yakuhanjp@3.4.1/dist/css/yakuhanrp.min.css"
+    />
+    <style>
+      :root {
+        --color-key: #66d9ef;
+        --color-issue: #a6e22e;
+        --color-action: #fd971f;
+        --color-publish: #f92672;
+        --color-purple: #ae81ff;
+        --color-dark: #272822;
+        --color-white: whitesmoke;
+>>>>>>> 7ee6b0c (feat: 全体UI / FirestoreタイムスタンプのフォーマットとUIの微調整、およびスクロールバーのスタイルを改善)
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
-    }
 
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: var(--color-white);
-      font-weight: 400;
-      font-size: clamp(0.85rem, 2vw, 0.95rem);
-      letter-spacing: 0.05em;
-      filter: drop-shadow(1px 1px 1px black);
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 0.9rem;
-      background: rgba(0, 0, 0, 0.35);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 8px;
-      color: var(--color-white);
-      font-size: clamp(0.9rem, 2vw, 1rem);
-      font-family: inherit;
-      transition: all 0.3s;
-      filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
-    }
-
-    .form-group input::placeholder {
-      color: rgba(255, 255, 255, 0.4);
-    }
-
-    .form-group input:hover {
-      background: rgba(0, 0, 0, 0.25);
-      border-color: rgba(255, 255, 255, 0.5);
-    }
-
-    .form-group input:focus {
-      outline: none;
-      background: rgba(0, 0, 0, 0.5);
-      border-color: var(--color-purple);
-      box-shadow: 0 0 0 3px rgba(174, 129, 255, 0.2);
-    }
-
-    .btn {
-      width: 100%;
-      padding: 0.9rem;
-      border: none;
-      border-radius: 8px;
-      font-size: clamp(0.9rem, 2vw, 1rem);
-      font-weight: 500;
-      font-family: 'Oswald', sans-serif;
-      letter-spacing: 0.1em;
-      cursor: pointer;
-      transition: all 0.3s;
-      filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.4));
-      text-transform: uppercase;
-    }
-
-    .btn:active {
-      transform: translateY(1px);
-      filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4));
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--color-purple) 0%, var(--color-publish) 100%);
-      color: white;
-      margin-bottom: 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
-      box-shadow: 0 0 20px rgba(174, 129, 255, 0.4);
-    }
-
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.15);
-      color: var(--color-white);
-      margin-bottom: 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.25);
-      transform: translateY(-2px);
-      filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
-    }
-
-    .btn-google {
-      background: rgba(66, 133, 244, 0.9);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .btn-google:hover {
-      background: rgba(66, 133, 244, 1);
-      transform: translateY(-2px);
-      filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
-      box-shadow: 0 0 20px rgba(66, 133, 244, 0.4);
-    }
-
-    .divider {
-      text-align: center;
-      margin: 1.5rem 0;
-      color: rgba(255, 255, 255, 0.7);
-      position: relative;
-      font-size: clamp(0.85rem, 2vw, 0.95rem);
-      letter-spacing: 0.1em;
-      filter: drop-shadow(1px 1px 1px black);
-    }
-
-    .divider::before,
-    .divider::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      width: 40%;
-      height: 1px;
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    .divider::before {
-      left: 0;
-    }
-
-    .divider::after {
-      right: 0;
-    }
-
-    .form-hidden {
-      display: none;
-    }
-
-    .spinner {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: white;
-      animation: spin 0.6s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Mobile responsive */
-    @media (max-width: 600px) {
       body {
-        padding: 15px;
+        font-family: YakuHanRP, "Oswald", "M PLUS Rounded 1c", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      body::before {
+        position: fixed;
+        z-index: -1;
+        top: 0;
+        left: 0;
+        display: block;
+        width: 100vw;
+        height: 100vh;
+        content: "";
+        background-image: linear-gradient(
+            45deg,
+            rgba(128, 0, 128, 0.82),
+            rgba(0, 0, 255, 0.82)
+          ),
+          url("https://picsum.photos/1200/800/?image=133");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        backdrop-filter: blur(6px);
       }
 
       .login-container {
-        padding: 2rem 1.5rem;
-      }
-
-      .form-group input,
-      .btn {
-        padding: 0.8rem;
-      }
-    }
-
-    @media (max-width: 400px) {
-      .login-container {
-        padding: 1.5rem 1rem;
+        width: 100%;
+        overflow: auto;
+        max-height: 94vh;
+        max-width: 480px;
+        padding: 2.5rem;
+        background: rgba(201, 181, 213, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        /* scrollbar design */
+        &::-webkit-scrollbar {
+          width: 8px;
+        }
+        &::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.1);
+        }
+        &::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 4px;
+        }
       }
 
       .login-title {
-        margin-bottom: 0.3rem;
+        text-align: center;
+        margin-bottom: 0.5rem;
+        color: var(--color-white);
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 400;
+        letter-spacing: 0.1em;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5),
+          0 0 10px rgba(174, 129, 255, 0.3);
+        filter: drop-shadow(1px 1px 2px black);
       }
 
       .login-subtitle {
+        text-align: center;
+        margin-bottom: 2rem;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
+        font-weight: 300;
+        letter-spacing: 0.05em;
+        filter: drop-shadow(1px 1px 1px black);
+      }
+
+      .error-message {
+        background: rgba(249, 38, 114, 0.2);
+        color: var(--color-white);
+        padding: 0.9rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--color-publish);
         margin-bottom: 1.5rem;
+        display: none;
+        font-size: 0.9rem;
+        filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+      }
+
+      .error-message.show {
+        display: block;
+        animation: shake 0.5s, fadeIn 0.3s;
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-8px);
+        }
+        75% {
+          transform: translateX(8px);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       .form-group {
-        margin-bottom: 1.2rem;
+        margin-bottom: 1.5rem;
       }
-    }
 
-    /* Local mode button */
-    .local-mode-btn {
-      margin-top: 0.5rem;
-    }
-
-    .login-message {
-      font-size: 0.75em;
-      opacity: 0.8;
-      margin-top: 4px;
-    }
-  </style>
-</head>
-<body>
-  <div class="login-container">
-    <h1 class="login-title">4STROKES</h1>
-    <p class="login-subtitle">Authentication Required</p>
-
-    <div id="error-message" class="error-message"></div>
-
-    <!-- Login Form -->
-    <form id="login-form">
-      <div class="form-group">
-        <label for="login-email">Email Address</label>
-        <input type="email" id="login-email" required autocomplete="email" placeholder="your@email.com">
-      </div>
-      <div class="form-group">
-        <label for="login-password">Password</label>
-        <input type="password" id="login-password" required autocomplete="current-password" placeholder="6+ characters">
-      </div>
-      <button type="submit" class="btn btn-primary" id="login-btn">Login</button>
-      <button type="button" id="show-register" class="btn btn-secondary">Create Account</button>
-    </form>
-
-    <!-- Register Form (initially hidden) -->
-    <form id="register-form" class="form-hidden">
-      <div class="form-group">
-        <label for="register-email">Email Address</label>
-        <input type="email" id="register-email" required autocomplete="email" placeholder="your@email.com">
-      </div>
-      <div class="form-group">
-        <label for="register-password">Password (6+ characters)</label>
-        <input type="password" id="register-password" required minlength="6" autocomplete="new-password" placeholder="6+ characters">
-      </div>
-      <button type="submit" class="btn btn-primary" id="register-btn">Register</button>
-      <button type="button" id="show-login" class="btn btn-secondary">Back to Login</button>
-    </form>
-
-    <div class="divider">OR</div>
-
-    <button id="google-login" class="btn btn-google">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
-        <path d="M9.003 18c2.43 0 4.467-.806 5.956-2.184l-2.909-2.258c-.806.54-1.837.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z" fill="#34A853"/>
-        <path d="M3.964 10.712c-.18-.54-.282-1.117-.282-1.71 0-.593.102-1.17.282-1.71V4.96H.957C.347 6.175 0 7.55 0 9.002c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-        <path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.426 0 9.003 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335"/>
-      </svg>
-      Sign in with Google
-    </button>
-
-    <div class="divider">OR</div>
-
-    <button id="local-mode-btn" class="btn btn-secondary local-mode-btn">
-      Continue with Local Storage
-      <div class="login-message">No login required - Data stays in your browser</div>
-    </button>
-  </div>
-
-  <script type="module">
-    import { loginWithGoogle, loginWithEmail, registerWithEmail, getErrorMessage } from './js/auth.js';
-    import { setStorageMode } from './js/storage-service.js';
-
-    const loginForm = document.getElementById('login-form');
-    const registerForm = document.getElementById('register-form');
-    const errorMessage = document.getElementById('error-message');
-    const googleLoginBtn = document.getElementById('google-login');
-    const localModeBtn = document.getElementById('local-mode-btn');
-    const showRegisterBtn = document.getElementById('show-register');
-    const showLoginBtn = document.getElementById('show-login');
-
-    // Show error message
-    function showError(message) {
-      errorMessage.textContent = message;
-      errorMessage.classList.add('show');
-      setTimeout(() => {
-        errorMessage.classList.remove('show');
-      }, 5000);
-    }
-
-    // On login success
-    function onLoginSuccess() {
-      setStorageMode('online');
-      window.location.href = '/main.html';
-    }
-
-    // Local mode
-    localModeBtn.addEventListener('click', () => {
-      setStorageMode('local');
-      window.location.href = '/main.html';
-    });
-
-    // Toggle loading state
-    function setLoading(button, isLoading) {
-      if (isLoading) {
-        button.disabled = true;
-        button.innerHTML = '<span class="spinner"></span> Processing...';
-      } else {
-        button.disabled = false;
-        button.innerHTML = button.dataset.originalText;
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--color-white);
+        font-weight: 400;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        letter-spacing: 0.05em;
+        filter: drop-shadow(1px 1px 1px black);
       }
-    }
 
-    // Google login
-    googleLoginBtn.addEventListener('click', async () => {
-      googleLoginBtn.dataset.originalText = googleLoginBtn.innerHTML;
-      setLoading(googleLoginBtn, true);
-
-      try {
-        await loginWithGoogle();
-        onLoginSuccess();
-      } catch (error) {
-        showError(getErrorMessage(error));
-        setLoading(googleLoginBtn, false);
+      .form-group input {
+        width: 100%;
+        padding: 0.9rem;
+        background: rgba(0, 0, 0, 0.35);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        color: var(--color-white);
+        font-size: clamp(0.9rem, 2vw, 1rem);
+        font-family: inherit;
+        transition: all 0.3s;
+        filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
       }
-    });
 
-    // Email login
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('login-email').value;
-      const password = document.getElementById('login-password').value;
-      const submitBtn = document.getElementById('login-btn');
-
-      submitBtn.dataset.originalText = submitBtn.innerHTML;
-      setLoading(submitBtn, true);
-
-      try {
-        await loginWithEmail(email, password);
-        onLoginSuccess();
-      } catch (error) {
-        showError(getErrorMessage(error));
-        setLoading(submitBtn, false);
+      .form-group input::placeholder {
+        color: rgba(255, 255, 255, 0.4);
       }
-    });
 
-    // Register
-    registerForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('register-email').value;
-      const password = document.getElementById('register-password').value;
-      const submitBtn = document.getElementById('register-btn');
-
-      submitBtn.dataset.originalText = submitBtn.innerHTML;
-      setLoading(submitBtn, true);
-
-      try {
-        await registerWithEmail(email, password);
-        onLoginSuccess();
-      } catch (error) {
-        showError(getErrorMessage(error));
-        setLoading(submitBtn, false);
+      .form-group input:hover {
+        background: rgba(0, 0, 0, 0.25);
+        border-color: rgba(255, 255, 255, 0.5);
       }
-    });
 
-    // Toggle forms
-    showRegisterBtn.addEventListener('click', () => {
-      loginForm.classList.add('form-hidden');
-      registerForm.classList.remove('form-hidden');
-      errorMessage.classList.remove('show');
-    });
+      .form-group input:focus {
+        outline: none;
+        background: rgba(0, 0, 0, 0.5);
+        border-color: var(--color-purple);
+        box-shadow: 0 0 0 3px rgba(174, 129, 255, 0.2);
+      }
 
-    showLoginBtn.addEventListener('click', () => {
-      registerForm.classList.add('form-hidden');
-      loginForm.classList.remove('form-hidden');
-      errorMessage.classList.remove('show');
-    });
-  </script>
-</body>
+      .btn {
+        width: 100%;
+        padding: 0.9rem;
+        border: none;
+        border-radius: 8px;
+        font-size: clamp(0.9rem, 2vw, 1rem);
+        font-weight: 500;
+        font-family: "Oswald", sans-serif;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        transition: all 0.3s;
+        filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.4));
+        text-transform: uppercase;
+      }
+
+      .btn:active {
+        transform: translateY(1px);
+        filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4));
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--color-purple) 0%,
+          var(--color-publish) 100%
+        );
+        color: white;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
+        box-shadow: 0 0 20px rgba(174, 129, 255, 0.4);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.15);
+        color: var(--color-white);
+        margin-bottom: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+        filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
+      }
+
+      .btn-google {
+        background: rgba(66, 133, 244, 0.9);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .btn-google:hover {
+        background: rgba(66, 133, 244, 1);
+        transform: translateY(-2px);
+        filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
+        box-shadow: 0 0 20px rgba(66, 133, 244, 0.4);
+      }
+
+      .divider {
+        text-align: center;
+        margin: 1.5rem 0;
+        color: rgba(255, 255, 255, 0.7);
+        position: relative;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        letter-spacing: 0.1em;
+        filter: drop-shadow(1px 1px 1px black);
+      }
+
+      .divider::before,
+      .divider::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 40%;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .divider::before {
+        left: 0;
+      }
+
+      .divider::after {
+        right: 0;
+      }
+
+      .form-hidden {
+        display: none;
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 0.6s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Mobile responsive */
+      @media (max-width: 600px) {
+        body {
+          padding: 15px;
+        }
+
+        .login-container {
+          padding: 2rem 1.5rem;
+        }
+
+        .form-group input,
+        .btn {
+          padding: 0.8rem;
+        }
+      }
+
+      @media (max-width: 400px) {
+        .login-container {
+          padding: 1.5rem 1rem;
+        }
+
+        .login-title {
+          margin-bottom: 0.3rem;
+        }
+
+        .login-subtitle {
+          margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+          margin-bottom: 1.2rem;
+        }
+      }
+
+      /* Local mode button */
+      .local-mode-btn {
+        margin-top: 0.5rem;
+      }
+
+      .login-message {
+        font-size: 0.75em;
+        opacity: 0.8;
+        margin-top: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <h1 class="login-title">4STROKES</h1>
+      <p class="login-subtitle">Authentication Required</p>
+
+      <div id="error-message" class="error-message"></div>
+
+      <!-- Login Form -->
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input
+            type="email"
+            id="login-email"
+            required
+            autocomplete="email"
+            placeholder="your@email.com"
+          />
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input
+            type="password"
+            id="login-password"
+            required
+            autocomplete="current-password"
+            placeholder="6+ characters"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary" id="login-btn">
+          Login
+        </button>
+        <button type="button" id="show-register" class="btn btn-secondary">
+          Create Account
+        </button>
+      </form>
+
+      <!-- Register Form (initially hidden) -->
+      <form id="register-form" class="form-hidden">
+        <div class="form-group">
+          <label for="register-email">Email Address</label>
+          <input
+            type="email"
+            id="register-email"
+            required
+            autocomplete="email"
+            placeholder="your@email.com"
+          />
+        </div>
+        <div class="form-group">
+          <label for="register-password">Password (6+ characters)</label>
+          <input
+            type="password"
+            id="register-password"
+            required
+            minlength="6"
+            autocomplete="new-password"
+            placeholder="6+ characters"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary" id="register-btn">
+          Register
+        </button>
+        <button type="button" id="show-login" class="btn btn-secondary">
+          Back to Login
+        </button>
+      </form>
+
+      <div class="divider">OR</div>
+
+      <button id="google-login" class="btn btn-google">
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 18 18"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"
+            fill="#4285F4"
+          />
+          <path
+            d="M9.003 18c2.43 0 4.467-.806 5.956-2.184l-2.909-2.258c-.806.54-1.837.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z"
+            fill="#34A853"
+          />
+          <path
+            d="M3.964 10.712c-.18-.54-.282-1.117-.282-1.71 0-.593.102-1.17.282-1.71V4.96H.957C.347 6.175 0 7.55 0 9.002c0 1.452.348 2.827.957 4.042l3.007-2.332z"
+            fill="#FBBC05"
+          />
+          <path
+            d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.426 0 9.003 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z"
+            fill="#EA4335"
+          />
+        </svg>
+        Sign in with Google
+      </button>
+
+      <div class="divider">OR</div>
+
+      <button id="local-mode-btn" class="btn btn-secondary local-mode-btn">
+        Continue with Local Storage
+        <div class="login-message">
+          No login required - Data stays in your browser
+        </div>
+      </button>
+    </div>
+
+    <script type="module">
+      import {
+        loginWithGoogle,
+        loginWithEmail,
+        registerWithEmail,
+        getErrorMessage,
+      } from "./js/auth.js";
+      import { setStorageMode } from "./js/storage-service.js";
+
+      const loginForm = document.getElementById("login-form");
+      const registerForm = document.getElementById("register-form");
+      const errorMessage = document.getElementById("error-message");
+      const googleLoginBtn = document.getElementById("google-login");
+      const localModeBtn = document.getElementById("local-mode-btn");
+      const showRegisterBtn = document.getElementById("show-register");
+      const showLoginBtn = document.getElementById("show-login");
+
+      // Show error message
+      function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.classList.add("show");
+        setTimeout(() => {
+          errorMessage.classList.remove("show");
+        }, 5000);
+      }
+
+      // On login success
+      function onLoginSuccess() {
+        setStorageMode("online");
+        window.location.href = "/main.html";
+      }
+
+      // Local mode
+      localModeBtn.addEventListener("click", () => {
+        setStorageMode("local");
+        window.location.href = "/main.html";
+      });
+
+      // Toggle loading state
+      function setLoading(button, isLoading) {
+        if (isLoading) {
+          button.disabled = true;
+          button.innerHTML = '<span class="spinner"></span> Processing...';
+        } else {
+          button.disabled = false;
+          button.innerHTML = button.dataset.originalText;
+        }
+      }
+
+      // Google login
+      googleLoginBtn.addEventListener("click", async () => {
+        googleLoginBtn.dataset.originalText = googleLoginBtn.innerHTML;
+        setLoading(googleLoginBtn, true);
+
+        try {
+          await loginWithGoogle();
+          onLoginSuccess();
+        } catch (error) {
+          showError(getErrorMessage(error));
+          setLoading(googleLoginBtn, false);
+        }
+      });
+
+      // Email login
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("login-email").value;
+        const password = document.getElementById("login-password").value;
+        const submitBtn = document.getElementById("login-btn");
+
+        submitBtn.dataset.originalText = submitBtn.innerHTML;
+        setLoading(submitBtn, true);
+
+        try {
+          await loginWithEmail(email, password);
+          onLoginSuccess();
+        } catch (error) {
+          showError(getErrorMessage(error));
+          setLoading(submitBtn, false);
+        }
+      });
+
+      // Register
+      registerForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("register-email").value;
+        const password = document.getElementById("register-password").value;
+        const submitBtn = document.getElementById("register-btn");
+
+        submitBtn.dataset.originalText = submitBtn.innerHTML;
+        setLoading(submitBtn, true);
+
+        try {
+          await registerWithEmail(email, password);
+          onLoginSuccess();
+        } catch (error) {
+          showError(getErrorMessage(error));
+          setLoading(submitBtn, false);
+        }
+      });
+
+      // Toggle forms
+      showRegisterBtn.addEventListener("click", () => {
+        loginForm.classList.add("form-hidden");
+        registerForm.classList.remove("form-hidden");
+        errorMessage.classList.remove("show");
+      });
+
+      showLoginBtn.addEventListener("click", () => {
+        registerForm.classList.add("form-hidden");
+        loginForm.classList.remove("form-hidden");
+        errorMessage.classList.remove("show");
+      });
+    </script>
+  </body>
 </html>

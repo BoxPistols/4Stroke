@@ -21,7 +21,11 @@
 
 // Modal content
 .modal-content {
-  background: linear-gradient(135deg, rgba(128, 0, 128, 0.95), rgba(0, 0, 255, 0.95));
+  background: linear-gradient(
+    135deg,
+    rgba(128, 0, 128, 0.95),
+    rgba(0, 0, 255, 0.95)
+  );
   border-radius: var(--radius-xl);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   max-width: 600px;
@@ -329,6 +333,7 @@
   cursor: pointer;
   transition: all var(--transition-normal);
   letter-spacing: 0.05em;
+  color: white;
 
   &.btn-primary {
     background: var(--btn-primary-bg);

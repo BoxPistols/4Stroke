@@ -81,7 +81,8 @@ select {
 }
 
 select {
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="14" viewBox="0 0 29 14" width="29"><path fill="white" d="M9.37727 3.625l5.08154 6.93523L19.54036 3.625"/></svg>') center right no-repeat;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="14" viewBox="0 0 29 14" width="29"><path fill="white" d="M9.37727 3.625l5.08154 6.93523L19.54036 3.625"/></svg>')
+    center right no-repeat;
   padding-right: 2rem;
 }
 
@@ -113,92 +114,100 @@ a {
 }
 
 :root {
-  --color1:#f92672;
-  --color2:#a6e22e;
-  --color3:#fd971f;
-  --color4:#66d9ef;
-  --color5:#ae81ff;
-  --color6:#e6db74;
-  --color7:#75715e;
-  --color8:#272822;
-  --white:whitesmoke;
+  --color1: #f92672;
+  --color2: #a6e22e;
+  --color3: #fd971f;
+  --color4: #66d9ef;
+  --color5: #ae81ff;
+  --color6: #e6db74;
+  --color7: #75715e;
+  --color8: #272822;
+  --white: whitesmoke;
 }
 
 ::-webkit-scrollbar {
-  width:12px;
-  height:6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-  border-radius:8px;
-  background:currentColor;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 * {
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 
-  outline:none;
+  outline: none;
 }
 
 html {
-  box-sizing:border-box;
-  -webkit-font-smoothing:antialiased;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  font-size: 14px;
+  scrollbar-width: thin;
 }
 
 body {
-  display:flex;
-  overflow-x: auto;  // Enable horizontal scroll for 4Stroke garages
-  overflow-y: hidden;  // Prevent vertical scroll on main page
-  min-width:100vw;
-  height:100vh;
+  display: flex;
+  overflow-x: auto; // Enable horizontal scroll for 4Stroke garages
+  overflow-y: hidden; // Prevent vertical scroll on main page
+  min-width: 100vw;
+  height: 100vh;
   // padding:4px 12px;
-  padding:8px 12px 60px;
+  padding: 8px 12px 60px;
 
-  font-family:YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans",
-  "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
+  font-family: YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans",
+    "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
 
-  scroll-behavior:smooth;
+  font-size: 100%;
+  // ios対策
+  -webkit-text-size-adjust: 100%;
+  // Mac Chrome
+  -webkit-font-smoothing: antialiased;
+
+  scroll-behavior: smooth;
   @include flex(null, center);
   &:before {
-    position:fixed;
-    z-index:-1;
-    top:0;
-    left:0;
-    display:block;
-    width:100vw;
-    height:100vh;
+    position: fixed;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100vw;
+    height: 100vh;
 
-    content:"";
+    content: "";
 
-    color:white;
-    background-image:linear-gradient(
-    45deg,
-    rgba(purple, .82),
-    rgba(blue, .82)
-    ),
-    url("https://picsum.photos/1200/800/?image=133");
-    background-repeat:no-repeat;
-    background-position:center;
-    background-size:cover;
-    background-size:cover;
+    color: white;
+    background-image: linear-gradient(
+        45deg,
+        rgba(purple, 0.82),
+        rgba(blue, 0.82)
+      ),
+      url("https://picsum.photos/1200/800/?image=133");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    background-size: cover;
 
-    backdrop-filter:blur(6px);
+    backdrop-filter: blur(6px);
   }
 }
 
 p {
-  margin:.1em 0 .5em;
-  padding:0;
+  margin: 0.1em 0 0.5em;
+  padding: 0;
 
-  line-height:1.8;
+  line-height: 1.8;
 }
 
 input[type="button"] {
-  margin:0;
+  margin: 0;
 
-  filter:drop-shadow(1px 1px 0px black);
+  filter: drop-shadow(1px 1px 0px black);
 }
 
 // Mobile responsive - Breakpoint: 768px

@@ -11,7 +11,11 @@
   // Gradient colors
   --gradient-purple: rgba(128, 0, 128, 0.82);
   --gradient-blue: rgba(0, 0, 255, 0.82);
-  --gradient-overlay: linear-gradient(45deg, var(--gradient-purple), var(--gradient-blue));
+  --gradient-overlay: linear-gradient(
+    45deg,
+    var(--gradient-purple),
+    var(--gradient-blue)
+  );
 
   // Background colors
   --bg-glass: rgba(201, 181, 213, 0.25);
@@ -51,8 +55,9 @@
   --spacing-vw-lg: 4vw;
 
   // ===== Typography =====
-  --font-primary: 'Oswald', sans-serif;
-  --font-japanese: YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
+  --font-primary: "Oswald", sans-serif;
+  --font-japanese: YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans",
+    "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
 
   --font-size-xs: 0.85rem;
   --font-size-sm: 0.9rem;
@@ -101,8 +106,8 @@
   --transition-expand: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
-  --easing-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
-  --easing-accelerate: cubic-bezier(0.4, 0.0, 1, 1);
+  --easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --easing-accelerate: cubic-bezier(0.4, 0, 1, 1);
 
   // ===== Durations =====
   --duration-collapse: 5000ms;

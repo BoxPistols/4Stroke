@@ -31,14 +31,14 @@ body:has(.mandara-editor) {
 
 .mandara-header {
   margin-bottom: var(--spacing-xl);
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.4);
   padding: var(--spacing-lg);
   border-radius: var(--radius-md);
   border: 1px solid rgba(255, 255, 255, 0.1);
 
   .mandara-title-input {
     width: 100%;
-    font-size: 1.8rem;
+    font-size: 1.4rem;
     font-weight: bold;
     padding: var(--spacing-md) var(--spacing-lg);
     background: rgba(255, 255, 255, 0.05);
@@ -176,7 +176,7 @@ body:has(.mandara-editor) {
 
 .mandara-memo {
   width: 100%;
-  min-height: 240px;
+  min-height: 200px;
   background: rgba(0, 0, 0, 0.4);
   border: 2px solid var(--border-light);
   border-radius: var(--radius-md);
@@ -209,7 +209,7 @@ body:has(.mandara-editor) {
     min-height: 40px;
     margin-bottom: var(--spacing-md);
     padding: var(--spacing-sm);
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.4);
     border-radius: var(--radius-sm);
   }
 
@@ -217,15 +217,19 @@ body:has(.mandara-editor) {
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-sm);
-    padding: 10px 14px;
-    background: linear-gradient(135deg, rgba(174, 129, 255, 0.8), rgba(128, 0, 128, 0.8));
+    padding: 4px 4px 4px 12px;
+    background: linear-gradient(
+      135deg,
+      rgba(174, 129, 255, 0.8),
+      rgba(128, 0, 128, 0.8)
+    );
     border-radius: 20px;
     color: var(--color-white);
     font-size: 14px;
     font-weight: 500;
     font-family: var(--font-japanese);
     line-height: 1.2;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
     transition: all var(--transition-fast);
 
     &:hover {
@@ -285,7 +289,7 @@ body:has(.mandara-editor) {
     min-height: 40px;
     margin-bottom: var(--spacing-md);
     padding: var(--spacing-sm);
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.4);
     border-radius: var(--radius-sm);
   }
 
@@ -385,12 +389,12 @@ body:has(.mandara-editor) {
 
   .btn {
     flex: 1;
-    padding: 14px 24px;
+    padding: 8px 12px;
     border: none;
     border-radius: var(--radius-md);
     color: var(--color-white);
     font-family: var(--font-primary);
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
     cursor: pointer;
     transition: all var(--transition-normal);
@@ -398,9 +402,10 @@ body:has(.mandara-editor) {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     position: relative;
     overflow: hidden;
+    width: auto;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       top: 50%;
       left: 50%;
@@ -413,7 +418,7 @@ body:has(.mandara-editor) {
     }
 
     &:hover::before {
-      width: 300px;
+      width: 100%;
       height: 300px;
     }
 
@@ -423,28 +428,48 @@ body:has(.mandara-editor) {
     }
 
     &.btn-danger {
-      background: linear-gradient(135deg, rgba(249, 38, 114, 0.9), rgba(220, 20, 90, 0.9));
+      background: transparent;
+      border: 1px solid rgba(249, 38, 114, 0.9);
+      color: rgba(249, 38, 114, 0.9);
 
       &:hover {
-        background: linear-gradient(135deg, rgba(249, 38, 114, 1), rgba(220, 20, 90, 1));
-        box-shadow: 0 6px 12px rgba(249, 38, 114, 0.4);
+        background: rgba(249, 38, 114, 0.1);
+        border-color: rgba(249, 38, 114, 1);
+        color: rgba(249, 38, 114, 1);
+        box-shadow: 0 6px 12px rgba(249, 38, 114, 0.2);
       }
     }
 
     &.btn-secondary {
-      background: linear-gradient(135deg, rgba(174, 129, 255, 0.9), rgba(128, 0, 128, 0.9));
+      background: linear-gradient(
+        135deg,
+        rgba(174, 129, 255, 0.9),
+        rgba(128, 0, 128, 0.9)
+      );
 
       &:hover {
-        background: linear-gradient(135deg, rgba(174, 129, 255, 1), rgba(128, 0, 128, 1));
+        background: linear-gradient(
+          135deg,
+          rgba(174, 129, 255, 1),
+          rgba(128, 0, 128, 1)
+        );
         box-shadow: 0 6px 12px rgba(174, 129, 255, 0.4);
       }
     }
 
     &.btn-warning {
-      background: linear-gradient(135deg, rgba(253, 151, 31, 0.9), rgba(230, 126, 34, 0.9));
+      background: linear-gradient(
+        135deg,
+        rgba(253, 151, 31, 0.9),
+        rgba(230, 126, 34, 0.9)
+      );
 
       &:hover {
-        background: linear-gradient(135deg, rgba(253, 151, 31, 1), rgba(230, 126, 34, 1));
+        background: linear-gradient(
+          135deg,
+          rgba(253, 151, 31, 1),
+          rgba(230, 126, 34, 1)
+        );
         box-shadow: 0 6px 12px rgba(253, 151, 31, 0.4);
       }
     }
@@ -505,6 +530,8 @@ body:has(.mandara-editor) {
   margin-bottom: var(--spacing-xl);
 
   .list-controls-row {
+    display: flex;
+    // flex-direction: column;
     @include flex(start, center);
     gap: var(--spacing-lg);
 
@@ -547,8 +574,7 @@ body:has(.mandara-editor) {
   }
 
   .sort-select {
-    flex-shrink: 0;
-    min-width: 250px;
+    flex-shrink: 1;
 
     option {
       background: #2a2a2a;
@@ -558,7 +584,8 @@ body:has(.mandara-editor) {
 
   .filter-input {
     flex: 1;
-    min-width: 300px;
+    min-width: 70vw;
+    padding: 8px 12px;
 
     @media (max-width: 768px) {
       min-width: unset;
@@ -590,7 +617,7 @@ body:has(.mandara-editor) {
 }
 
 .mandara-card {
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-lg);
   padding: var(--spacing-xl);
@@ -601,19 +628,27 @@ body:has(.mandara-editor) {
   overflow: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+    background: linear-gradient(
+      90deg,
+      var(--color-accent),
+      var(--color-primary)
+    );
     opacity: 0;
     transition: opacity var(--transition-normal);
   }
 
   &:hover {
-    background: linear-gradient(135deg, rgba(201, 181, 213, 0.3), rgba(128, 0, 128, 0.2));
+    background: linear-gradient(
+      135deg,
+      rgba(201, 181, 213, 0.3),
+      rgba(128, 0, 128, 0.2)
+    );
     border-color: var(--color-accent);
     transform: translateY(-4px);
     box-shadow: 0 8px 20px rgba(174, 129, 255, 0.3);
@@ -723,7 +758,11 @@ body:has(.mandara-editor) {
   .list-view-btn,
   .search-btn {
     padding: 10px 20px;
-    background: linear-gradient(135deg, rgba(174, 129, 255, 0.9), rgba(128, 0, 128, 0.9));
+    background: linear-gradient(
+      135deg,
+      rgba(174, 129, 255, 0.9),
+      rgba(128, 0, 128, 0.9)
+    );
     border: none;
     border-radius: var(--radius-md);
     color: var(--color-white);
@@ -736,7 +775,11 @@ body:has(.mandara-editor) {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 
     &:hover {
-      background: linear-gradient(135deg, rgba(174, 129, 255, 1), rgba(128, 0, 128, 1));
+      background: linear-gradient(
+        135deg,
+        rgba(174, 129, 255, 1),
+        rgba(128, 0, 128, 1)
+      );
       box-shadow: 0 4px 10px rgba(174, 129, 255, 0.4);
       transform: translateY(-2px);
     }
@@ -790,6 +833,7 @@ body:has(.mandara-editor) {
   .mandara-editor {
     padding: var(--spacing-md);
     margin: var(--spacing-sm);
+    padding-bottom: 64px;
   }
 
   .mandara-header {
@@ -837,7 +881,7 @@ body:has(.mandara-editor) {
   }
 
   .mandara-memo {
-    min-height: 180px;
+    min-height: 120px;
     font-size: 14px;
     padding: var(--spacing-md);
   }
