@@ -19,8 +19,8 @@ body:has(.mandara-editor) {
   background: #13121487;
   border: 1px solid #dfdfdfc2;
   border-radius: 12px;
-  margin-top: var(--spacing-xl);
-  margin-bottom: var(--spacing-xl);
+  margin-top: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
 
   @media (max-width: 768px) {
     padding: var(--spacing-md);

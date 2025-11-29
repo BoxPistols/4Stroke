@@ -1985,8 +1985,8 @@ body:has(.mandara-editor) {
   background: rgba(19, 18, 20, 0.5294117647);
   border: 1px solid rgba(223, 223, 223, 0.7607843137);
   border-radius: 12px;
-  margin-top: var(--spacing-xl);
-  margin-bottom: var(--spacing-xl);
+  margin-top: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
 }
 @media (max-width: 768px) {
   .mandara-editor {
