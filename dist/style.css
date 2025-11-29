@@ -1083,7 +1083,7 @@ input.stroke-title {
   border-radius: 8px;
   background-color: rgba(0, 0, 0, 0.35);
   font-family: YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
-  font-size: 0.9em;
+  font-size: 1em;
   filter: drop-shadow(1px 1px 0px black);
   display: flex;
   /**

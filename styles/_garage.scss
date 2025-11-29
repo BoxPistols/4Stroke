@@ -156,8 +156,7 @@
 
     font-family: YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans",
       "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
-    font-size: 0.9em;
-    // font-size:1em;
+    font-size: 1em;
     // filter:drop-shadow(1px 2px 1px currentColor);
 
     filter: drop-shadow(1px 1px 0px black);
@@ -271,7 +270,7 @@
 
   textarea {
     flex: 1 !important;
-    font-size: 0.85rem !important;
+    font-size: 1rem !important;
     width: 100% !important;
     max-width: 100%;
     padding: 8px !important;
@@ -318,7 +317,7 @@
   }
 
   textarea {
-    font-size: 0.85rem !important;
+    font-size: 1rem !important;
     padding: 8px 10px !important;
     min-height: 20vh !important;
   }
