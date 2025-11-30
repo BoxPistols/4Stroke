@@ -52,7 +52,42 @@ const firebaseConfig = {
 3. 設定（⚙️）→ プロジェクトの設定 → マイアプリ
 4. SDKの設定と構成 → 構成 をコピー
 
-### 4. ローカルサーバーを起動
+### 4. Google認証制限を設定（オプション）
+
+このアプリケーションは特定のGoogleアカウントでのみログインを許可する機能を備えています。
+
+**ローカル開発時:**
+
+```bash
+# Firebase設定ファイルのコピーと同様に、認証設定をコピー
+cp js/config.example.js js/config.js
+```
+
+`js/config.js` を編集して、許可するメールアドレスを設定します：
+
+```javascript
+export const CONFIG = {
+  ALLOWED_GOOGLE_EMAIL: 'your-email@gmail.com',
+};
+```
+
+**Vercel環境での設定:**
+
+Vercelの環境変数に以下を設定してください：
+
+```
+環境変数名: VITE_ALLOWED_GOOGLE_EMAIL
+値: あなたのメールアドレス（例: ito.atsu.mail@gmail.com）
+```
+
+設定手順：
+1. Vercel プロジェクト設定を開く
+2. Settings → Environment Variables
+3. 上記の環境変数を追加
+
+詳細は [Google認証制限](./docs/GOOGLE_AUTH_RESTRICTION.md) を参照してください。
+
+### 5. ローカルサーバーを起動
 
 ```bash
 # Python 3を使う場合
@@ -62,7 +97,7 @@ python3 -m http.server 8000
 npx http-server -p 8000
 ```
 
-### 5. ブラウザでアクセス
+### 6. ブラウザでアクセス
 
 ```
 http://localhost:8000/
