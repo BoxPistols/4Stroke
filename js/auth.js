@@ -10,6 +10,11 @@ import {
   onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
+// デバッグ情報をログ出力
+console.log('[DEBUG] auth.js loaded');
+console.log('[DEBUG] CONFIG:', CONFIG);
+console.log('[DEBUG] ALLOWED_GOOGLE_EMAIL:', CONFIG.ALLOWED_GOOGLE_EMAIL);
+
 /**
  * Googleログイン
  * @returns {Promise<User>} ログインしたユーザー情報
