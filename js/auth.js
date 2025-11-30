@@ -1,5 +1,6 @@
 // Firebase Authentication モジュール
 import { auth } from './firebase-config.js';
+import { CONFIG } from './config.js';
 import {
   signInWithPopup,
   GoogleAuthProvider,
@@ -8,9 +9,6 @@ import {
   signOut,
   onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-
-// 許可されたGoogleアカウントのメールアドレス
-const ALLOWED_GOOGLE_EMAIL = 'ito.atsu.mail@gmail.com';
 
 /**
  * Googleログイン
@@ -27,7 +25,7 @@ export async function loginWithGoogle() {
     const userEmail = result.user.email;
 
     // メールアドレスをチェック
-    if (userEmail !== ALLOWED_GOOGLE_EMAIL) {
+    if (userEmail !== CONFIG.ALLOWED_GOOGLE_EMAIL) {
       // 許可されていないメールアドレスの場合はサインアウト
       await signOut(auth);
       console.error('❌ このGoogleアカウントはアクセス権限がありません:', userEmail);
