@@ -9,6 +9,9 @@ import {
   onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
+// 許可されたGoogleアカウントのメールアドレス
+const ALLOWED_GOOGLE_EMAIL = 'ito.atsu.mail@gmail.com';
+
 /**
  * Googleログイン
  * @returns {Promise<User>} ログインしたユーザー情報
@@ -21,6 +24,16 @@ export async function loginWithGoogle() {
   });
   try {
     const result = await signInWithPopup(auth, provider);
+    const userEmail = result.user.email;
+
+    // メールアドレスをチェック
+    if (userEmail !== ALLOWED_GOOGLE_EMAIL) {
+      // 許可されていないメールアドレスの場合はサインアウト
+      await signOut(auth);
+      console.error('❌ このGoogleアカウントはアクセス権限がありません:', userEmail);
+      throw new Error('auth/access-denied');
+    }
+
     console.log('✅ Google ログイン成功:', result.user.email);
     return result.user;
   } catch (error) {
@@ -116,6 +129,7 @@ export function getErrorMessage(error) {
     'auth/weak-password': 'パスワードは6文字以上にしてください',
     'auth/popup-closed-by-user': 'ログインがキャンセルされました',
     'auth/network-request-failed': 'ネットワークエラーが発生しました',
+    'auth/access-denied': 'このGoogleアカウントではログインできません。許可されたアカウントでログインしてください。',
   };
 
   return errorMessages[error.code] || `エラーが発生しました: ${error.message}`;
