@@ -7,9 +7,6 @@ dist
 .env
 .env.local
 
-# Application config (contains personal information)
-js/config.js
-
 # Test coverage
 coverage
 
