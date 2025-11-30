@@ -7,18 +7,72 @@ const STORAGE_MODE_KEY = 'storage_mode';
 const MODE_LOCAL = 'local';
 const MODE_ONLINE = 'online';
 
+// メモリ上のストレージ（localStorage アクセス不可時のフォールバック）
+const memoryStorage = new Map();
+let storageAvailable = true;
+
+/**
+ * localStorage が利用可能か確認
+ */
+function isLocalStorageAvailable() {
+  try {
+    const test = '__test__';
+    localStorage.setItem(test, test);
+    localStorage.removeItem(test);
+    return true;
+  } catch (error) {
+    console.warn('[WARNING] localStorage is not available, using memory storage:', error.message);
+    return false;
+  }
+}
+
+// 初期化時に確認
+storageAvailable = isLocalStorageAvailable();
+
+/**
+ * localStorage/memoryStorage から値を取得
+ */
+function getItem(key) {
+  try {
+    if (storageAvailable) {
+      return localStorage.getItem(key);
+    } else {
+      return memoryStorage.get(key) || null;
+    }
+  } catch (error) {
+    console.warn(`[WARNING] Failed to get item ${key}:`, error.message);
+    return memoryStorage.get(key) || null;
+  }
+}
+
+/**
+ * localStorage/memoryStorage に値を設定
+ */
+function setItem(key, value) {
+  try {
+    if (storageAvailable) {
+      localStorage.setItem(key, value);
+    } else {
+      memoryStorage.set(key, value);
+    }
+  } catch (error) {
+    console.warn(`[WARNING] Failed to set item ${key}:`, error.message);
+    memoryStorage.set(key, value);
+  }
+}
+
 /**
  * Get current storage mode
  */
 export function getStorageMode() {
-  return localStorage.getItem(STORAGE_MODE_KEY) || MODE_LOCAL;
+  return getItem(STORAGE_MODE_KEY) || MODE_LOCAL;
 }
 
 /**
  * Set storage mode
  */
 export function setStorageMode(mode) {
-  localStorage.setItem(STORAGE_MODE_KEY, mode);
+  setItem(STORAGE_MODE_KEY, mode);
   console.log(`[INFO] Storage mode set to: ${mode}`);
 }
 
@@ -46,11 +100,11 @@ export const LocalStorage = {
   loadGarageData(garageId) {
     const garageNum = garageIdToNumber(garageId);
     return {
-      title: localStorage.getItem(`stroke-title${garageNum}`) || '',
-      stroke1: localStorage.getItem(`stroke${(garageNum - 1) * 4 + 1}`) || '',
-      stroke2: localStorage.getItem(`stroke${(garageNum - 1) * 4 + 2}`) || '',
-      stroke3: localStorage.getItem(`stroke${(garageNum - 1) * 4 + 3}`) || '',
-      stroke4: localStorage.getItem(`stroke${(garageNum - 1) * 4 + 4}`) || '',
+      title: getItem(`stroke-title${garageNum}`) || '',
+      stroke1: getItem(`stroke${(garageNum - 1) * 4 + 1}`) || '',
+      stroke2: getItem(`stroke${(garageNum - 1) * 4 + 2}`) || '',
+      stroke3: getItem(`stroke${(garageNum - 1) * 4 + 3}`) || '',
+      stroke4: getItem(`stroke${(garageNum - 1) * 4 + 4}`) || '',
     };
   },
 
@@ -58,7 +112,7 @@ export const LocalStorage = {
    * Load all mandaras from localStorage
    */
   async loadAllMandaras() {
-    const mandarasJson = localStorage.getItem('mandaras');
+    const mandarasJson = getItem('mandaras');
     if (!mandarasJson) {
       return [];
     }
@@ -97,7 +151,7 @@ export const LocalStorage = {
       });
     }
 
-    localStorage.setItem('mandaras', JSON.stringify(mandaras));
+    setItem('mandaras', JSON.stringify(mandaras));
     console.log(`[SUCCESS] Saved mandara to localStorage: ${mandara.id}`);
   },
 
@@ -107,7 +161,7 @@ export const LocalStorage = {
   async deleteMandara(mandaraId) {
     const mandaras = await this.loadAllMandaras();
     const filtered = mandaras.filter(m => m.id !== mandaraId);
-    localStorage.setItem('mandaras', JSON.stringify(filtered));
+    setItem('mandaras', JSON.stringify(filtered));
     console.log(`[SUCCESS] Deleted mandara from localStorage: ${mandaraId}`);
   },
 
@@ -120,7 +174,7 @@ export const LocalStorage = {
     }
     const mandaras = await this.loadAllMandaras();
     const filtered = mandaras.filter(m => !mandaraIds.includes(m.id));
-    localStorage.setItem('mandaras', JSON.stringify(filtered));
+    setItem('mandaras', JSON.stringify(filtered));
     console.log(`[SUCCESS] Deleted ${mandaraIds.length} mandaras from localStorage`);
   },
 
@@ -143,11 +197,11 @@ export const LocalStorage = {
     const garageNum = garageIdToNumber(garageId);
 
     if (fieldKey === 'title') {
-      localStorage.setItem(`stroke-title${garageNum}`, value);
+      setItem(`stroke-title${garageNum}`, value);
     } else {
       const strokeNum = parseInt(fieldKey.replace('stroke', ''));
       const index = (garageNum - 1) * 4 + strokeNum;
-      localStorage.setItem(`stroke${index}`, value);
+      setItem(`stroke${index}`, value);
     }
     console.log(`[SUCCESS] Saved to localStorage: ${garageId}.${fieldKey}`);
   },
@@ -172,10 +226,10 @@ export const LocalStorage = {
   async deleteGarage(garageId) {
     const garageNum = garageIdToNumber(garageId);
 
-    localStorage.setItem(`stroke-title${garageNum}`, '');
+    setItem(`stroke-title${garageNum}`, '');
     for (let i = 1; i <= GARAGE.STROKES_PER_GARAGE; i++) {
       const index = (garageNum - 1) * GARAGE.STROKES_PER_GARAGE + i;
-      localStorage.setItem(`stroke${index}`, '');
+      setItem(`stroke${index}`, '');
     }
     console.log(`[SUCCESS] Deleted garage: ${garageId}`);
   }
