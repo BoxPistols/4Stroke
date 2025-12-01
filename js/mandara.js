@@ -18,6 +18,7 @@ import {
   removeTodo as removeTodoLogic,
   reorderTodo as reorderTodoLogic,
 } from "./mandara-logic.js";
+import { setupTodoDragAndDrop } from "./todo-drag.js";
 
 // Current state
 let currentUserId = null;
@@ -306,120 +307,17 @@ function renderTodos() {
   });
 
   // Setup drag and drop after rendering
-  setupTodoDragAndDrop(container);
+  setupTodoDragAndDrop(container, {
+    onReorder: (fromIndex, toIndex) => {
+      if (reorderTodoLogic(currentMandara, fromIndex, toIndex)) {
+        console.log("[INFO] Todo reordered:", fromIndex, "->", toIndex);
+        renderTodos();
+        saveCurrentMandara();
+      }
+    },
+  });
 
   console.log("[INFO] Rendered todos:", currentMandara.todos?.length || 0);
-}
-
-// Setup drag and drop for todos
-function setupTodoDragAndDrop(container) {
-  let draggedItem = null;
-  let draggedIndex = -1;
-
-  container.querySelectorAll(".todo-item").forEach((item) => {
-    // Mouse drag events (desktop)
-    item.addEventListener("dragstart", (e) => {
-      draggedItem = item;
-      draggedIndex = parseInt(item.dataset.index);
-      item.classList.add("dragging");
-      e.dataTransfer.effectAllowed = "move";
-      e.dataTransfer.setData("text/plain", item.dataset.index);
-    });
-
-    item.addEventListener("dragend", () => {
-      item.classList.remove("dragging");
-      draggedItem = null;
-      draggedIndex = -1;
-    });
-
-    item.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = "move";
-      if (draggedItem && draggedItem !== item) {
-        item.classList.add("drag-over");
-      }
-    });
-
-    item.addEventListener("dragleave", () => {
-      item.classList.remove("drag-over");
-    });
-
-    item.addEventListener("drop", (e) => {
-      e.preventDefault();
-      item.classList.remove("drag-over");
-
-      if (draggedItem && draggedItem !== item) {
-        const fromIndex = draggedIndex;
-        const toIndex = parseInt(item.dataset.index);
-
-        if (reorderTodoLogic(currentMandara, fromIndex, toIndex)) {
-          console.log("[INFO] Todo reordered:", fromIndex, "->", toIndex);
-          renderTodos();
-          saveCurrentMandara();
-        }
-      }
-      draggedItem = null;
-      draggedIndex = -1;
-    });
-
-    // Touch events (mobile)
-    item.addEventListener("touchstart", (e) => {
-      draggedItem = item;
-      draggedIndex = parseInt(item.dataset.index);
-      item.classList.add("dragging");
-    });
-
-    item.addEventListener("touchmove", (e) => {
-      if (!draggedItem) return;
-
-      const touch = e.touches[0];
-      const elementAtPoint = document.elementFromPoint(
-        touch.clientX,
-        touch.clientY
-      );
-      const targetItem = elementAtPoint?.closest(".todo-item");
-
-      container.querySelectorAll(".todo-item").forEach((i) => {
-        i.classList.remove("drag-over");
-      });
-
-      if (targetItem && targetItem !== draggedItem) {
-        targetItem.classList.add("drag-over");
-      }
-
-      e.preventDefault();
-    });
-
-    item.addEventListener("touchend", (e) => {
-      if (!draggedItem) return;
-
-      const touch = e.changedTouches[0];
-      const elementAtPoint = document.elementFromPoint(
-        touch.clientX,
-        touch.clientY
-      );
-      const targetItem = elementAtPoint?.closest(".todo-item");
-
-      container.querySelectorAll(".todo-item").forEach((i) => {
-        i.classList.remove("drag-over");
-      });
-
-      if (targetItem && targetItem !== draggedItem) {
-        const fromIndex = draggedIndex;
-        const toIndex = parseInt(targetItem.dataset.index);
-
-        if (reorderTodoLogic(currentMandara, fromIndex, toIndex)) {
-          console.log("[INFO] Todo reordered (touch):", fromIndex, "->", toIndex);
-          renderTodos();
-          saveCurrentMandara();
-        }
-      }
-
-      draggedItem.classList.remove("dragging");
-      draggedItem = null;
-      draggedIndex = -1;
-    });
-  });
 }
 
 // Add todo
