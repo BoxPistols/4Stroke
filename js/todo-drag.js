@@ -12,8 +12,45 @@
 export function setupTodoDragAndDrop(container, callbacks) {
   let draggedItem = null;
   let draggedIndex = -1;
+  let currentDragOverItem = null; // Track current drag-over element for performance
 
   const { onReorder } = callbacks;
+
+  // Helper: Reset drag state
+  function resetDragState() {
+    if (draggedItem) {
+      draggedItem.classList.remove("dragging");
+    }
+    if (currentDragOverItem) {
+      currentDragOverItem.classList.remove("drag-over");
+    }
+    draggedItem = null;
+    draggedIndex = -1;
+    currentDragOverItem = null;
+  }
+
+  // Helper: Set drag-over on target (removes from previous)
+  function setDragOver(targetItem) {
+    if (currentDragOverItem === targetItem) return;
+    if (currentDragOverItem) {
+      currentDragOverItem.classList.remove("drag-over");
+    }
+    currentDragOverItem = targetItem;
+    if (targetItem) {
+      targetItem.classList.add("drag-over");
+    }
+  }
+
+  // Helper: Handle reorder when drop occurs
+  function handleDrop(targetItem) {
+    setDragOver(null);
+    if (draggedItem && targetItem && targetItem !== draggedItem) {
+      const fromIndex = draggedIndex;
+      const toIndex = parseInt(targetItem.dataset.index);
+      onReorder(fromIndex, toIndex);
+    }
+    resetDragState();
+  }
 
   container.querySelectorAll(".todo-item").forEach((item) => {
     // Mouse drag events (desktop)
@@ -25,35 +62,25 @@ export function setupTodoDragAndDrop(container, callbacks) {
       e.dataTransfer.setData("text/plain", item.dataset.index);
     });
 
-    item.addEventListener("dragend", () => {
-      item.classList.remove("dragging");
-      draggedItem = null;
-      draggedIndex = -1;
-    });
+    item.addEventListener("dragend", resetDragState);
 
     item.addEventListener("dragover", (e) => {
       e.preventDefault();
       e.dataTransfer.dropEffect = "move";
       if (draggedItem && draggedItem !== item) {
-        item.classList.add("drag-over");
+        setDragOver(item);
       }
     });
 
     item.addEventListener("dragleave", () => {
-      item.classList.remove("drag-over");
+      if (currentDragOverItem === item) {
+        setDragOver(null);
+      }
     });
 
     item.addEventListener("drop", (e) => {
       e.preventDefault();
-      item.classList.remove("drag-over");
-
-      if (draggedItem && draggedItem !== item) {
-        const fromIndex = draggedIndex;
-        const toIndex = parseInt(item.dataset.index);
-        onReorder(fromIndex, toIndex);
-      }
-      draggedItem = null;
-      draggedIndex = -1;
+      handleDrop(item);
     });
 
     // Touch events (mobile)
@@ -83,12 +110,10 @@ export function setupTodoDragAndDrop(container, callbacks) {
         );
         const targetItem = elementAtPoint?.closest(".todo-item");
 
-        container.querySelectorAll(".todo-item").forEach((i) => {
-          i.classList.remove("drag-over");
-        });
-
         if (targetItem && targetItem !== draggedItem) {
-          targetItem.classList.add("drag-over");
+          setDragOver(targetItem);
+        } else {
+          setDragOver(null);
         }
 
         e.preventDefault();
@@ -105,20 +130,7 @@ export function setupTodoDragAndDrop(container, callbacks) {
         touch.clientY
       );
       const targetItem = elementAtPoint?.closest(".todo-item");
-
-      container.querySelectorAll(".todo-item").forEach((i) => {
-        i.classList.remove("drag-over");
-      });
-
-      if (targetItem && targetItem !== draggedItem) {
-        const fromIndex = draggedIndex;
-        const toIndex = parseInt(targetItem.dataset.index);
-        onReorder(fromIndex, toIndex);
-      }
-
-      draggedItem.classList.remove("dragging");
-      draggedItem = null;
-      draggedIndex = -1;
+      handleDrop(targetItem);
     });
   });
 }
