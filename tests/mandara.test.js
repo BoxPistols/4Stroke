@@ -8,6 +8,7 @@ import {
   editTodo,
   toggleTodo,
   removeTodo,
+  reorderTodo,
 } from "../js/mandara-logic.js";
 
 describe("Mandara Logic", () => {
@@ -104,6 +105,33 @@ describe("Mandara Logic", () => {
       const result = removeTodo(mandara, todo.id);
       expect(result).toBe(true);
       expect(mandara.todos.length).toBe(0);
+    });
+
+    it("should reorder todos", () => {
+      addTodo(mandara, "Task 1");
+      addTodo(mandara, "Task 2");
+      addTodo(mandara, "Task 3");
+
+      // Move Task 1 (index 0) to index 2
+      const result = reorderTodo(mandara, 0, 2);
+      expect(result).toBe(true);
+      expect(mandara.todos[0].text).toBe("Task 2");
+      expect(mandara.todos[1].text).toBe("Task 3");
+      expect(mandara.todos[2].text).toBe("Task 1");
+    });
+
+    it("should return false for invalid reorder indices", () => {
+      addTodo(mandara, "Task 1");
+      addTodo(mandara, "Task 2");
+
+      expect(reorderTodo(mandara, -1, 0)).toBe(false);
+      expect(reorderTodo(mandara, 0, 5)).toBe(false);
+      expect(reorderTodo(mandara, 0, 0)).toBe(false); // Same index
+    });
+
+    it("should handle reorder with empty todos", () => {
+      const result = reorderTodo(mandara, 0, 1);
+      expect(result).toBe(false);
     });
   });
 });

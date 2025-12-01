@@ -147,3 +147,16 @@ export function removeTodo(mandara, id) {
 
   return mandara.todos.length !== initialLength;
 }
+
+export function reorderTodo(mandara, fromIndex, toIndex) {
+  if (!mandara || !mandara.todos) return false;
+  if (fromIndex < 0 || fromIndex >= mandara.todos.length) return false;
+  if (toIndex < 0 || toIndex >= mandara.todos.length) return false;
+  if (fromIndex === toIndex) return false;
+
+  // Remove from old position and insert at new position
+  const [movedTodo] = mandara.todos.splice(fromIndex, 1);
+  mandara.todos.splice(toIndex, 0, movedTodo);
+
+  return true;
+}

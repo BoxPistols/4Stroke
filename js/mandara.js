@@ -16,7 +16,9 @@ import {
   editTodo as editTodoLogic,
   toggleTodo as toggleTodoLogic,
   removeTodo as removeTodoLogic,
+  reorderTodo as reorderTodoLogic,
 } from "./mandara-logic.js";
+import { setupTodoDragAndDrop } from "./todo-drag.js";
 
 // Current state
 let currentUserId = null;
@@ -227,55 +229,39 @@ function renderTags() {
     container.appendChild(tagEl);
   });
 
-  console.log("[INFO] Rendered tags:", currentMandara.tags?.length || 0);
 }
 
 // Add tag
 function addTag(tag) {
   if (addTagLogic(currentMandara, tag)) {
-    console.log("[INFO] Tag added:", tag);
     renderTags();
     saveCurrentMandara();
-  } else {
-    console.log("[INFO] Tag not added (empty or duplicate)");
   }
 }
 
 // Edit tag
 function editTag(index) {
   if (!currentMandara || !currentMandara.tags) return;
-
   const oldTag = currentMandara.tags[index];
   const newTag = prompt("タグを編集:", oldTag);
-
   try {
     if (editTagLogic(currentMandara, index, newTag)) {
-      console.log("[INFO] Tag edited:", oldTag, "->", newTag);
       renderTags();
       saveCurrentMandara();
     } else if (newTag !== null && newTag.trim() === "") {
-      // Logic module returns false for empty, handle delete confirmation here
-      if (confirm("タグを削除しますか？")) {
-        removeTag(oldTag);
-      }
+      if (confirm("タグを削除しますか？")) removeTag(oldTag);
     }
   } catch (e) {
-    if (e.message === "DUPLICATE_TAG") {
-      alert("そのタグは既に存在します");
-    } else {
-      console.error(e);
-    }
+    if (e.message === "DUPLICATE_TAG") alert("そのタグは既に存在します");
+    else console.error(e);
   }
 }
 
 // Remove tag
 function removeTag(tag) {
   if (removeTagLogic(currentMandara, tag)) {
-    console.log("[INFO] Tag removed:", tag);
     renderTags();
     saveCurrentMandara();
-  } else {
-    console.log("[WARN] Cannot remove tag");
   }
 }
 
@@ -285,10 +271,14 @@ function renderTodos() {
   if (!container || !currentMandara) return;
 
   container.innerHTML = "";
-  (currentMandara.todos || []).forEach((todo) => {
+  (currentMandara.todos || []).forEach((todo, index) => {
     const todoEl = document.createElement("div");
     todoEl.className = "todo-item";
+    todoEl.draggable = true;
+    todoEl.dataset.index = index;
+    todoEl.dataset.id = todo.id;
     todoEl.innerHTML = `
+      <span class="todo-drag-handle" title="ドラッグして並び替え">☰</span>
       <input type="checkbox" class="todo-checkbox" data-id="${todo.id}" ${
       todo.completed ? "checked" : ""
     }>
@@ -298,6 +288,17 @@ function renderTodos() {
       <button type="button" class="todo-remove" data-id="${todo.id}">×</button>
     `;
     container.appendChild(todoEl);
+  });
+
+  // Setup drag and drop after rendering
+  setupTodoDragAndDrop(container, {
+    onReorder: (fromIndex, toIndex) => {
+      if (reorderTodoLogic(currentMandara, fromIndex, toIndex)) {
+        console.log("[INFO] Todo reordered:", fromIndex, "->", toIndex);
+        renderTodos();
+        saveCurrentMandara();
+      }
+    },
   });
 
   console.log("[INFO] Rendered todos:", currentMandara.todos?.length || 0);

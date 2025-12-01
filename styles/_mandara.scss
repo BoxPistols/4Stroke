@@ -302,10 +302,47 @@ body:has(.mandara-editor) {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-sm);
     transition: all var(--transition-fast);
+    cursor: grab;
+    touch-action: manipulation; // Prevent double-tap zoom on iOS
+    -webkit-touch-callout: none; // Disable iOS callout
 
     &:hover {
       background: rgba(255, 255, 255, 0.08);
       border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    &.dragging {
+      opacity: 0.5;
+      transform: rotate(2deg) scale(1.02);
+      z-index: 1000;
+      cursor: grabbing;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    &.drag-over {
+      border-color: var(--color-accent);
+      background: rgba(174, 129, 255, 0.2);
+      transform: scale(1.02);
+    }
+
+    .todo-drag-handle {
+      flex-shrink: 0;
+      cursor: grab;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 14px;
+      padding: 4px;
+      user-select: none;
+      transition: color var(--transition-fast);
+      touch-action: none; // Enable custom touch handling for drag
+      -webkit-user-select: none;
+
+      &:hover {
+        color: var(--color-accent);
+      }
+
+      &:active {
+        cursor: grabbing;
+      }
     }
 
     .todo-checkbox {
