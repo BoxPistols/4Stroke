@@ -229,55 +229,39 @@ function renderTags() {
     container.appendChild(tagEl);
   });
 
-  console.log("[INFO] Rendered tags:", currentMandara.tags?.length || 0);
 }
 
 // Add tag
 function addTag(tag) {
   if (addTagLogic(currentMandara, tag)) {
-    console.log("[INFO] Tag added:", tag);
     renderTags();
     saveCurrentMandara();
-  } else {
-    console.log("[INFO] Tag not added (empty or duplicate)");
   }
 }
 
 // Edit tag
 function editTag(index) {
   if (!currentMandara || !currentMandara.tags) return;
-
   const oldTag = currentMandara.tags[index];
   const newTag = prompt("タグを編集:", oldTag);
-
   try {
     if (editTagLogic(currentMandara, index, newTag)) {
-      console.log("[INFO] Tag edited:", oldTag, "->", newTag);
       renderTags();
       saveCurrentMandara();
     } else if (newTag !== null && newTag.trim() === "") {
-      // Logic module returns false for empty, handle delete confirmation here
-      if (confirm("タグを削除しますか？")) {
-        removeTag(oldTag);
-      }
+      if (confirm("タグを削除しますか？")) removeTag(oldTag);
     }
   } catch (e) {
-    if (e.message === "DUPLICATE_TAG") {
-      alert("そのタグは既に存在します");
-    } else {
-      console.error(e);
-    }
+    if (e.message === "DUPLICATE_TAG") alert("そのタグは既に存在します");
+    else console.error(e);
   }
 }
 
 // Remove tag
 function removeTag(tag) {
   if (removeTagLogic(currentMandara, tag)) {
-    console.log("[INFO] Tag removed:", tag);
     renderTags();
     saveCurrentMandara();
-  } else {
-    console.log("[WARN] Cannot remove tag");
   }
 }
 
