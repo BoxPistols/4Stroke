@@ -57,32 +57,44 @@ export function setupTodoDragAndDrop(container, callbacks) {
     });
 
     // Touch events (mobile)
-    item.addEventListener("touchstart", (e) => {
-      draggedItem = item;
-      draggedIndex = parseInt(item.dataset.index);
-      item.classList.add("dragging");
-    });
+    item.addEventListener(
+      "touchstart",
+      (e) => {
+        // Only start drag from drag handle to avoid interfering with other interactions
+        const handle = e.target.closest(".todo-drag-handle");
+        if (!handle) return;
 
-    item.addEventListener("touchmove", (e) => {
-      if (!draggedItem) return;
+        draggedItem = item;
+        draggedIndex = parseInt(item.dataset.index);
+        item.classList.add("dragging");
+      },
+      { passive: true }
+    );
 
-      const touch = e.touches[0];
-      const elementAtPoint = document.elementFromPoint(
-        touch.clientX,
-        touch.clientY
-      );
-      const targetItem = elementAtPoint?.closest(".todo-item");
+    item.addEventListener(
+      "touchmove",
+      (e) => {
+        if (!draggedItem) return;
 
-      container.querySelectorAll(".todo-item").forEach((i) => {
-        i.classList.remove("drag-over");
-      });
+        const touch = e.touches[0];
+        const elementAtPoint = document.elementFromPoint(
+          touch.clientX,
+          touch.clientY
+        );
+        const targetItem = elementAtPoint?.closest(".todo-item");
 
-      if (targetItem && targetItem !== draggedItem) {
-        targetItem.classList.add("drag-over");
-      }
+        container.querySelectorAll(".todo-item").forEach((i) => {
+          i.classList.remove("drag-over");
+        });
 
-      e.preventDefault();
-    });
+        if (targetItem && targetItem !== draggedItem) {
+          targetItem.classList.add("drag-over");
+        }
+
+        e.preventDefault();
+      },
+      { passive: false } // Required for preventDefault on iOS Safari
+    );
 
     item.addEventListener("touchend", (e) => {
       if (!draggedItem) return;

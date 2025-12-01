@@ -303,6 +303,8 @@ body:has(.mandara-editor) {
     border-radius: var(--radius-sm);
     transition: all var(--transition-fast);
     cursor: grab;
+    touch-action: manipulation; // Prevent double-tap zoom on iOS
+    -webkit-touch-callout: none; // Disable iOS callout
 
     &:hover {
       background: rgba(255, 255, 255, 0.08);
@@ -331,6 +333,8 @@ body:has(.mandara-editor) {
       padding: 4px;
       user-select: none;
       transition: color var(--transition-fast);
+      touch-action: none; // Enable custom touch handling for drag
+      -webkit-user-select: none;
 
       &:hover {
         color: var(--color-accent);
