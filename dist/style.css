@@ -548,7 +548,6 @@ a:hover, a:focus {
   margin: 0;
   padding: 0;
   outline: none;
-  touch-action: manipulation;
 }
 
 html {
@@ -1084,8 +1083,9 @@ input.stroke-title {
   border-radius: 8px;
   background-color: rgba(0, 0, 0, 0.35);
   font-family: YakuHanRP, "M PLUS Rounded 1c", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
-  font-size: 1em;
+  font-size: 0.9em;
   filter: drop-shadow(1px 1px 0px black);
+  touch-action: manipulation;
   display: flex;
   /**
     * justify-content / Horizontal ===（1st Argument）
@@ -1195,7 +1195,7 @@ input.stroke-title {
   }
   textarea {
     flex: 1 !important;
-    font-size: 0.85rem !important;
+    font-size: 1rem !important;
     width: 100% !important;
     max-width: 100%;
     padding: 8px !important;
@@ -1232,7 +1232,7 @@ input.stroke-title {
     padding: 10px !important;
   }
   textarea {
-    font-size: 0.85rem !important;
+    font-size: 1rem !important;
     padding: 8px 10px !important;
     min-height: 20vh !important;
   }
@@ -2242,10 +2242,42 @@ body:has(.mandara-editor) {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-sm);
   transition: all var(--transition-fast);
+  cursor: grab;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
 }
 .todos-section .todo-item:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.2);
+}
+.todos-section .todo-item.dragging {
+  opacity: 0.5;
+  transform: rotate(2deg) scale(1.02);
+  z-index: 1000;
+  cursor: grabbing;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+.todos-section .todo-item.drag-over {
+  border-color: var(--color-accent);
+  background: rgba(174, 129, 255, 0.2);
+  transform: scale(1.02);
+}
+.todos-section .todo-item .todo-drag-handle {
+  flex-shrink: 0;
+  cursor: grab;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 14px;
+  padding: 4px;
+  user-select: none;
+  transition: color var(--transition-fast);
+  touch-action: none;
+  -webkit-user-select: none;
+}
+.todos-section .todo-item .todo-drag-handle:hover {
+  color: var(--color-accent);
+}
+.todos-section .todo-item .todo-drag-handle:active {
+  cursor: grabbing;
 }
 .todos-section .todo-item .todo-checkbox {
   flex-shrink: 0;
@@ -2675,6 +2707,55 @@ body:has(.mandara-editor) {
   padding-top: var(--spacing-md);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   font-family: var(--font-japanese);
+}
+.mandara-card .card-drag-handle {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: grab;
+  font-size: 16px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+.mandara-card .card-drag-handle:hover {
+  color: var(--color-accent);
+  background: rgba(174, 129, 255, 0.2);
+}
+.mandara-card .card-drag-handle:active {
+  cursor: grabbing;
+}
+.mandara-card.dragging {
+  opacity: 0.6;
+  transform: rotate(2deg) scale(1.02);
+  z-index: 1000;
+  cursor: grabbing;
+  box-shadow: 0 12px 30px rgba(174, 129, 255, 0.4);
+  border-color: var(--color-accent);
+}
+.mandara-card.dragging .card-drag-handle {
+  color: var(--color-accent);
+}
+.mandara-card.drag-over {
+  border-color: var(--color-accent);
+  background: rgba(174, 129, 255, 0.25);
+  transform: translateY(-2px);
+}
+.mandara-card.drag-over::before {
+  opacity: 1;
+}
+
+.mandara-list.draggable-list .mandara-card {
+  cursor: grab;
+}
+.mandara-list.draggable-list .mandara-card:active {
+  cursor: grabbing;
 }
 
 .mandara-nav .new-mandara-btn,

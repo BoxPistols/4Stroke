@@ -19,11 +19,17 @@ import {
   reorderTodo as reorderTodoLogic,
 } from "./mandara-logic.js";
 import { setupTodoDragAndDrop } from "./todo-drag.js";
+import {
+  renderMandaraList as renderMandaraListView,
+  showListView as showListViewModule,
+  closeListView as closeListViewModule,
+} from "./mandara-list-view.js";
 
 // Current state
 let currentUserId = null;
 let currentMandara = null;
 let allMandaras = [];
+let mandaraOrder = []; // Custom order of mandara IDs
 let saveTimer = null;
 
 // Debug helpers - accessible from browser console
@@ -378,54 +384,65 @@ async function deleteCurrentMandara() {
     console.log("[SUCCESS] Deleted mandara:", currentMandara.id);
     showToast("削除しました");
 
-    // Load all mandaras and show first one or create new
+    // Load all mandaras and mandara order, then show first one or create new
     await loadAllMandaras();
-    if (allMandaras.length > 0) {
-      loadMandaraIntoUI(allMandaras[0]);
-    } else {
-      const newMandara = createNewMandara();
-      await Storage.saveMandara(currentUserId, newMandara);
-      allMandaras = [newMandara];
-      loadMandaraIntoUI(newMandara);
-    }
+    await loadMandaraOrder();
+    await loadFirstOrCreateNew();
   } catch (error) {
     console.error("[ERROR] Failed to delete mandara:", error);
     alert("削除に失敗しました");
   }
 }
 
+// Helper: Get first mandara based on custom order
+function getFirstMandaraByOrder() {
+  if (mandaraOrder.length > 0) {
+    const firstId = mandaraOrder[0];
+    const mandara = allMandaras.find((m) => m.id === firstId);
+    if (mandara) return mandara;
+  }
+  return allMandaras[0];
+}
+
+// Helper: Load first mandara or create new one
+async function loadFirstOrCreateNew() {
+  if (allMandaras.length > 0) {
+    loadMandaraIntoUI(getFirstMandaraByOrder());
+  } else {
+    const newMandara = createNewMandara();
+    await Storage.saveMandara(currentUserId, newMandara);
+    allMandaras = [newMandara];
+    mandaraOrder = [newMandara.id];
+    await saveMandaraOrder();
+    loadMandaraIntoUI(newMandara);
+  }
+}
+
+// Helper: Re-render list with current sort/filter
+function rerenderList() {
+  const sortSelect = document.getElementById("sort-select");
+  const filterInput = document.getElementById("filter-input");
+  renderMandaraList(
+    filterInput ? filterInput.value : "",
+    sortSelect ? sortSelect.value : "custom"
+  );
+}
+
 // Delete mandara by ID (for list view)
 async function deleteMandara(mandaraId) {
   const mandara = allMandaras.find((m) => m.id === mandaraId);
-  if (!mandara) {
-    console.warn("[WARN] Mandara not found:", mandaraId);
-    return;
-  }
+  if (!mandara) return;
 
-  if (!confirm(`「${mandara.title || "無題"}」を削除しますか？`)) {
-    console.log("[INFO] Delete cancelled by user");
-    return;
-  }
+  if (!confirm(`「${mandara.title || "無題"}」を削除しますか？`)) return;
 
   try {
     await Storage.deleteMandara(currentUserId, mandaraId);
-    console.log("[SUCCESS] Deleted mandara:", mandaraId);
     showToast("削除しました");
-
-    // Reload list
     await loadAllMandaras();
-    renderMandaraList();
-
-    // If deleted mandara was current one, load another or create new
+    await loadMandaraOrder();
+    rerenderList();
     if (currentMandara && currentMandara.id === mandaraId) {
-      if (allMandaras.length > 0) {
-        loadMandaraIntoUI(allMandaras[0]);
-      } else {
-        const newMandara = createNewMandara();
-        await Storage.saveMandara(currentUserId, newMandara);
-        allMandaras = [newMandara];
-        loadMandaraIntoUI(newMandara);
-      }
+      await loadFirstOrCreateNew();
     }
   } catch (error) {
     console.error("[ERROR] Failed to delete mandara:", error);
@@ -437,33 +454,16 @@ async function deleteMandara(mandaraId) {
 async function deleteMandaras(mandaraIds) {
   if (mandaraIds.length === 0) return;
 
-  const count = mandaraIds.length;
-  if (!confirm(`${count}件のマンダラを削除しますか？`)) {
-    console.log("[INFO] Batch delete cancelled by user");
-    return;
-  }
+  if (!confirm(`${mandaraIds.length}件のマンダラを削除しますか？`)) return;
 
   try {
-    // Use batch delete if available, otherwise delete sequentially
     await Storage.deleteMandaras(currentUserId, mandaraIds);
-
-    console.log(`[SUCCESS] Deleted ${count} mandaras`);
-    showToast(`${count}件削除しました`);
-
-    // Reload list
+    showToast(`${mandaraIds.length}件削除しました`);
     await loadAllMandaras();
-    renderMandaraList();
-
-    // If current mandara was deleted, load another or create new
+    await loadMandaraOrder();
+    rerenderList();
     if (currentMandara && mandaraIds.includes(currentMandara.id)) {
-      if (allMandaras.length > 0) {
-        loadMandaraIntoUI(allMandaras[0]);
-      } else {
-        const newMandara = createNewMandara();
-        await Storage.saveMandara(currentUserId, newMandara);
-        allMandaras = [newMandara];
-        loadMandaraIntoUI(newMandara);
-      }
+      await loadFirstOrCreateNew();
     }
   } catch (error) {
     console.error("[ERROR] Failed to delete mandaras:", error);
@@ -514,121 +514,82 @@ async function loadAllMandaras() {
   }
 }
 
-// Render mandara list
-function renderMandaraList(filter = "", sortBy = "updated-desc") {
-  const listContainer = document.getElementById("mandara-list");
-  if (!listContainer) return;
+// Load mandara order
+async function loadMandaraOrder() {
+  try {
+    mandaraOrder = await Storage.loadMandaraOrder(currentUserId);
+    console.log(`[INFO] Loaded mandara order: ${mandaraOrder.length} items`);
 
-  // Filter
-  let filtered = allMandaras;
-  if (filter) {
-    const lowerFilter = filter.toLowerCase();
-    filtered = allMandaras.filter((m) => {
-      const title = (m.title || "").toLowerCase();
-      const memo = (m.memo || "").toLowerCase();
-      const cells = Object.values(m.cells || {})
-        .join(" ")
-        .toLowerCase();
-      const tags = (m.tags || []).join(" ").toLowerCase();
-      return (
-        title.includes(lowerFilter) ||
-        memo.includes(lowerFilter) ||
-        cells.includes(lowerFilter) ||
-        tags.includes(lowerFilter)
-      );
-    });
-  }
+    // Validate order - remove IDs that don't exist in allMandaras
+    const existingIds = new Set(allMandaras.map((m) => m.id));
+    mandaraOrder = mandaraOrder.filter((id) => existingIds.has(id));
 
-  // Sort
-  filtered.sort((a, b) => {
-    switch (sortBy) {
-      case "updated-desc":
-        return new Date(b.updatedAt) - new Date(a.updatedAt);
-      case "updated-asc":
-        return new Date(a.updatedAt) - new Date(b.updatedAt);
-      case "created-desc":
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      case "created-asc":
-        return new Date(a.createdAt) - new Date(b.createdAt);
-      case "title-asc":
-        return (a.title || "").localeCompare(b.title || "");
-      case "title-desc":
-        return (b.title || "").localeCompare(a.title || "");
-      default:
-        return 0;
+    // Add any new mandaras that are not in the order (at the beginning)
+    const orderSet = new Set(mandaraOrder);
+    const newMandaras = allMandaras
+      .filter((m) => !orderSet.has(m.id))
+      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+      .map((m) => m.id);
+
+    if (newMandaras.length > 0) {
+      mandaraOrder = [...newMandaras, ...mandaraOrder];
+      // Save updated order
+      await Storage.saveMandaraOrder(currentUserId, mandaraOrder);
     }
-  });
-
-  // Render
-  listContainer.innerHTML = "";
-  if (filtered.length === 0) {
-    listContainer.innerHTML =
-      '<p class="empty-message">マンダラが見つかりません</p>';
-    return;
+  } catch (error) {
+    console.error("[ERROR] Failed to load mandara order:", error);
+    mandaraOrder = [];
   }
+}
 
-  filtered.forEach((mandara) => {
-    const card = document.createElement("div");
-    card.className = "mandara-card";
-    card.dataset.id = mandara.id;
+// Save mandara order
+async function saveMandaraOrder() {
+  try {
+    await Storage.saveMandaraOrder(currentUserId, mandaraOrder);
+    console.log(`[INFO] Saved mandara order: ${mandaraOrder.length} items`);
+  } catch (error) {
+    console.error("[ERROR] Failed to save mandara order:", error);
+  }
+}
 
-    const tagsHtml = (mandara.tags || [])
-      .map((tag) => `<span class="tag">${tag}</span>`)
-      .join("");
-    const centerText =
-      mandara.cells && mandara.cells[5] ? mandara.cells[5] : "中心未設定";
+// Reorder mandara in the list
+function reorderMandara(fromIndex, toIndex) {
+  if (fromIndex === toIndex) return;
 
-    card.innerHTML = `
-      <div class="card-header">
-        <input type="checkbox" class="card-checkbox" data-id="${
-          mandara.id
-        }" aria-label="Select ${mandara.title || "無題"}">
-        <h3 class="card-title">${mandara.title || "無題"}</h3>
-        <button type="button" class="card-delete-btn" data-id="${
-          mandara.id
-        }" aria-label="Delete ${mandara.title || "無題"}">×</button>
-      </div>
-      <p class="card-center">中心: ${centerText}</p>
-      <div class="card-tags">${tagsHtml}</div>
-      <div class="card-meta">
-        <span>作成: ${formatDate(mandara.createdAt)}</span>
-        <span>更新: ${formatDate(mandara.updatedAt)}</span>
-      </div>
-    `;
+  const [movedId] = mandaraOrder.splice(fromIndex, 1);
+  mandaraOrder.splice(toIndex, 0, movedId);
 
-    // Click on card (but not checkbox or delete button) to open
-    card.addEventListener("click", (e) => {
-      if (
-        !e.target.classList.contains("card-checkbox") &&
-        !e.target.classList.contains("card-delete-btn")
-      ) {
-        loadMandaraIntoUI(mandara);
-        closeListView();
-      }
-    });
+  console.log(`[INFO] Mandara reordered: ${fromIndex} -> ${toIndex}`);
+  saveMandaraOrder();
+}
 
-    // Delete button handler
-    const deleteBtn = card.querySelector(".card-delete-btn");
-    deleteBtn.addEventListener("click", async (e) => {
-      e.stopPropagation();
-      await deleteMandara(mandara.id);
-    });
+// Get context for list view module
+function getListViewContext() {
+  return {
+    allMandaras,
+    mandaraOrder,
+    formatDate,
+    loadMandaraIntoUI,
+    closeListView,
+    deleteMandara,
+    reorderMandara,
+    showToast,
+  };
+}
 
-    listContainer.appendChild(card);
-  });
+// Render mandara list (wrapper for module)
+function renderMandaraList(filter = "", sortBy = "custom") {
+  renderMandaraListView(getListViewContext(), filter, sortBy);
 }
 
 // Show list view
 function showListView() {
-  document.getElementById("list-view").classList.remove("is-hidden");
-  document.getElementById("mandara-editor").style.display = "none";
-  renderMandaraList();
+  showListViewModule(() => renderMandaraList());
 }
 
 // Close list view
 function closeListView() {
-  document.getElementById("list-view").classList.add("is-hidden");
-  document.getElementById("mandara-editor").style.display = "block";
+  closeListViewModule();
 }
 
 // Setup event listeners
@@ -761,6 +722,9 @@ function setupEventListeners() {
       const newMandara = createNewMandara();
       await Storage.saveMandara(currentUserId, newMandara);
       allMandaras.unshift(newMandara);
+      // Add to custom order at the beginning
+      mandaraOrder.unshift(newMandara.id);
+      await saveMandaraOrder();
       loadMandaraIntoUI(newMandara); // This will update URL automatically
       showToast("新しいマンダラを作成しました");
     });
@@ -940,9 +904,24 @@ async function initializeApp() {
   // Load all mandaras
   await loadAllMandaras();
 
+  // Load mandara order (must be after loadAllMandaras)
+  await loadMandaraOrder();
+
   // Check URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   const mandaraId = urlParams.get("id");
+
+  // Helper: Get first mandara based on custom order
+  function getFirstMandara() {
+    if (mandaraOrder.length > 0) {
+      // Use custom order - find the first mandara in the order
+      const firstId = mandaraOrder[0];
+      const mandara = allMandaras.find((m) => m.id === firstId);
+      if (mandara) return mandara;
+    }
+    // Fall back to first in allMandaras (sorted by updatedAt)
+    return allMandaras[0];
+  }
 
   // If there's a specific mandara ID, load it
   if (mandaraId) {
@@ -955,6 +934,11 @@ async function initializeApp() {
       if (mandara) {
         // Add to list if found
         allMandaras.unshift(mandara);
+        // Also add to order at the beginning
+        if (!mandaraOrder.includes(mandara.id)) {
+          mandaraOrder.unshift(mandara.id);
+          saveMandaraOrder();
+        }
       }
     }
 
@@ -962,24 +946,28 @@ async function initializeApp() {
       loadMandaraIntoUI(mandara);
       console.log("[INFO] Loaded mandara from URL:", mandaraId);
     } else {
-      // Mandara not found, load most recent or create new
+      // Mandara not found, load first in custom order or create new
       if (allMandaras.length > 0) {
-        loadMandaraIntoUI(allMandaras[0]);
+        loadMandaraIntoUI(getFirstMandara());
       } else {
         const firstMandara = createNewMandara();
         await Storage.saveMandara(currentUserId, firstMandara);
         allMandaras = [firstMandara];
+        mandaraOrder = [firstMandara.id];
+        await saveMandaraOrder();
         loadMandaraIntoUI(firstMandara);
       }
     }
   } else if (allMandaras.length > 0) {
-    // Load most recent mandara
-    loadMandaraIntoUI(allMandaras[0]);
+    // Load first mandara based on custom order
+    loadMandaraIntoUI(getFirstMandara());
   } else {
     // Create first mandara
     const firstMandara = createNewMandara();
     await Storage.saveMandara(currentUserId, firstMandara);
     allMandaras = [firstMandara];
+    mandaraOrder = [firstMandara.id];
+    await saveMandaraOrder();
     loadMandaraIntoUI(firstMandara);
   }
 

@@ -387,8 +387,61 @@ export async function deleteMandaras(userId, mandaraIds) {
 
     await batch.commit();
     console.log(`🗑️ ${mandaraIds.length}件のマンダラをバッチ削除成功`);
+
+    // Also update mandaraOrder to remove deleted IDs
+    const order = await loadMandaraOrder(userId);
+    if (order.length > 0) {
+      const filteredOrder = order.filter(id => !mandaraIds.includes(id));
+      await saveMandaraOrder(userId, filteredOrder);
+    }
   } catch (error) {
     console.error(`❌ バッチ削除失敗:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Load mandara order for a user
+ * @param {string} userId - ユーザーID
+ * @returns {Promise<Array>} マンダラID順序配列
+ */
+export async function loadMandaraOrder(userId) {
+  console.log('📖 マンダラ順序読み込み開始...');
+
+  try {
+    const orderRef = doc(db, 'users', userId, 'settings', 'mandaraOrder');
+    const docSnap = await getDoc(orderRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      console.log(`✅ マンダラ順序読み込み完了: ${data.order?.length || 0}件`);
+      return data.order || [];
+    } else {
+      console.log('ℹ️ マンダラ順序データなし');
+      return [];
+    }
+  } catch (error) {
+    console.error('❌ マンダラ順序読み込み失敗:', error);
+    return [];
+  }
+}
+
+/**
+ * Save mandara order for a user
+ * @param {string} userId - ユーザーID
+ * @param {Array} orderArray - マンダラID順序配列
+ * @returns {Promise<void>}
+ */
+export async function saveMandaraOrder(userId, orderArray) {
+  try {
+    const orderRef = doc(db, 'users', userId, 'settings', 'mandaraOrder');
+    await setDoc(orderRef, {
+      order: orderArray,
+      updatedAt: new Date()
+    });
+    console.log(`💾 マンダラ順序保存成功: ${orderArray.length}件`);
+  } catch (error) {
+    console.error('❌ マンダラ順序保存失敗:', error);
     throw error;
   }
 }

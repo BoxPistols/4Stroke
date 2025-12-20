@@ -90,6 +90,8 @@ export function isLocalMode() {
   return getStorageMode() === MODE_LOCAL;
 }
 
+const MANDARA_ORDER_KEY = 'mandaraOrder';
+
 /**
  * Local Storage implementation
  */
@@ -176,6 +178,37 @@ export const LocalStorage = {
     const filtered = mandaras.filter(m => !mandaraIds.includes(m.id));
     setItem('mandaras', JSON.stringify(filtered));
     console.log(`[SUCCESS] Deleted ${mandaraIds.length} mandaras from localStorage`);
+
+    // Also update mandaraOrder to remove deleted IDs
+    const order = await this.loadMandaraOrder();
+    if (order.length > 0) {
+      const filteredOrder = order.filter(id => !mandaraIds.includes(id));
+      await this.saveMandaraOrder(filteredOrder);
+    }
+  },
+
+  /**
+   * Load mandara order from localStorage
+   */
+  async loadMandaraOrder() {
+    const orderJson = getItem(MANDARA_ORDER_KEY);
+    if (!orderJson) {
+      return [];
+    }
+    try {
+      return JSON.parse(orderJson);
+    } catch (error) {
+      console.error('[ERROR] Failed to parse mandaraOrder from localStorage:', error);
+      return [];
+    }
+  },
+
+  /**
+   * Save mandara order to localStorage
+   */
+  async saveMandaraOrder(orderArray) {
+    setItem(MANDARA_ORDER_KEY, JSON.stringify(orderArray));
+    console.log(`[SUCCESS] Saved mandara order to localStorage: ${orderArray.length} items`);
   },
 
   /**
@@ -356,6 +389,30 @@ export const Storage = {
     } else {
       const { deleteMandaras } = await import('./firestore-crud.js');
       return deleteMandaras(userId, mandaraIds);
+    }
+  },
+
+  /**
+   * Load mandara order
+   */
+  async loadMandaraOrder(userId = null) {
+    if (isLocalMode()) {
+      return LocalStorage.loadMandaraOrder();
+    } else {
+      const { loadMandaraOrder } = await import('./firestore-crud.js');
+      return loadMandaraOrder(userId);
+    }
+  },
+
+  /**
+   * Save mandara order
+   */
+  async saveMandaraOrder(userId, orderArray) {
+    if (isLocalMode()) {
+      return LocalStorage.saveMandaraOrder(orderArray);
+    } else {
+      const { saveMandaraOrder } = await import('./firestore-crud.js');
+      return saveMandaraOrder(userId, orderArray);
     }
   }
 };
