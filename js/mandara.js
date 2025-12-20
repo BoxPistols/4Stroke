@@ -19,11 +19,16 @@ import {
   reorderTodo as reorderTodoLogic,
 } from "./mandara-logic.js";
 import { setupTodoDragAndDrop } from "./todo-drag.js";
+import {
+  setupMandaraListDragAndDrop,
+  disableMandaraListDragAndDrop,
+} from "./mandara-list-drag.js";
 
 // Current state
 let currentUserId = null;
 let currentMandara = null;
 let allMandaras = [];
+let mandaraOrder = []; // Custom order of mandara IDs
 let saveTimer = null;
 
 // Debug helpers - accessible from browser console
@@ -378,20 +383,44 @@ async function deleteCurrentMandara() {
     console.log("[SUCCESS] Deleted mandara:", currentMandara.id);
     showToast("削除しました");
 
-    // Load all mandaras and show first one or create new
+    // Load all mandaras and mandara order, then show first one or create new
     await loadAllMandaras();
+    await loadMandaraOrder();
+
+    // Get first mandara based on custom order
+    const getFirstMandara = () => {
+      if (mandaraOrder.length > 0) {
+        const firstId = mandaraOrder[0];
+        const mandara = allMandaras.find((m) => m.id === firstId);
+        if (mandara) return mandara;
+      }
+      return allMandaras[0];
+    };
+
     if (allMandaras.length > 0) {
-      loadMandaraIntoUI(allMandaras[0]);
+      loadMandaraIntoUI(getFirstMandara());
     } else {
       const newMandara = createNewMandara();
       await Storage.saveMandara(currentUserId, newMandara);
       allMandaras = [newMandara];
+      mandaraOrder = [newMandara.id];
+      await saveMandaraOrder();
       loadMandaraIntoUI(newMandara);
     }
   } catch (error) {
     console.error("[ERROR] Failed to delete mandara:", error);
     alert("削除に失敗しました");
   }
+}
+
+// Helper: Get first mandara based on custom order
+function getFirstMandaraByOrder() {
+  if (mandaraOrder.length > 0) {
+    const firstId = mandaraOrder[0];
+    const mandara = allMandaras.find((m) => m.id === firstId);
+    if (mandara) return mandara;
+  }
+  return allMandaras[0];
 }
 
 // Delete mandara by ID (for list view)
@@ -412,18 +441,28 @@ async function deleteMandara(mandaraId) {
     console.log("[SUCCESS] Deleted mandara:", mandaraId);
     showToast("削除しました");
 
-    // Reload list
+    // Reload list and order
     await loadAllMandaras();
-    renderMandaraList();
+    await loadMandaraOrder();
+
+    // Get current sort mode for re-rendering
+    const sortSelect = document.getElementById("sort-select");
+    const filterInput = document.getElementById("filter-input");
+    renderMandaraList(
+      filterInput ? filterInput.value : "",
+      sortSelect ? sortSelect.value : "custom"
+    );
 
     // If deleted mandara was current one, load another or create new
     if (currentMandara && currentMandara.id === mandaraId) {
       if (allMandaras.length > 0) {
-        loadMandaraIntoUI(allMandaras[0]);
+        loadMandaraIntoUI(getFirstMandaraByOrder());
       } else {
         const newMandara = createNewMandara();
         await Storage.saveMandara(currentUserId, newMandara);
         allMandaras = [newMandara];
+        mandaraOrder = [newMandara.id];
+        await saveMandaraOrder();
         loadMandaraIntoUI(newMandara);
       }
     }
@@ -450,18 +489,28 @@ async function deleteMandaras(mandaraIds) {
     console.log(`[SUCCESS] Deleted ${count} mandaras`);
     showToast(`${count}件削除しました`);
 
-    // Reload list
+    // Reload list and order
     await loadAllMandaras();
-    renderMandaraList();
+    await loadMandaraOrder();
+
+    // Get current sort mode for re-rendering
+    const sortSelect = document.getElementById("sort-select");
+    const filterInput = document.getElementById("filter-input");
+    renderMandaraList(
+      filterInput ? filterInput.value : "",
+      sortSelect ? sortSelect.value : "custom"
+    );
 
     // If current mandara was deleted, load another or create new
     if (currentMandara && mandaraIds.includes(currentMandara.id)) {
       if (allMandaras.length > 0) {
-        loadMandaraIntoUI(allMandaras[0]);
+        loadMandaraIntoUI(getFirstMandaraByOrder());
       } else {
         const newMandara = createNewMandara();
         await Storage.saveMandara(currentUserId, newMandara);
         allMandaras = [newMandara];
+        mandaraOrder = [newMandara.id];
+        await saveMandaraOrder();
         loadMandaraIntoUI(newMandara);
       }
     }
@@ -514,14 +563,66 @@ async function loadAllMandaras() {
   }
 }
 
+// Load mandara order
+async function loadMandaraOrder() {
+  try {
+    mandaraOrder = await Storage.loadMandaraOrder(currentUserId);
+    console.log(`[INFO] Loaded mandara order: ${mandaraOrder.length} items`);
+
+    // Validate order - remove IDs that don't exist in allMandaras
+    const existingIds = new Set(allMandaras.map((m) => m.id));
+    mandaraOrder = mandaraOrder.filter((id) => existingIds.has(id));
+
+    // Add any new mandaras that are not in the order (at the beginning)
+    const orderSet = new Set(mandaraOrder);
+    const newMandaras = allMandaras
+      .filter((m) => !orderSet.has(m.id))
+      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+      .map((m) => m.id);
+
+    if (newMandaras.length > 0) {
+      mandaraOrder = [...newMandaras, ...mandaraOrder];
+      // Save updated order
+      await Storage.saveMandaraOrder(currentUserId, mandaraOrder);
+    }
+  } catch (error) {
+    console.error("[ERROR] Failed to load mandara order:", error);
+    mandaraOrder = [];
+  }
+}
+
+// Save mandara order
+async function saveMandaraOrder() {
+  try {
+    await Storage.saveMandaraOrder(currentUserId, mandaraOrder);
+    console.log(`[INFO] Saved mandara order: ${mandaraOrder.length} items`);
+  } catch (error) {
+    console.error("[ERROR] Failed to save mandara order:", error);
+  }
+}
+
+// Reorder mandara in the list
+function reorderMandara(fromIndex, toIndex) {
+  if (fromIndex === toIndex) return;
+
+  const [movedId] = mandaraOrder.splice(fromIndex, 1);
+  mandaraOrder.splice(toIndex, 0, movedId);
+
+  console.log(`[INFO] Mandara reordered: ${fromIndex} -> ${toIndex}`);
+  saveMandaraOrder();
+}
+
 // Render mandara list
-function renderMandaraList(filter = "", sortBy = "updated-desc") {
+function renderMandaraList(filter = "", sortBy = "custom") {
   const listContainer = document.getElementById("mandara-list");
   if (!listContainer) return;
 
+  const isCustomSort = sortBy === "custom";
+  const hasFilter = filter && filter.trim().length > 0;
+
   // Filter
   let filtered = allMandaras;
-  if (filter) {
+  if (hasFilter) {
     const lowerFilter = filter.toLowerCase();
     filtered = allMandaras.filter((m) => {
       const title = (m.title || "").toLowerCase();
@@ -540,24 +641,38 @@ function renderMandaraList(filter = "", sortBy = "updated-desc") {
   }
 
   // Sort
-  filtered.sort((a, b) => {
-    switch (sortBy) {
-      case "updated-desc":
-        return new Date(b.updatedAt) - new Date(a.updatedAt);
-      case "updated-asc":
-        return new Date(a.updatedAt) - new Date(b.updatedAt);
-      case "created-desc":
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      case "created-asc":
-        return new Date(a.createdAt) - new Date(b.createdAt);
-      case "title-asc":
-        return (a.title || "").localeCompare(b.title || "");
-      case "title-desc":
-        return (b.title || "").localeCompare(a.title || "");
-      default:
-        return 0;
-    }
-  });
+  if (isCustomSort && !hasFilter) {
+    // Use custom order
+    const orderMap = new Map(mandaraOrder.map((id, index) => [id, index]));
+    filtered.sort((a, b) => {
+      const indexA = orderMap.has(a.id) ? orderMap.get(a.id) : Infinity;
+      const indexB = orderMap.has(b.id) ? orderMap.get(b.id) : Infinity;
+      return indexA - indexB;
+    });
+  } else {
+    // Use standard sort
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "updated-desc":
+          return new Date(b.updatedAt) - new Date(a.updatedAt);
+        case "updated-asc":
+          return new Date(a.updatedAt) - new Date(b.updatedAt);
+        case "created-desc":
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        case "created-asc":
+          return new Date(a.createdAt) - new Date(b.createdAt);
+        case "title-asc":
+          return (a.title || "").localeCompare(b.title || "");
+        case "title-desc":
+          return (b.title || "").localeCompare(a.title || "");
+        case "custom":
+          // When filtering with custom sort, fall back to updated-desc
+          return new Date(b.updatedAt) - new Date(a.updatedAt);
+        default:
+          return 0;
+      }
+    });
+  }
 
   // Render
   listContainer.innerHTML = "";
@@ -565,6 +680,13 @@ function renderMandaraList(filter = "", sortBy = "updated-desc") {
     listContainer.innerHTML =
       '<p class="empty-message">マンダラが見つかりません</p>';
     return;
+  }
+
+  // Add/remove draggable class to list container
+  if (isCustomSort && !hasFilter) {
+    listContainer.classList.add("draggable-list");
+  } else {
+    listContainer.classList.remove("draggable-list");
   }
 
   filtered.forEach((mandara) => {
@@ -578,8 +700,15 @@ function renderMandaraList(filter = "", sortBy = "updated-desc") {
     const centerText =
       mandara.cells && mandara.cells[5] ? mandara.cells[5] : "中心未設定";
 
+    // Add drag handle for custom sort mode
+    const dragHandleHtml =
+      isCustomSort && !hasFilter
+        ? '<span class="card-drag-handle" title="ドラッグして並び替え">☰</span>'
+        : "";
+
     card.innerHTML = `
       <div class="card-header">
+        ${dragHandleHtml}
         <input type="checkbox" class="card-checkbox" data-id="${
           mandara.id
         }" aria-label="Select ${mandara.title || "無題"}">
@@ -596,11 +725,12 @@ function renderMandaraList(filter = "", sortBy = "updated-desc") {
       </div>
     `;
 
-    // Click on card (but not checkbox or delete button) to open
+    // Click on card (but not checkbox, delete button, or drag handle) to open
     card.addEventListener("click", (e) => {
       if (
         !e.target.classList.contains("card-checkbox") &&
-        !e.target.classList.contains("card-delete-btn")
+        !e.target.classList.contains("card-delete-btn") &&
+        !e.target.classList.contains("card-drag-handle")
       ) {
         loadMandaraIntoUI(mandara);
         closeListView();
@@ -616,6 +746,25 @@ function renderMandaraList(filter = "", sortBy = "updated-desc") {
 
     listContainer.appendChild(card);
   });
+
+  // Setup or disable drag and drop based on sort mode
+  if (isCustomSort && !hasFilter) {
+    setupMandaraListDragAndDrop(listContainer, {
+      onReorder: (fromIndex, toIndex) => {
+        reorderMandara(fromIndex, toIndex);
+        // Re-render to update visual state
+        const sortSelect = document.getElementById("sort-select");
+        const filterInput = document.getElementById("filter-input");
+        renderMandaraList(
+          filterInput ? filterInput.value : "",
+          sortSelect ? sortSelect.value : "custom"
+        );
+        showToast("並び順を保存しました");
+      },
+    });
+  } else {
+    disableMandaraListDragAndDrop(listContainer);
+  }
 }
 
 // Show list view
@@ -761,6 +910,9 @@ function setupEventListeners() {
       const newMandara = createNewMandara();
       await Storage.saveMandara(currentUserId, newMandara);
       allMandaras.unshift(newMandara);
+      // Add to custom order at the beginning
+      mandaraOrder.unshift(newMandara.id);
+      await saveMandaraOrder();
       loadMandaraIntoUI(newMandara); // This will update URL automatically
       showToast("新しいマンダラを作成しました");
     });
@@ -940,9 +1092,24 @@ async function initializeApp() {
   // Load all mandaras
   await loadAllMandaras();
 
+  // Load mandara order (must be after loadAllMandaras)
+  await loadMandaraOrder();
+
   // Check URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   const mandaraId = urlParams.get("id");
+
+  // Helper: Get first mandara based on custom order
+  function getFirstMandara() {
+    if (mandaraOrder.length > 0) {
+      // Use custom order - find the first mandara in the order
+      const firstId = mandaraOrder[0];
+      const mandara = allMandaras.find((m) => m.id === firstId);
+      if (mandara) return mandara;
+    }
+    // Fall back to first in allMandaras (sorted by updatedAt)
+    return allMandaras[0];
+  }
 
   // If there's a specific mandara ID, load it
   if (mandaraId) {
@@ -955,6 +1122,11 @@ async function initializeApp() {
       if (mandara) {
         // Add to list if found
         allMandaras.unshift(mandara);
+        // Also add to order at the beginning
+        if (!mandaraOrder.includes(mandara.id)) {
+          mandaraOrder.unshift(mandara.id);
+          saveMandaraOrder();
+        }
       }
     }
 
@@ -962,24 +1134,28 @@ async function initializeApp() {
       loadMandaraIntoUI(mandara);
       console.log("[INFO] Loaded mandara from URL:", mandaraId);
     } else {
-      // Mandara not found, load most recent or create new
+      // Mandara not found, load first in custom order or create new
       if (allMandaras.length > 0) {
-        loadMandaraIntoUI(allMandaras[0]);
+        loadMandaraIntoUI(getFirstMandara());
       } else {
         const firstMandara = createNewMandara();
         await Storage.saveMandara(currentUserId, firstMandara);
         allMandaras = [firstMandara];
+        mandaraOrder = [firstMandara.id];
+        await saveMandaraOrder();
         loadMandaraIntoUI(firstMandara);
       }
     }
   } else if (allMandaras.length > 0) {
-    // Load most recent mandara
-    loadMandaraIntoUI(allMandaras[0]);
+    // Load first mandara based on custom order
+    loadMandaraIntoUI(getFirstMandara());
   } else {
     // Create first mandara
     const firstMandara = createNewMandara();
     await Storage.saveMandara(currentUserId, firstMandara);
     allMandaras = [firstMandara];
+    mandaraOrder = [firstMandara.id];
+    await saveMandaraOrder();
     loadMandaraIntoUI(firstMandara);
   }
 

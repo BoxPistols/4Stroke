@@ -787,6 +787,69 @@ body:has(.mandara-editor) {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     font-family: var(--font-japanese);
   }
+
+  // Drag handle for custom order sorting
+  .card-drag-handle {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: grab;
+    font-size: 16px;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    user-select: none;
+
+    &:hover {
+      color: var(--color-accent);
+      background: rgba(174, 129, 255, 0.2);
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  // Dragging state
+  &.dragging {
+    opacity: 0.6;
+    transform: rotate(2deg) scale(1.02);
+    z-index: 1000;
+    cursor: grabbing;
+    box-shadow: 0 12px 30px rgba(174, 129, 255, 0.4);
+    border-color: var(--color-accent);
+
+    .card-drag-handle {
+      color: var(--color-accent);
+    }
+  }
+
+  // Drag-over state (when another card is being dragged over)
+  &.drag-over {
+    border-color: var(--color-accent);
+    background: rgba(174, 129, 255, 0.25);
+    transform: translateY(-2px);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+}
+
+// Draggable list container
+.mandara-list.draggable-list {
+  .mandara-card {
+    cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
 }
 
 // Nav buttons for mandara
