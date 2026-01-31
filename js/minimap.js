@@ -8,6 +8,7 @@ import { TIMINGS, GARAGE } from './constants.js';
 import { debounce } from './utils/debounce.js';
 import { DOM, showAutoSaveMessage } from './utils/dom-cache.js';
 import { getGarageLetter, getNotePosition } from './utils/garage-id-utils.js';
+import { updatePreviewIfActive } from './markdown-renderer.js';
 
 // Note metadata
 const GARAGE_NAMES = ['GARAGE-A', 'GARAGE-B', 'GARAGE-C', 'GARAGE-D'];
@@ -237,6 +238,10 @@ async function handleDrop(e) {
       mainDraggedTextarea.value = targetContent;
       mainTargetTextarea.value = draggedContent;
 
+      // Update markdown previews if in preview mode
+      updatePreviewIfActive(mainDraggedTextarea);
+      updatePreviewIfActive(mainTargetTextarea);
+
       // Save both changes to storage
       await saveNoteToStorage(draggedIndex, targetContent);
       await saveNoteToStorage(targetIndex, draggedContent);
@@ -258,6 +263,8 @@ async function syncToMainView(noteIndex, content) {
   const mainTextarea = DOM.getTextarea(noteIndex);
   if (mainTextarea) {
     mainTextarea.value = content;
+    // Update markdown preview if in preview mode
+    updatePreviewIfActive(mainTextarea);
     await saveNoteToStorage(noteIndex, content);
     showAutoSaveMessage();
   }

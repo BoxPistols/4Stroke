@@ -24,6 +24,9 @@ import {
   setMinimapUserId
 } from './minimap.js';
 
+// Markdown renderer import
+import { initMarkdownRenderer } from './markdown-renderer.js';
+
 // Utilities import
 import { TIMINGS, BREAKPOINTS, FEATURES, GARAGE } from './constants.js';
 import { debounce } from './utils/debounce.js';
@@ -748,4 +751,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const currentMode = getStorageMode();
   const userId = isOnlineMode() ? null : null; // Will be set properly in auth callback
   initializeMinimap(userId);
+
+  // Initialize markdown renderer
+  initMarkdownRenderer();
 });
