@@ -73,14 +73,14 @@ function togglePreview(textarea, preview, button) {
   if (isPreview) {
     // Switch to edit mode
     preview.style.display = 'none';
-    textarea.style.display = 'block';
+    textarea.style.display = '';
     button.textContent = 'Preview';
     button.classList.remove('active');
   } else {
     // Switch to preview mode
     renderMarkdown(textarea, preview);
     textarea.style.display = 'none';
-    preview.style.display = 'block';
+    preview.style.display = '';
     button.textContent = 'Edit';
     button.classList.add('active');
   }
@@ -148,7 +148,45 @@ export function initMarkdownRenderer() {
     textarea.dataset.previewId = preview.id;
   });
 
+  // Setup keyboard shortcuts
+  setupKeyboardShortcuts();
+
   console.log('✓ Markdown renderer initialized for', textareas.length, 'textareas');
+}
+
+/**
+ * Setup keyboard shortcuts for toggling preview
+ */
+function setupKeyboardShortcuts() {
+  document.addEventListener('keydown', (e) => {
+    // Cmd/Ctrl + Shift + M: Toggle preview for focused textarea
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'M') {
+      e.preventDefault();
+
+      // Find the focused textarea or the textarea in the current stroke box
+      const activeElement = document.activeElement;
+      let targetTextarea = null;
+
+      if (activeElement.tagName === 'TEXTAREA' && activeElement.classList.contains('stroke')) {
+        targetTextarea = activeElement;
+      } else {
+        // Find the stroke box containing the active element
+        const strokeBox = activeElement.closest('.garage-stroke-box');
+        if (strokeBox) {
+          targetTextarea = strokeBox.querySelector('textarea.stroke');
+        }
+      }
+
+      if (targetTextarea) {
+        const preview = getPreview(targetTextarea);
+        const button = targetTextarea.closest('.garage-stroke-box')?.querySelector('.markdown-toggle-btn');
+
+        if (preview && button) {
+          togglePreview(targetTextarea, preview, button);
+        }
+      }
+    }
+  });
 }
 
 /**
