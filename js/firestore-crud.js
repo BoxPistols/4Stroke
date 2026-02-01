@@ -7,7 +7,10 @@ import {
   updateDoc,
   deleteDoc,
   collection,
-  writeBatch
+  writeBatch,
+  getDocs,
+  query,
+  orderBy
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { normalizeGarageId } from './utils/garage-id-utils.js';
 import { GARAGE } from './constants.js';
@@ -274,7 +277,6 @@ export async function loadAllMandaras(userId) {
   console.log('📖 全マンダラデータ読み込み開始...');
 
   try {
-    const { getDocs, query, orderBy } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
     const mandarasRef = collection(db, 'users', userId, 'mandaras');
     const q = query(mandarasRef, orderBy('updatedAt', 'desc'));
     const querySnapshot = await getDocs(q);
