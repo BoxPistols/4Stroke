@@ -3,8 +3,8 @@
  * Provides real-time markdown rendering for textareas
  */
 
-import { marked } from '../node_modules/marked/lib/marked.esm.js';
-import DOMPurify from '../node_modules/dompurify/dist/purify.es.mjs';
+import { marked } from 'https://cdn.jsdelivr.net/npm/marked@12.0.0/lib/marked.esm.js';
+import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.es.mjs';
 
 // Configure marked options
 marked.setOptions({
