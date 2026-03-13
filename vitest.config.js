@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     environment: 'happy-dom',
     globals: true,
+    setupFiles: ['./tests/setup.js'],
     exclude: [
       '**/node_modules/**',
       '**/dist/**',
@@ -22,6 +23,12 @@ export default defineConfig({
         '**/*.config.js',
         '**/firebase-config.js',
       ],
+    },
+  },
+  resolve: {
+    alias: {
+      'https://cdn.jsdelivr.net/npm/marked@12.0.0/lib/marked.esm.js': 'marked',
+      'https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.es.mjs': 'dompurify',
     },
   },
 });
