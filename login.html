@@ -367,6 +367,40 @@
         opacity: 0.8;
         margin-top: 4px;
       }
+
+      .success-message {
+        background: rgba(166, 226, 46, 0.2);
+        color: var(--color-white);
+        padding: 0.9rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--color-issue);
+        margin-bottom: 1.5rem;
+        display: none;
+        font-size: 0.9rem;
+        filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+      }
+
+      .success-message.show {
+        display: block;
+        animation: fadeIn 0.3s;
+      }
+
+      .btn-email-link {
+        background: rgba(174, 129, 255, 0.8);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .btn-email-link:hover {
+        background: rgba(174, 129, 255, 1);
+        transform: translateY(-2px);
+        filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
+        box-shadow: 0 0 20px rgba(174, 129, 255, 0.4);
+      }
     </style>
   </head>
   <body>
@@ -375,9 +409,33 @@
       <p class="login-subtitle">Authentication Required</p>
 
       <div id="error-message" class="error-message"></div>
+      <div id="success-message" class="success-message"></div>
 
-      <!-- Login Form -->
-      <form id="login-form">
+      <!-- Email Link Form (パスワードなしログイン) -->
+      <form id="email-link-form">
+        <div class="form-group">
+          <label for="email-link-input">Email Address</label>
+          <input
+            type="email"
+            id="email-link-input"
+            required
+            autocomplete="email"
+            placeholder="your@email.com"
+          />
+        </div>
+        <button type="submit" class="btn btn-email-link" id="send-link-btn">
+          Send Login Link
+          <div class="login-message">
+            No password required
+          </div>
+        </button>
+        <button type="button" id="show-password-login" class="btn btn-secondary">
+          Use Password Instead
+        </button>
+      </form>
+
+      <!-- Login Form (パスワードログイン - initially hidden) -->
+      <form id="login-form" class="form-hidden">
         <div class="form-group">
           <label for="login-email">Email Address</label>
           <input
@@ -403,6 +461,9 @@
         </button>
         <button type="button" id="show-register" class="btn btn-secondary">
           Create Account
+        </button>
+        <button type="button" id="show-email-link" class="btn btn-secondary">
+          Use Email Link Instead
         </button>
       </form>
 
@@ -489,24 +550,37 @@
         loginWithGoogle,
         loginWithGitHub,
         handleRedirectResult,
+        sendEmailLink,
+        completeEmailLinkSignIn,
         loginWithEmail,
         registerWithEmail,
         getErrorMessage,
       } from "./js/auth.js";
       import { setStorageMode } from "./js/storage-service.js";
 
+      const emailLinkForm = document.getElementById("email-link-form");
       const loginForm = document.getElementById("login-form");
       const registerForm = document.getElementById("register-form");
       const errorMessage = document.getElementById("error-message");
+      const successMessage = document.getElementById("success-message");
       const googleLoginBtn = document.getElementById("google-login");
       const githubLoginBtn = document.getElementById("github-login");
       const localModeBtn = document.getElementById("local-mode-btn");
       const showRegisterBtn = document.getElementById("show-register");
       const showLoginBtn = document.getElementById("show-login");
+      const showPasswordLoginBtn = document.getElementById("show-password-login");
+      const showEmailLinkBtn = document.getElementById("show-email-link");
 
-      // リダイレクト認証の結果を処理（ページ読み込み時）
+      // ページ読み込み時: メールリンクログインの完了チェック + リダイレクト認証
       (async () => {
         try {
+          // メールリンクからのログイン完了チェック
+          const emailLinkUser = await completeEmailLinkSignIn();
+          if (emailLinkUser) {
+            onLoginSuccess();
+            return;
+          }
+          // リダイレクト認証の結果を処理
           const user = await handleRedirectResult();
           if (user) {
             onLoginSuccess();
@@ -520,9 +594,17 @@
       function showError(message) {
         errorMessage.textContent = message;
         errorMessage.classList.add("show");
+        successMessage.classList.remove("show");
         setTimeout(() => {
           errorMessage.classList.remove("show");
         }, 5000);
+      }
+
+      // Show success message
+      function showSuccess(message) {
+        successMessage.textContent = message;
+        successMessage.classList.add("show");
+        errorMessage.classList.remove("show");
       }
 
       // On login success
@@ -614,17 +696,53 @@
         }
       });
 
+      // Send email link
+      emailLinkForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("email-link-input").value;
+        const submitBtn = document.getElementById("send-link-btn");
+
+        submitBtn.dataset.originalText = submitBtn.innerHTML;
+        setLoading(submitBtn, true);
+
+        try {
+          await sendEmailLink(email);
+          showSuccess(`${email} にログインリンクを送信しました。メールを確認してください。`);
+          setLoading(submitBtn, false);
+        } catch (error) {
+          showError(getErrorMessage(error));
+          setLoading(submitBtn, false);
+        }
+      });
+
+      // フォーム切り替えヘルパー
+      function hideAllForms() {
+        emailLinkForm.classList.add("form-hidden");
+        loginForm.classList.add("form-hidden");
+        registerForm.classList.add("form-hidden");
+        errorMessage.classList.remove("show");
+        successMessage.classList.remove("show");
+      }
+
       // Toggle forms
       showRegisterBtn.addEventListener("click", () => {
-        loginForm.classList.add("form-hidden");
+        hideAllForms();
         registerForm.classList.remove("form-hidden");
-        errorMessage.classList.remove("show");
       });
 
       showLoginBtn.addEventListener("click", () => {
-        registerForm.classList.add("form-hidden");
+        hideAllForms();
         loginForm.classList.remove("form-hidden");
-        errorMessage.classList.remove("show");
+      });
+
+      showPasswordLoginBtn.addEventListener("click", () => {
+        hideAllForms();
+        loginForm.classList.remove("form-hidden");
+      });
+
+      showEmailLinkBtn.addEventListener("click", () => {
+        hideAllForms();
+        emailLinkForm.classList.remove("form-hidden");
       });
     </script>
   </body>

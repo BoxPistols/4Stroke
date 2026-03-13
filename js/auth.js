@@ -9,8 +9,12 @@ import {
   GithubAuthProvider,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  linkWithCredential
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
 // デバッグ情報をログ出力
@@ -66,8 +70,9 @@ export async function loginWithGoogle() {
     console.log('✅ Google ログイン成功:', result.user.email);
     return result.user;
   } catch (error) {
-    // ポップアップがブロックされた場合、リダイレクト方式にフォールバック
-    if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+    // popup-blocked のみリダイレクトにフォールバック（アプリ内ブラウザ等）
+    // popup-closed-by-user はユーザーが意図的に閉じたのでそのままエラー表示
+    if (error.code === 'auth/popup-blocked') {
       console.log('[AUTH] ポップアップがブロックされたため、リダイレクト方式にフォールバック');
       await signInWithRedirect(auth, provider);
       return;
@@ -78,7 +83,7 @@ export async function loginWithGoogle() {
 }
 
 /**
- * GitHubログイン（ポップアップ失敗時はリダイレクトにフォールバック）
+ * GitHubログイン
  * @returns {Promise<User>} ログインしたユーザー情報
  */
 export async function loginWithGitHub() {
@@ -96,11 +101,23 @@ export async function loginWithGitHub() {
     console.log('✅ GitHub ログイン成功:', result.user.displayName || result.user.email);
     return result.user;
   } catch (error) {
-    // ポップアップがブロックされた場合、リダイレクト方式にフォールバック
-    if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+    if (error.code === 'auth/popup-blocked') {
       console.log('[AUTH] ポップアップがブロックされたため、リダイレクト方式にフォールバック');
       await signInWithRedirect(auth, provider);
       return;
+    }
+    // 同じメールで別プロバイダのアカウントが存在する場合、自動リンク
+    if (error.code === 'auth/account-exists-with-different-credential') {
+      const pendingCred = GithubAuthProvider.credentialFromError(error);
+      if (pendingCred) {
+        console.log('[AUTH] 既存アカウントにGitHub認証をリンク中...');
+        // まずGoogleでログインしてからGitHub認証をリンク
+        const googleProvider = new GoogleAuthProvider();
+        const googleResult = await signInWithPopup(auth, googleProvider);
+        const linkedResult = await linkWithCredential(googleResult.user, pendingCred);
+        console.log('✅ GitHubアカウントをリンクしてログイン成功:', linkedResult.user.email);
+        return linkedResult.user;
+      }
     }
     console.error('❌ GitHub ログイン失敗:', error.message);
     throw error;
@@ -169,6 +186,55 @@ export async function registerWithEmail(email, password) {
 }
 
 /**
+ * メールリンクを送信（パスワードなしログイン）
+ * @param {string} email - メールアドレス
+ */
+export async function sendEmailLink(email) {
+  const actionCodeSettings = {
+    // メールリンクをクリックした後のリダイレクト先
+    url: window.location.origin + '/login.html',
+    handleCodeInApp: true,
+  };
+
+  try {
+    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+    // メールアドレスをlocalStorageに保存（リンククリック後に使用）
+    window.localStorage.setItem('emailForSignIn', email);
+    console.log('✅ ログインリンクを送信しました:', email);
+  } catch (error) {
+    console.error('❌ メールリンク送信失敗:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * メールリンクでログインを完了
+ * @returns {Promise<User|null>} ユーザー情報（リンクでない場合はnull）
+ */
+export async function completeEmailLinkSignIn() {
+  if (!isSignInWithEmailLink(auth, window.location.href)) {
+    return null;
+  }
+
+  let email = window.localStorage.getItem('emailForSignIn');
+  if (!email) {
+    // 別のデバイスでリンクを開いた場合、メールアドレスを入力してもらう
+    email = window.prompt('ログインリンクの確認のため、メールアドレスを入力してください');
+  }
+  if (!email) return null;
+
+  try {
+    const result = await signInWithEmailLink(auth, email, window.location.href);
+    window.localStorage.removeItem('emailForSignIn');
+    console.log('✅ メールリンクログイン成功:', result.user.email);
+    return result.user;
+  } catch (error) {
+    console.error('❌ メールリンクログイン失敗:', error.message);
+    throw error;
+  }
+}
+
+/**
  * ログアウト
  * @returns {Promise<void>}
  */
@@ -221,6 +287,8 @@ export function getErrorMessage(error) {
     'auth/weak-password': 'パスワードは6文字以上にしてください',
     'auth/popup-closed-by-user': 'ログインがキャンセルされました',
     'auth/popup-blocked': 'ポップアップがブロックされました。リダイレクト方式で再試行します。',
+    'auth/unauthorized-domain': 'このドメインは認証に許可されていません。localhost:8888 でアクセスしてください。',
+    'auth/invalid-action-code': 'ログインリンクが無効または期限切れです。もう一度送信してください。',
     'auth/network-request-failed': 'ネットワークエラーが発生しました',
     'auth/access-denied': 'このGoogleアカウントではログインできません。許可されたアカウントでログインしてください。',
     'auth/account-exists-with-different-credential': 'このメールアドレスは別のログイン方法で登録済みです。元の方法でログインしてください。',
