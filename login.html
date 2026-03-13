@@ -43,10 +43,11 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        min-height: 100vh;
+        min-height: 100dvh;
         padding: 20px;
         position: relative;
-        overflow: hidden;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
       }
 
       body::before {
@@ -56,7 +57,7 @@
         left: 0;
         display: block;
         width: 100vw;
-        height: 100vh;
+        height: 100dvh;
         content: "";
         background-image: linear-gradient(
             45deg,
@@ -256,6 +257,24 @@
         box-shadow: 0 0 20px rgba(66, 133, 244, 0.4);
       }
 
+      .btn-github {
+        background: rgba(36, 41, 46, 0.9);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-top: 0.5rem;
+      }
+
+      .btn-github:hover {
+        background: rgba(36, 41, 46, 1);
+        transform: translateY(-2px);
+        filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
+        box-shadow: 0 0 20px rgba(36, 41, 46, 0.4);
+      }
+
       .divider {
         text-align: center;
         margin: 1.5rem 0;
@@ -448,6 +467,13 @@
         Sign in with Google
       </button>
 
+      <button id="github-login" class="btn btn-github">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="white" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        Sign in with GitHub
+      </button>
+
       <div class="divider">OR</div>
 
       <button id="local-mode-btn" class="btn btn-secondary local-mode-btn">
@@ -461,6 +487,8 @@
     <script type="module">
       import {
         loginWithGoogle,
+        loginWithGitHub,
+        handleRedirectResult,
         loginWithEmail,
         registerWithEmail,
         getErrorMessage,
@@ -471,9 +499,22 @@
       const registerForm = document.getElementById("register-form");
       const errorMessage = document.getElementById("error-message");
       const googleLoginBtn = document.getElementById("google-login");
+      const githubLoginBtn = document.getElementById("github-login");
       const localModeBtn = document.getElementById("local-mode-btn");
       const showRegisterBtn = document.getElementById("show-register");
       const showLoginBtn = document.getElementById("show-login");
+
+      // リダイレクト認証の結果を処理（ページ読み込み時）
+      (async () => {
+        try {
+          const user = await handleRedirectResult();
+          if (user) {
+            onLoginSuccess();
+          }
+        } catch (error) {
+          showError(getErrorMessage(error));
+        }
+      })();
 
       // Show error message
       function showError(message) {
@@ -518,6 +559,20 @@
         } catch (error) {
           showError(getErrorMessage(error));
           setLoading(googleLoginBtn, false);
+        }
+      });
+
+      // GitHub login
+      githubLoginBtn.addEventListener("click", async () => {
+        githubLoginBtn.dataset.originalText = githubLoginBtn.innerHTML;
+        setLoading(githubLoginBtn, true);
+
+        try {
+          await loginWithGitHub();
+          onLoginSuccess();
+        } catch (error) {
+          showError(getErrorMessage(error));
+          setLoading(githubLoginBtn, false);
         }
       });
 

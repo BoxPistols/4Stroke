@@ -3,7 +3,10 @@ import { auth } from './firebase-config.js';
 import { CONFIG } from './config.js';
 import {
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
+  GithubAuthProvider,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
@@ -16,7 +19,22 @@ console.log('[DEBUG] CONFIG:', CONFIG);
 console.log('[DEBUG] ALLOWED_GOOGLE_EMAIL:', CONFIG.ALLOWED_GOOGLE_EMAIL);
 
 /**
- * Googleログイン
+ * ポップアップがブロックされる環境かどうかを検出
+ * @returns {boolean}
+ */
+function shouldUseRedirect() {
+  const ua = navigator.userAgent || '';
+  // アプリ内ブラウザ（LINE, Instagram, Facebook, Twitter等）
+  const isInAppBrowser = /Line|FBAN|FBAV|Instagram|Twitter/i.test(ua);
+  // iPad Safari（iPadOS 13+はMacとして認識されるためタッチ判定も併用）
+  const isIPad = /iPad/i.test(ua) || (navigator.maxTouchPoints > 1 && /Macintosh/i.test(ua));
+  // PWAスタンドアロンモード
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  return isInAppBrowser || isIPad || isStandalone;
+}
+
+/**
+ * Googleログイン（ポップアップ失敗時はリダイレクトにフォールバック）
  * @returns {Promise<User>} ログインしたユーザー情報
  */
 export async function loginWithGoogle() {
@@ -25,6 +43,14 @@ export async function loginWithGoogle() {
   provider.setCustomParameters({
     prompt: 'select_account'
   });
+
+  // ポップアップがブロックされやすい環境ではリダイレクト方式を使用
+  if (shouldUseRedirect()) {
+    console.log('[AUTH] リダイレクト方式でGoogleログインを開始');
+    await signInWithRedirect(auth, provider);
+    return; // リダイレクト後にページが再読み込みされる
+  }
+
   try {
     const result = await signInWithPopup(auth, provider);
     const userEmail = result.user.email;
@@ -40,7 +66,70 @@ export async function loginWithGoogle() {
     console.log('✅ Google ログイン成功:', result.user.email);
     return result.user;
   } catch (error) {
+    // ポップアップがブロックされた場合、リダイレクト方式にフォールバック
+    if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+      console.log('[AUTH] ポップアップがブロックされたため、リダイレクト方式にフォールバック');
+      await signInWithRedirect(auth, provider);
+      return;
+    }
     console.error('❌ Google ログイン失敗:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * GitHubログイン（ポップアップ失敗時はリダイレクトにフォールバック）
+ * @returns {Promise<User>} ログインしたユーザー情報
+ */
+export async function loginWithGitHub() {
+  const provider = new GithubAuthProvider();
+
+  // ポップアップがブロックされやすい環境ではリダイレクト方式を使用
+  if (shouldUseRedirect()) {
+    console.log('[AUTH] リダイレクト方式でGitHubログインを開始');
+    await signInWithRedirect(auth, provider);
+    return;
+  }
+
+  try {
+    const result = await signInWithPopup(auth, provider);
+    console.log('✅ GitHub ログイン成功:', result.user.displayName || result.user.email);
+    return result.user;
+  } catch (error) {
+    // ポップアップがブロックされた場合、リダイレクト方式にフォールバック
+    if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+      console.log('[AUTH] ポップアップがブロックされたため、リダイレクト方式にフォールバック');
+      await signInWithRedirect(auth, provider);
+      return;
+    }
+    console.error('❌ GitHub ログイン失敗:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * リダイレクト認証の結果を処理
+ * @returns {Promise<User|null>} ユーザー情報（リダイレクト結果がない場合はnull）
+ */
+export async function handleRedirectResult() {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result) {
+      const user = result.user;
+      // Google認証の場合、メールアドレスをチェック
+      const isGoogle = result.providerId === 'google.com' ||
+        user.providerData.some(p => p.providerId === 'google.com');
+      if (isGoogle && user.email !== CONFIG.ALLOWED_GOOGLE_EMAIL) {
+        await signOut(auth);
+        console.error('❌ このGoogleアカウントはアクセス権限がありません:', user.email);
+        throw { code: 'auth/access-denied' };
+      }
+      console.log('✅ リダイレクトログイン成功:', user.displayName || user.email);
+      return user;
+    }
+    return null;
+  } catch (error) {
+    console.error('❌ リダイレクト認証失敗:', error.message || error);
     throw error;
   }
 }
@@ -131,8 +220,10 @@ export function getErrorMessage(error) {
     'auth/email-already-in-use': 'このメールアドレスは既に使用されています',
     'auth/weak-password': 'パスワードは6文字以上にしてください',
     'auth/popup-closed-by-user': 'ログインがキャンセルされました',
+    'auth/popup-blocked': 'ポップアップがブロックされました。リダイレクト方式で再試行します。',
     'auth/network-request-failed': 'ネットワークエラーが発生しました',
     'auth/access-denied': 'このGoogleアカウントではログインできません。許可されたアカウントでログインしてください。',
+    'auth/account-exists-with-different-credential': 'このメールアドレスは別のログイン方法で登録済みです。元の方法でログインしてください。',
   };
 
   return errorMessages[error.code] || `エラーが発生しました: ${error.message}`;
