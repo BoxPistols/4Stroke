@@ -566,6 +566,10 @@
         return isIOS && isStandalone;
       })();
 
+      console.log('[LOGIN] PWA standalone mode:', isIOSPWA ? 'iOS PWA' : 'not iOS PWA');
+      console.log('[LOGIN] display-mode standalone:', window.matchMedia('(display-mode: standalone)').matches);
+      console.log('[LOGIN] navigator.standalone:', window.navigator.standalone);
+
       if (isIOSPWA) {
         console.log('[AUTH] iOS PWAスタンドアロンモード検出 - メールベースログインを推奨');
         // OAuthボタンに注意書きを追加
@@ -628,8 +632,12 @@
       }
 
       // On login success
-      function onLoginSuccess() {
+      // Firebase Authのセッションが永続化されるのを待ってからナビゲーション
+      async function onLoginSuccess() {
         setStorageMode("online");
+        // Firebase Authがセッションを永続化する時間を確保
+        // （iOS PWAスタンドアロンではIndexedDB/localStorageへの書き込みが遅延する場合がある）
+        await new Promise(resolve => setTimeout(resolve, 300));
         window.location.href = "/main.html";
       }
 
