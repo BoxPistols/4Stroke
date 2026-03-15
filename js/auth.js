@@ -23,7 +23,19 @@ console.log('[DEBUG] CONFIG:', CONFIG);
 console.log('[DEBUG] ALLOWED_GOOGLE_EMAIL:', CONFIG.ALLOWED_GOOGLE_EMAIL);
 
 /**
+ * iOS PWAスタンドアロンモードかどうかを検出
+ * @returns {boolean}
+ */
+function isIOSStandalone() {
+  const ua = navigator.userAgent || '';
+  const isIOS = /iPhone|iPod/.test(ua) || (/iPad/.test(ua) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(ua)));
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  return isIOS && isStandalone;
+}
+
+/**
  * ポップアップがブロックされる環境かどうかを検出
+ * iOS PWAスタンドアロンではリダイレクトが動作しないためポップアップを使用
  * @returns {boolean}
  */
 function shouldUseRedirect() {
@@ -32,9 +44,10 @@ function shouldUseRedirect() {
   const isInAppBrowser = /Line|FBAN|FBAV|Instagram|Twitter/i.test(ua);
   // iPad Safari（iPadOS 13+はMacとして認識されるためタッチ判定も併用）
   const isIPad = /iPad/i.test(ua) || (navigator.maxTouchPoints > 1 && /Macintosh/i.test(ua));
-  // PWAスタンドアロンモード
+  // PWAスタンドアロンモード（iOS以外のみリダイレクト使用）
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-  return isInAppBrowser || isIPad || isStandalone;
+  const isNonIOSStandalone = isStandalone && !isIOSStandalone();
+  return isInAppBrowser || isIPad || isNonIOSStandalone;
 }
 
 /**
@@ -49,6 +62,7 @@ export async function loginWithGoogle() {
   });
 
   // ポップアップがブロックされやすい環境ではリダイレクト方式を使用
+  // ただしiOS PWAスタンドアロンではリダイレクトが動作しないためポップアップを使用
   if (shouldUseRedirect()) {
     console.log('[AUTH] リダイレクト方式でGoogleログインを開始');
     await signInWithRedirect(auth, provider);
@@ -70,9 +84,13 @@ export async function loginWithGoogle() {
     console.log('✅ Google ログイン成功:', result.user.email);
     return result.user;
   } catch (error) {
-    // popup-blocked のみリダイレクトにフォールバック（アプリ内ブラウザ等）
-    // popup-closed-by-user はユーザーが意図的に閉じたのでそのままエラー表示
+    // popup-blocked のみリダイレクトにフォールバック
+    // ただしiOS PWAスタンドアロンではリダイレクトも動作しないため、エラーメッセージを表示
     if (error.code === 'auth/popup-blocked') {
+      if (isIOSStandalone()) {
+        console.error('[AUTH] iOS PWAスタンドアロンではポップアップもリダイレクトも使用できません');
+        throw { code: 'auth/pwa-oauth-unsupported' };
+      }
       console.log('[AUTH] ポップアップがブロックされたため、リダイレクト方式にフォールバック');
       await signInWithRedirect(auth, provider);
       return;
@@ -90,6 +108,7 @@ export async function loginWithGitHub() {
   const provider = new GithubAuthProvider();
 
   // ポップアップがブロックされやすい環境ではリダイレクト方式を使用
+  // ただしiOS PWAスタンドアロンではリダイレクトが動作しないためポップアップを使用
   if (shouldUseRedirect()) {
     console.log('[AUTH] リダイレクト方式でGitHubログインを開始');
     await signInWithRedirect(auth, provider);
@@ -102,6 +121,10 @@ export async function loginWithGitHub() {
     return result.user;
   } catch (error) {
     if (error.code === 'auth/popup-blocked') {
+      if (isIOSStandalone()) {
+        console.error('[AUTH] iOS PWAスタンドアロンではポップアップもリダイレクトも使用できません');
+        throw { code: 'auth/pwa-oauth-unsupported' };
+      }
       console.log('[AUTH] ポップアップがブロックされたため、リダイレクト方式にフォールバック');
       await signInWithRedirect(auth, provider);
       return;
@@ -292,6 +315,7 @@ export function getErrorMessage(error) {
     'auth/network-request-failed': 'ネットワークエラーが発生しました',
     'auth/access-denied': 'このGoogleアカウントではログインできません。許可されたアカウントでログインしてください。',
     'auth/account-exists-with-different-credential': 'このメールアドレスは別のログイン方法で登録済みです。元の方法でログインしてください。',
+    'auth/pwa-oauth-unsupported': 'ホーム画面アプリではGoogle/GitHubログインが利用できません。メールリンクまたはパスワードでログインしてください。',
   };
 
   return errorMessages[error.code] || `エラーが発生しました: ${error.message}`;

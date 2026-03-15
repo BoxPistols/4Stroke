@@ -673,11 +673,31 @@ document.addEventListener("DOMContentLoaded", async function () {
     const { onAuthChange, getCurrentUser, logout } = await import('./auth.js');
     const { migrateFromLocalStorage } = await import('./firestore-crud.js');
 
+    // 初回のauth状態チェックかどうかを追跡
+    // Firebase Auth がセッションを復元する前に null が来る場合があるため、
+    // 初回は少し待ってから再確認する（特にiOS PWAスタンドアロンモード）
+    let isFirstCheck = true;
+
     onAuthChange(async (user) => {
       if (!user) {
+        if (isFirstCheck) {
+          isFirstCheck = false;
+          // Firebase Authがセッション復元中の可能性があるため、少し待って再確認
+          console.log('[AUTH] No user on first check, waiting for session restore...');
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          const { getCurrentUser } = await import('./auth.js');
+          const restoredUser = getCurrentUser();
+          if (restoredUser) {
+            console.log('[AUTH] Session restored after wait:', restoredUser.email);
+            // onAuthChangeが再度fireされるので、ここではreturn
+            return;
+          }
+          console.log('[AUTH] No session found after wait, redirecting to login');
+        }
         window.location.href = '/login.html';
         return;
       }
+      isFirstCheck = false;
 
       console.log('[SUCCESS] Logged in:', user.email);
 

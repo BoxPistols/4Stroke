@@ -558,6 +558,30 @@
       } from "./js/auth.js";
       import { setStorageMode } from "./js/storage-service.js";
 
+      // iOS PWAスタンドアロンモード検出: OAuth系ボタンに注意書きを表示
+      const isIOSPWA = (() => {
+        const ua = navigator.userAgent || '';
+        const isIOS = /iPhone|iPod/.test(ua) || (/iPad/.test(ua) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(ua)));
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        return isIOS && isStandalone;
+      })();
+
+      console.log('[LOGIN] PWA standalone mode:', isIOSPWA ? 'iOS PWA' : 'not iOS PWA');
+      console.log('[LOGIN] display-mode standalone:', window.matchMedia('(display-mode: standalone)').matches);
+      console.log('[LOGIN] navigator.standalone:', window.navigator.standalone);
+
+      if (isIOSPWA) {
+        console.log('[AUTH] iOS PWAスタンドアロンモード検出 - メールベースログインを推奨');
+        // OAuthボタンに注意書きを追加
+        document.querySelectorAll('.btn-google, .btn-github').forEach(btn => {
+          btn.style.opacity = '0.5';
+          const note = document.createElement('div');
+          note.className = 'login-message';
+          note.textContent = 'ホーム画面アプリでは利用できない場合があります';
+          btn.appendChild(note);
+        });
+      }
+
       const emailLinkForm = document.getElementById("email-link-form");
       const loginForm = document.getElementById("login-form");
       const registerForm = document.getElementById("register-form");
@@ -608,8 +632,12 @@
       }
 
       // On login success
-      function onLoginSuccess() {
+      // Firebase Authのセッションが永続化されるのを待ってからナビゲーション
+      async function onLoginSuccess() {
         setStorageMode("online");
+        // Firebase Authがセッションを永続化する時間を確保
+        // （iOS PWAスタンドアロンではIndexedDB/localStorageへの書き込みが遅延する場合がある）
+        await new Promise(resolve => setTimeout(resolve, 300));
         window.location.href = "/main.html";
       }
 
