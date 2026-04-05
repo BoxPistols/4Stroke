@@ -555,8 +555,26 @@
         loginWithEmail,
         registerWithEmail,
         getErrorMessage,
+        isAuthAvailable,
       } from "./js/auth.js";
       import { setStorageMode } from "./js/storage-service.js";
+      import { waitForFirebaseCheck } from "./js/firebase-available.js";
+
+      // Firebase可用性チェック: 未設定なら警告表示しログインUIを無効化
+      await waitForFirebaseCheck();
+      if (!isAuthAvailable()) {
+        console.warn('[LOGIN] Firebase is not configured on this environment');
+        const warning = document.createElement('div');
+        warning.style.cssText = 'padding: 16px; margin: 16px; background: rgba(241, 250, 140, 0.15); border: 1px solid rgba(241, 250, 140, 0.4); border-radius: 8px; color: #f1fa8c; font-family: sans-serif; text-align: center;';
+        warning.innerHTML = 'この環境ではログイン機能が無効化されています。<br><a href="main.html" style="color: #fff; text-decoration: underline;">ローカルモードで利用する</a>';
+        document.body.insertBefore(warning, document.body.firstChild);
+        // ログインボタンを無効化
+        document.querySelectorAll('button').forEach(btn => {
+          btn.disabled = true;
+          btn.style.opacity = '0.4';
+          btn.style.cursor = 'not-allowed';
+        });
+      }
 
       // iOS PWAスタンドアロンモード検出: OAuth系ボタンに注意書きを表示
       const isIOSPWA = (() => {

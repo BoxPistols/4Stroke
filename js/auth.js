@@ -1,6 +1,23 @@
 // Firebase Authentication モジュール
 import { auth } from './firebase-config.js';
 import { CONFIG } from './config.js';
+
+/**
+ * Firebase 認証が利用可能かチェック (auth が null でないこと)
+ * 未初期化の場合はわかりやすいエラーを投げる
+ */
+function requireAuth() {
+  if (!auth) {
+    const err = new Error('Firebase is not configured (FIREBASE_API_KEY missing)');
+    err.code = 'auth/firebase-not-configured';
+    throw err;
+  }
+  return auth;
+}
+
+export function isAuthAvailable() {
+  return !!auth;
+}
 import {
   signInWithPopup,
   signInWithRedirect,
@@ -65,18 +82,18 @@ export async function loginWithGoogle() {
   // ただしiOS PWAスタンドアロンではリダイレクトが動作しないためポップアップを使用
   if (shouldUseRedirect()) {
     console.log('[AUTH] リダイレクト方式でGoogleログインを開始');
-    await signInWithRedirect(auth, provider);
+    await signInWithRedirect(requireAuth(),provider);
     return; // リダイレクト後にページが再読み込みされる
   }
 
   try {
-    const result = await signInWithPopup(auth, provider);
+    const result = await signInWithPopup(requireAuth(),provider);
     const userEmail = result.user.email;
 
     // メールアドレスをチェック
     if (userEmail !== CONFIG.ALLOWED_GOOGLE_EMAIL) {
       // 許可されていないメールアドレスの場合はサインアウト
-      await signOut(auth);
+      await signOut(requireAuth());
       console.error('❌ このGoogleアカウントはアクセス権限がありません:', userEmail);
       throw new Error('auth/access-denied');
     }
@@ -92,7 +109,7 @@ export async function loginWithGoogle() {
         throw { code: 'auth/pwa-oauth-unsupported' };
       }
       console.log('[AUTH] ポップアップがブロックされたため、リダイレクト方式にフォールバック');
-      await signInWithRedirect(auth, provider);
+      await signInWithRedirect(requireAuth(),provider);
       return;
     }
     console.error('❌ Google ログイン失敗:', error.message);
@@ -111,12 +128,12 @@ export async function loginWithGitHub() {
   // ただしiOS PWAスタンドアロンではリダイレクトが動作しないためポップアップを使用
   if (shouldUseRedirect()) {
     console.log('[AUTH] リダイレクト方式でGitHubログインを開始');
-    await signInWithRedirect(auth, provider);
+    await signInWithRedirect(requireAuth(),provider);
     return;
   }
 
   try {
-    const result = await signInWithPopup(auth, provider);
+    const result = await signInWithPopup(requireAuth(),provider);
     console.log('✅ GitHub ログイン成功:', result.user.displayName || result.user.email);
     return result.user;
   } catch (error) {
@@ -126,7 +143,7 @@ export async function loginWithGitHub() {
         throw { code: 'auth/pwa-oauth-unsupported' };
       }
       console.log('[AUTH] ポップアップがブロックされたため、リダイレクト方式にフォールバック');
-      await signInWithRedirect(auth, provider);
+      await signInWithRedirect(requireAuth(),provider);
       return;
     }
     // 同じメールで別プロバイダのアカウントが存在する場合、自動リンク
@@ -136,7 +153,7 @@ export async function loginWithGitHub() {
         console.log('[AUTH] 既存アカウントにGitHub認証をリンク中...');
         // まずGoogleでログインしてからGitHub認証をリンク
         const googleProvider = new GoogleAuthProvider();
-        const googleResult = await signInWithPopup(auth, googleProvider);
+        const googleResult = await signInWithPopup(requireAuth(),googleProvider);
         const linkedResult = await linkWithCredential(googleResult.user, pendingCred);
         console.log('✅ GitHubアカウントをリンクしてログイン成功:', linkedResult.user.email);
         return linkedResult.user;
@@ -153,14 +170,14 @@ export async function loginWithGitHub() {
  */
 export async function handleRedirectResult() {
   try {
-    const result = await getRedirectResult(auth);
+    const result = await getRedirectResult(requireAuth());
     if (result) {
       const user = result.user;
       // Google認証の場合、メールアドレスをチェック
       const isGoogle = result.providerId === 'google.com' ||
         user.providerData.some(p => p.providerId === 'google.com');
       if (isGoogle && user.email !== CONFIG.ALLOWED_GOOGLE_EMAIL) {
-        await signOut(auth);
+        await signOut(requireAuth());
         console.error('❌ このGoogleアカウントはアクセス権限がありません:', user.email);
         throw { code: 'auth/access-denied' };
       }
@@ -182,7 +199,7 @@ export async function handleRedirectResult() {
  */
 export async function loginWithEmail(email, password) {
   try {
-    const result = await signInWithEmailAndPassword(auth, email, password);
+    const result = await signInWithEmailAndPassword(requireAuth(),email, password);
     console.log('✅ メールログイン成功:', result.user.email);
     return result.user;
   } catch (error) {
@@ -199,7 +216,7 @@ export async function loginWithEmail(email, password) {
  */
 export async function registerWithEmail(email, password) {
   try {
-    const result = await createUserWithEmailAndPassword(auth, email, password);
+    const result = await createUserWithEmailAndPassword(requireAuth(),email, password);
     console.log('✅ 新規登録成功:', result.user.email);
     return result.user;
   } catch (error) {
@@ -220,7 +237,7 @@ export async function sendEmailLink(email) {
   };
 
   try {
-    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+    await sendSignInLinkToEmail(requireAuth(),email, actionCodeSettings);
     // メールアドレスをlocalStorageに保存（リンククリック後に使用）
     window.localStorage.setItem('emailForSignIn', email);
     console.log('✅ ログインリンクを送信しました:', email);
@@ -235,7 +252,7 @@ export async function sendEmailLink(email) {
  * @returns {Promise<User|null>} ユーザー情報（リンクでない場合はnull）
  */
 export async function completeEmailLinkSignIn() {
-  if (!isSignInWithEmailLink(auth, window.location.href)) {
+  if (!isSignInWithEmailLink(requireAuth(),window.location.href)) {
     return null;
   }
 
@@ -247,7 +264,7 @@ export async function completeEmailLinkSignIn() {
   if (!email) return null;
 
   try {
-    const result = await signInWithEmailLink(auth, email, window.location.href);
+    const result = await signInWithEmailLink(requireAuth(),email, window.location.href);
     window.localStorage.removeItem('emailForSignIn');
     console.log('✅ メールリンクログイン成功:', result.user.email);
     return result.user;
@@ -263,7 +280,7 @@ export async function completeEmailLinkSignIn() {
  */
 export async function logout() {
   try {
-    await signOut(auth);
+    await signOut(requireAuth());
     console.log('✅ ログアウト成功');
   } catch (error) {
     console.error('❌ ログアウト失敗:', error.message);
@@ -277,6 +294,12 @@ export async function logout() {
  * @returns {Function} 監視を解除する関数
  */
 export function onAuthChange(callback) {
+  if (!auth) {
+    // Firebase 未設定: 即座に null を返して監視解除用noopを返す
+    console.warn('[AUTH] Firebase not configured, user will be null');
+    callback(null);
+    return () => {};
+  }
   return onAuthStateChanged(auth, (user) => {
     if (user) {
       console.log('🔐 ログイン中:', user.email);
@@ -292,6 +315,7 @@ export function onAuthChange(callback) {
  * @returns {User|null} ユーザー情報（未ログインの場合はnull）
  */
 export function getCurrentUser() {
+  if (!auth) return null;
   return auth.currentUser;
 }
 
@@ -316,6 +340,7 @@ export function getErrorMessage(error) {
     'auth/access-denied': 'このGoogleアカウントではログインできません。許可されたアカウントでログインしてください。',
     'auth/account-exists-with-different-credential': 'このメールアドレスは別のログイン方法で登録済みです。元の方法でログインしてください。',
     'auth/pwa-oauth-unsupported': 'ホーム画面アプリではGoogle/GitHubログインが利用できません。メールリンクまたはパスワードでログインしてください。',
+    'auth/firebase-not-configured': 'この環境ではログイン機能が利用できません。ローカルモードでアプリを利用してください。',
   };
 
   return errorMessages[error.code] || `エラーが発生しました: ${error.message}`;
