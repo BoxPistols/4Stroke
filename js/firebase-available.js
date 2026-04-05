@@ -13,7 +13,8 @@ async function loadAndCheck() {
   if (_loadPromise) return _loadPromise;
   _loadPromise = (async () => {
     try {
-      const mod = await import('./env-config.generated.js');
+      // @vite-ignore: env-config.generated.js はビルド時生成ファイル
+      const mod = await import(/* @vite-ignore */ './env-config.generated.js');
       _available = !!(mod.ENV_CONFIG?.FIREBASE?.apiKey);
     } catch {
       _available = false;

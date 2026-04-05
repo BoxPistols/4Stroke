@@ -20,7 +20,7 @@ async function loadGeneratedKeys() {
   if (cachedKeys !== null) return cachedKeys;
 
   try {
-    const mod = await import("./env-config.generated.js");
+    const mod = await import(/* @vite-ignore */ "./env-config.generated.js");
     cachedKeys = mod.ENV_CONFIG.AI.sharedKeys || {};
     console.log("[ai-config] Loaded shared keys from env-config.generated.js");
   } catch (e) {
