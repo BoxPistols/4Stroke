@@ -614,23 +614,26 @@
       const showEmailLinkBtn = document.getElementById("show-email-link");
 
       // ページ読み込み時: メールリンクログインの完了チェック + リダイレクト認証
-      (async () => {
-        try {
-          // メールリンクからのログイン完了チェック
-          const emailLinkUser = await completeEmailLinkSignIn();
-          if (emailLinkUser) {
-            onLoginSuccess();
-            return;
+      // (Firebase 未設定時はスキップ)
+      if (isAuthAvailable()) {
+        (async () => {
+          try {
+            // メールリンクからのログイン完了チェック
+            const emailLinkUser = await completeEmailLinkSignIn();
+            if (emailLinkUser) {
+              onLoginSuccess();
+              return;
+            }
+            // リダイレクト認証の結果を処理
+            const user = await handleRedirectResult();
+            if (user) {
+              onLoginSuccess();
+            }
+          } catch (error) {
+            showError(getErrorMessage(error));
           }
-          // リダイレクト認証の結果を処理
-          const user = await handleRedirectResult();
-          if (user) {
-            onLoginSuccess();
-          }
-        } catch (error) {
-          showError(getErrorMessage(error));
-        }
-      })();
+        })();
+      }
 
       // Show error message
       function showError(message) {
