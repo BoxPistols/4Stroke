@@ -1067,6 +1067,8 @@
   border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   color: var(--color-white);
+  -webkit-text-fill-color: var(--color-white);
+  caret-color: var(--color-white);
   font-family: monospace;
   font-size: 14px;
   transition: border-color 0.2s;
@@ -1079,6 +1081,17 @@
     outline: none;
     border-color: var(--color-accent);
     box-shadow: 0 0 0 3px rgba(174, 129, 255, 0.15);
+  }
+
+  // Autofill対策（Safari/Chromeの黄色背景・黒文字を無効化）
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--color-white);
+    -webkit-box-shadow: 0 0 0 1000px rgba(20, 20, 30, 0.98) inset;
+    caret-color: var(--color-white);
+    transition: background-color 9999s ease-out 0s;
   }
 }
 
