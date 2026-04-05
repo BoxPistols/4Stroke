@@ -2,6 +2,7 @@
 
 import { garageIdToNumber, numberToGarageId } from './utils/garage-id-utils.js';
 import { GARAGE } from './constants.js';
+import { isFirebaseAvailable } from './firebase-available.js';
 
 const STORAGE_MODE_KEY = 'storage_mode';
 const MODE_LOCAL = 'local';
@@ -77,17 +78,30 @@ export function setStorageMode(mode) {
 }
 
 /**
- * Check if currently in online mode
+ * Check if currently in online mode (user-selected mode only)
  */
 export function isOnlineMode() {
   return getStorageMode() === MODE_ONLINE;
 }
 
 /**
- * Check if currently in local mode
+ * Check if currently in local mode (user-selected mode only)
  */
 export function isLocalMode() {
   return getStorageMode() === MODE_LOCAL;
+}
+
+/**
+ * Firebase 利用不可な場合に online → local へダウングレード
+ * アプリ初期化時に呼ぶことで、Firebase 未設定の環境でも動作させる
+ */
+export function downgradeToLocalIfNeeded() {
+  if (getStorageMode() === MODE_ONLINE && !isFirebaseAvailable()) {
+    console.warn('[Storage] Firebase unavailable, downgrading to local mode');
+    setStorageMode(MODE_LOCAL);
+    return true;
+  }
+  return false;
 }
 
 const MANDARA_ORDER_KEY = 'mandaraOrder';

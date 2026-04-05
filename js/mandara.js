@@ -4,7 +4,9 @@ import {
   isLocalMode,
   isOnlineMode,
   Storage,
+  downgradeToLocalIfNeeded,
 } from "./storage-service.js";
+import { waitForFirebaseCheck } from "./firebase-available.js";
 import { TIMINGS } from "./constants.js";
 import { createNewMandara as createMandaraLogic } from "./mandara-logic.js";
 import {
@@ -797,6 +799,10 @@ function setupEventListeners() {
 // Initialize app
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("[INFO] Mandara app starting...");
+
+  // Firebase可用性チェックを待ち、利用不可ならローカルモードにダウングレード
+  await waitForFirebaseCheck();
+  downgradeToLocalIfNeeded();
 
   // サイドバー幅切替ボタンを即座に初期化 (データ読込みを待たずに)
   initSidebarSize();

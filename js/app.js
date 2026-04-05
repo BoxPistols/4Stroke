@@ -1,5 +1,6 @@
 // Storage service import
-import { getStorageMode, isLocalMode, isOnlineMode, Storage } from './storage-service.js';
+import { getStorageMode, isLocalMode, isOnlineMode, Storage, downgradeToLocalIfNeeded } from './storage-service.js';
+import { waitForFirebaseCheck } from './firebase-available.js';
 
 // URL converter import
 import { processPastedText, processPastedTextSync } from './url-converter.js';
@@ -38,6 +39,10 @@ import { DOM, showAutoSaveMessage } from './utils/dom-cache.js';
 let saveTimer = null;
 
 document.addEventListener("DOMContentLoaded", async function () {
+  // Firebase可用性チェックを待ち、利用不可ならローカルモードにダウングレード
+  await waitForFirebaseCheck();
+  downgradeToLocalIfNeeded();
+
   const mode = getStorageMode();
   console.log(`[INFO] App starting in ${mode} mode`);
 
