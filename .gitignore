@@ -6,6 +6,11 @@ dist
 # Environment variables
 .env
 .env.local
+.env.swp
+
+# Generated files (from .env via scripts/)
+js/env-config.generated.js
+# js/ai-keys.generated.js (Legacy, merged into env-config.generated.js)
 
 # Test coverage
 coverage

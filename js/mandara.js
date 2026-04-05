@@ -6,24 +6,33 @@ import {
   Storage,
 } from "./storage-service.js";
 import { TIMINGS } from "./constants.js";
-import {
-  generateId,
-  createNewMandara as createMandaraLogic,
-  addTag as addTagLogic,
-  editTag as editTagLogic,
-  removeTag as removeTagLogic,
-  addTodo as addTodoLogic,
-  editTodo as editTodoLogic,
-  toggleTodo as toggleTodoLogic,
-  removeTodo as removeTodoLogic,
-  reorderTodo as reorderTodoLogic,
-} from "./mandara-logic.js";
-import { setupTodoDragAndDrop } from "./todo-drag.js";
+import { createNewMandara as createMandaraLogic } from "./mandara-logic.js";
 import {
   renderMandaraList as renderMandaraListView,
   showListView as showListViewModule,
   closeListView as closeListViewModule,
 } from "./mandara-list-view.js";
+import { clearCache as clearInsightCache } from "./mandara-insight.js";
+import { ensureSharedKeysLoaded } from "./ai-config.js";
+import { createInsightController } from "./mandara-insight-controller.js";
+import { renderApiSettings } from "./mandara-insight-api-tab.js";
+import { createTagsTodosUI } from "./mandara-tags-todos-ui.js";
+import { initSidebarSize } from "./sidebar-size.js";
+
+// Controllers (初期化時に生成される)
+let insightController = null;
+let tagsTodosUI = null;
+
+// タグ/TODO 操作のラッパー (初期化前でも安全に呼べる)
+const renderTags = () => tagsTodosUI?.renderTags();
+const addTag = (tag) => tagsTodosUI?.addTag(tag);
+const editTag = (index) => tagsTodosUI?.editTag(index);
+const removeTag = (tag) => tagsTodosUI?.removeTag(tag);
+const renderTodos = () => tagsTodosUI?.renderTodos();
+const addTodo = (text) => tagsTodosUI?.addTodo(text);
+const editTodo = (id) => tagsTodosUI?.editTodo(id);
+const toggleTodo = (id) => tagsTodosUI?.toggleTodo(id);
+const removeTodo = (id) => tagsTodosUI?.removeTodo(id);
 
 // Current state
 let currentUserId = null;
@@ -207,163 +216,6 @@ function debouncedSave() {
   }, TIMINGS.DEBOUNCE_DELAY);
 }
 
-// Render tags
-function renderTags() {
-  const container = document.getElementById("tags-container");
-  if (!container || !currentMandara) return;
-
-  container.innerHTML = "";
-  (currentMandara.tags || []).forEach((tag, index) => {
-    const tagEl = document.createElement("span");
-    tagEl.className = "tag";
-
-    const tagText = document.createElement("span");
-    tagText.className = "tag-text";
-    tagText.textContent = tag;
-    tagText.dataset.index = index;
-    tagText.title = "Click to edit";
-    tagEl.appendChild(tagText);
-
-    const removeBtn = document.createElement("button");
-    removeBtn.className = "tag-remove";
-    removeBtn.dataset.tag = tag;
-    removeBtn.textContent = "×";
-    removeBtn.setAttribute("type", "button");
-    removeBtn.setAttribute("aria-label", `Remove tag ${tag}`);
-
-    tagEl.appendChild(removeBtn);
-    container.appendChild(tagEl);
-  });
-
-}
-
-// Add tag
-function addTag(tag) {
-  if (addTagLogic(currentMandara, tag)) {
-    renderTags();
-    saveCurrentMandara();
-  }
-}
-
-// Edit tag
-function editTag(index) {
-  if (!currentMandara || !currentMandara.tags) return;
-  const oldTag = currentMandara.tags[index];
-  const newTag = prompt("タグを編集:", oldTag);
-  try {
-    if (editTagLogic(currentMandara, index, newTag)) {
-      renderTags();
-      saveCurrentMandara();
-    } else if (newTag !== null && newTag.trim() === "") {
-      if (confirm("タグを削除しますか？")) removeTag(oldTag);
-    }
-  } catch (e) {
-    if (e.message === "DUPLICATE_TAG") alert("そのタグは既に存在します");
-    else console.error(e);
-  }
-}
-
-// Remove tag
-function removeTag(tag) {
-  if (removeTagLogic(currentMandara, tag)) {
-    renderTags();
-    saveCurrentMandara();
-  }
-}
-
-// Render todos
-function renderTodos() {
-  const container = document.getElementById("todos-container");
-  if (!container || !currentMandara) return;
-
-  container.innerHTML = "";
-  (currentMandara.todos || []).forEach((todo, index) => {
-    const todoEl = document.createElement("div");
-    todoEl.className = "todo-item";
-    todoEl.draggable = true;
-    todoEl.dataset.index = index;
-    todoEl.dataset.id = todo.id;
-    todoEl.innerHTML = `
-      <span class="todo-drag-handle" title="ドラッグして並び替え">☰</span>
-      <input type="checkbox" class="todo-checkbox" data-id="${todo.id}" ${
-      todo.completed ? "checked" : ""
-    }>
-      <span class="todo-text ${todo.completed ? "completed" : ""}" data-id="${
-      todo.id
-    }" title="Click to edit">${todo.text}</span>
-      <button type="button" class="todo-remove" data-id="${todo.id}">×</button>
-    `;
-    container.appendChild(todoEl);
-  });
-
-  // Setup drag and drop after rendering
-  setupTodoDragAndDrop(container, {
-    onReorder: (fromIndex, toIndex) => {
-      if (reorderTodoLogic(currentMandara, fromIndex, toIndex)) {
-        console.log("[INFO] Todo reordered:", fromIndex, "->", toIndex);
-        renderTodos();
-        saveCurrentMandara();
-      }
-    },
-  });
-
-  console.log("[INFO] Rendered todos:", currentMandara.todos?.length || 0);
-}
-
-// Add todo
-function addTodo(text) {
-  const todo = addTodoLogic(currentMandara, text);
-  if (todo) {
-    console.log("[INFO] Todo added:", todo);
-    renderTodos();
-    saveCurrentMandara();
-  } else {
-    console.log("[INFO] Todo not added (empty)");
-  }
-}
-
-// Edit todo
-function editTodo(id) {
-  if (!currentMandara || !currentMandara.todos) return;
-
-  const todo = currentMandara.todos.find((t) => t.id === id);
-  if (todo) {
-    const newText = prompt("TODOを編集:", todo.text);
-
-    if (editTodoLogic(currentMandara, id, newText)) {
-      console.log("[INFO] Todo edited:", id);
-      renderTodos();
-      saveCurrentMandara();
-    } else if (newText !== null && newText.trim() === "") {
-      // Logic module returns false for empty, handle delete confirmation here
-      if (confirm("TODOを削除しますか？")) {
-        removeTodo(id);
-      }
-    }
-  }
-}
-
-// Toggle todo
-function toggleTodo(id) {
-  if (toggleTodoLogic(currentMandara, id)) {
-    console.log("[INFO] Todo toggled:", id);
-    renderTodos();
-    saveCurrentMandara();
-  } else {
-    console.warn("[WARN] Todo not found:", id);
-  }
-}
-
-// Remove todo
-function removeTodo(id) {
-  if (removeTodoLogic(currentMandara, id)) {
-    console.log("[INFO] Todo removed:", id);
-    renderTodos();
-    saveCurrentMandara();
-  } else {
-    console.log("[WARN] Cannot remove todo");
-  }
-}
 
 // Delete current mandara
 async function deleteCurrentMandara() {
@@ -590,6 +442,93 @@ function showListView() {
 // Close list view
 function closeListView() {
   closeListViewModule();
+}
+
+
+// Setup Insight event listeners (uses insightController)
+function setupInsightEventListeners() {
+  if (!insightController) return;
+
+  // API設定タブを初期描画 (ユーザーが初回クリックする前に準備)
+  renderApiSettings();
+
+  // Insight button → 確認画面表示 (即分析しない)
+  const insightBtn = document.getElementById("insight-btn");
+  if (insightBtn) {
+    insightBtn.addEventListener("click", () => {
+      if (insightController.isInsightPanelOpen()) {
+        insightController.closeInsightPanel();
+      } else {
+        insightController.showInsightIntro();
+      }
+    });
+  }
+
+  // Close button
+  const closeBtn = document.getElementById("insight-close-btn");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", insightController.closeInsightPanel);
+  }
+
+  // Rerun button (キャッシュクリア後に再分析)
+  const rerunBtn = document.getElementById("insight-rerun-btn");
+  if (rerunBtn) {
+    rerunBtn.addEventListener("click", () => {
+      clearInsightCache();
+      insightController.startInsightAnalysis();
+    });
+  }
+
+  // Export menu (MD出力)
+  const exportBtn = document.getElementById("insight-export-btn");
+  const exportDropdown = document.getElementById("insight-export-dropdown");
+  const copyBtn = document.getElementById("insight-export-copy");
+  const downloadBtn = document.getElementById("insight-export-download");
+
+  if (exportBtn && exportDropdown) {
+    exportBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      exportDropdown.classList.toggle("is-hidden");
+    });
+    // ドロップダウン外クリックで閉じる
+    document.addEventListener("click", (e) => {
+      if (!exportBtn.contains(e.target) && !exportDropdown.contains(e.target)) {
+        exportDropdown.classList.add("is-hidden");
+      }
+    });
+  }
+  if (copyBtn) {
+    copyBtn.addEventListener("click", async () => {
+      exportDropdown.classList.add("is-hidden");
+      await insightController.copyMarkdown();
+    });
+  }
+  if (downloadBtn) {
+    downloadBtn.addEventListener("click", () => {
+      exportDropdown.classList.add("is-hidden");
+      insightController.downloadMarkdown();
+    });
+  }
+
+  // Tab switching - API設定タブを開いたらローカルバナーを消去し再描画
+  document.querySelectorAll(".insight-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const tabName = tab.dataset.tab;
+      insightController.switchTab(tabName);
+      if (tabName === "api") {
+        // バナーを消してAPI設定を再描画 (最新状態を反映)
+        const banner = document.getElementById("local-mode-banner");
+        if (banner) banner.remove();
+        renderApiSettings();
+      }
+    });
+  });
+
+  // Cross analysis button
+  const crossBtn = document.getElementById("run-cross-analysis-btn");
+  if (crossBtn) {
+    crossBtn.addEventListener("click", insightController.startCrossAnalysis);
+  }
 }
 
 // Setup event listeners
@@ -859,6 +798,9 @@ function setupEventListeners() {
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("[INFO] Mandara app starting...");
 
+  // サイドバー幅切替ボタンを即座に初期化 (データ読込みを待たずに)
+  initSidebarSize();
+
   if (isOnlineMode()) {
     // Online mode - require authentication
     const { onAuthChange } = await import("./auth.js");
@@ -901,6 +843,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // Initialize app logic
 async function initializeApp() {
+  // 共有APIキーを先にロード (存在すれば)
+  await ensureSharedKeysLoaded();
+
+  // タグ/TODO UIコントローラーを初期化
+  tagsTodosUI = createTagsTodosUI({
+    getCurrentMandara: () => currentMandara,
+    saveCurrentMandara,
+  });
+
+  // Insight コントローラーを初期化 (状態参照とコールバックを注入)
+  insightController = createInsightController({
+    getCurrentMandara: () => currentMandara,
+    getAllMandaras: () => allMandaras,
+    getCurrentUserId: () => currentUserId,
+    saveCurrentMandara,
+    addTodo,
+    showToast,
+    storage: Storage,
+  });
+
   // Load all mandaras
   await loadAllMandaras();
 
@@ -973,6 +935,7 @@ async function initializeApp() {
 
   // Setup event listeners
   setupEventListeners();
+  setupInsightEventListeners();
 
   console.log("[INFO] Mandara app initialized");
 }

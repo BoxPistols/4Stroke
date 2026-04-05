@@ -2,19 +2,13 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, setPersistence, browserLocalPersistence, indexedDBLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { ENV_CONFIG } from "./env-config.generated.js";
 
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyC1vcbD5ov1pgQvdb6CAIBFT4zi2mCwFxc",
-  authDomain: "strokes-a0b62.firebaseapp.com",
-  projectId: "strokes-a0b62",
-  storageBucket: "strokes-a0b62.firebasestorage.app",
-  messagingSenderId: "13565861697",
-  appId: "1:13565861697:web:54b8064f372730d3458bc0",
-};
+// Firebase configuration (from .env via env-config.generated.js)
+const firebaseConfig = ENV_CONFIG.FIREBASE;
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
 // Get auth and firestore instances
 export const auth = getAuth(app);

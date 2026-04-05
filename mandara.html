@@ -53,6 +53,11 @@
             SEARCH
           </button>
         </li>
+        <li>
+          <button id="insight-btn" class="insight-btn" title="AI Insight">
+            INSIGHT
+          </button>
+        </li>
         <li class="user-info">
           <button
             id="logout-btn"
@@ -77,6 +82,11 @@
         <div class="mandara-meta">
           <span id="created-date" class="meta-date">作成: -</span>
           <span id="updated-date" class="meta-date">更新: -</span>
+          <div class="sidebar-size-toggle" title="サイドバーの幅を変更">
+            <button type="button" class="sidebar-size-btn" data-size="narrow" title="標準 (400px)">S</button>
+            <button type="button" class="sidebar-size-btn" data-size="medium" title="中 (560px)">M</button>
+            <button type="button" class="sidebar-size-btn" data-size="wide" title="広 (720px)">L</button>
+          </div>
         </div>
       </div>
 
@@ -229,6 +239,87 @@
 
       <div id="mandara-list" class="mandara-list">
         <!-- Will be populated by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Insight Panel -->
+    <div id="insight-panel" class="insight-panel is-hidden">
+      <div class="insight-panel-header">
+        <h2 class="insight-panel-title">MANDARA Insight</h2>
+        <div class="insight-panel-actions">
+          <div class="insight-export-menu">
+            <button id="insight-export-btn" class="btn btn-secondary insight-export-btn" title="Markdownとして出力">
+              MD出力
+            </button>
+            <div id="insight-export-dropdown" class="insight-export-dropdown is-hidden">
+              <button type="button" id="insight-export-copy">クリップボードにコピー</button>
+              <button type="button" id="insight-export-download">ファイル保存 (.md)</button>
+            </div>
+          </div>
+          <button id="insight-rerun-btn" class="btn btn-secondary insight-rerun-btn" title="再分析">
+            再分析
+          </button>
+          <button id="insight-close-btn" class="insight-close-btn" title="Close">
+            &times;
+          </button>
+        </div>
+      </div>
+
+      <div class="insight-tabs">
+        <button class="insight-tab" data-tab="api">API設定</button>
+        <button class="insight-tab active" data-tab="structural">構造分析</button>
+        <button class="insight-tab" data-tab="issues">課題抽出</button>
+        <button class="insight-tab" data-tab="action">アクションプラン</button>
+        <button class="insight-tab" data-tab="cross">横断分析</button>
+      </div>
+
+      <div class="insight-content">
+        <!-- API Settings Tab -->
+        <div id="insight-tab-api" class="insight-tab-content">
+          <div id="api-settings" class="api-settings"></div>
+        </div>
+
+        <!-- Structural Analysis Tab -->
+        <div id="insight-tab-structural" class="insight-tab-content active">
+          <div id="structural-result" class="insight-result">
+            <div class="insight-placeholder">
+              INSIGHTボタンで分析を開始できます
+            </div>
+          </div>
+        </div>
+
+        <!-- Issue Extraction Tab -->
+        <div id="insight-tab-issues" class="insight-tab-content">
+          <div id="issues-result" class="insight-result">
+            <div class="insight-placeholder">
+              構造分析後に課題抽出が実行されます
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Plan Tab -->
+        <div id="insight-tab-action" class="insight-tab-content">
+          <div id="action-result" class="insight-result">
+            <div class="insight-placeholder">
+              課題抽出後にアクションプランが生成されます
+            </div>
+          </div>
+        </div>
+
+        <!-- Cross Analysis Tab -->
+        <div id="insight-tab-cross" class="insight-tab-content">
+          <div class="insight-cross-controls">
+            <button id="run-cross-analysis-btn" class="btn btn-secondary">
+              横断分析を実行
+            </button>
+            <span class="insight-cross-hint">全マンダラを横断的に分析します</span>
+          </div>
+          <div id="cross-result" class="insight-result">
+            <div class="insight-placeholder">
+              横断分析はボタンで個別に実行できます
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
