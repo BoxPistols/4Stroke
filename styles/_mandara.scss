@@ -79,19 +79,32 @@ body:has(.mandara-editor) {
   display: grid;
   grid-template-columns: 1fr 400px;
   gap: var(--spacing-xl);
+  // 9マスグリッドを1画面に収めるため高さを制約
+  // (header + editor padding + title + nav を引いた残りを使う)
+  height: calc(100vh - 240px);
+  min-height: 520px;
+  align-items: stretch;
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
+    height: auto;
+    min-height: auto;
   }
 }
 
-// 9-Grid Mandara
+// 9-Grid Mandara — コンテナ内で100%高さを使う
 .mandara-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   gap: var(--spacing-md);
-  min-height: 600px;
+  height: 100%;
+  min-height: 520px;
+
+  @media (max-width: 1024px) {
+    height: auto;
+    min-height: 520px;
+  }
 
   @media (max-width: 768px) {
     min-height: 400px;
@@ -141,16 +154,39 @@ body:has(.mandara-editor) {
   }
 }
 
-// Memo Area
+// Memo Area — グリッドと同じ高さで内部スクロール
 .mandara-memo-area {
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-lg);
   padding: var(--spacing-xl);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  // サイドバー内スクロール (TODOやタグが増えても親は伸びない)
+  overflow-y: auto;
+  height: 100%;
+  min-height: 0; // gridアイテムが親を突き抜けないようにする重要な指定
+
+  // 内部スクロールバーの装飾
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(174, 129, 255, 0.3);
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(174, 129, 255, 0.5);
+    }
+  }
 
   @media (max-width: 1024px) {
     margin-top: var(--spacing-xl);
+    overflow-y: visible;
+    height: auto;
   }
 
   .memo-title {
@@ -176,7 +212,8 @@ body:has(.mandara-editor) {
 
 .mandara-memo {
   width: 100%;
-  min-height: 200px;
+  min-height: 120px;
+  max-height: 240px;
   background: rgba(0, 0, 0, 0.4);
   border: 2px solid var(--border-light);
   border-radius: var(--radius-md);
@@ -207,10 +244,20 @@ body:has(.mandara-editor) {
     flex-wrap: wrap;
     gap: var(--spacing-sm);
     min-height: 40px;
+    max-height: 120px;
+    overflow-y: auto;
     margin-bottom: var(--spacing-md);
     padding: var(--spacing-sm);
     background: rgba(0, 0, 0, 0.4);
     border-radius: var(--radius-sm);
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(174, 129, 255, 0.3);
+      border-radius: 3px;
+    }
   }
 
   .tag {
@@ -287,10 +334,20 @@ body:has(.mandara-editor) {
     flex-direction: column;
     gap: var(--spacing-sm);
     min-height: 40px;
+    max-height: 280px;
+    overflow-y: auto;
     margin-bottom: var(--spacing-md);
     padding: var(--spacing-sm);
     background: rgba(0, 0, 0, 0.4);
     border-radius: var(--radius-sm);
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(174, 129, 255, 0.3);
+      border-radius: 3px;
+    }
   }
 
   .todo-item {

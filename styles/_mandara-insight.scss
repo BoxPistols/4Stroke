@@ -567,20 +567,35 @@
   font-size: 13px;
 }
 
-.action-add-todo-btn {
+.action-todo-buttons {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.action-add-todo-btn,
+.action-reject-btn {
   padding: 4px 10px;
-  background: rgba(174, 129, 255, 0.2);
-  border: 1px solid rgba(174, 129, 255, 0.4);
   border-radius: 4px;
-  color: var(--color-accent);
   font-size: 12px;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
+}
 
-  &:hover {
+.action-add-todo-btn {
+  background: rgba(174, 129, 255, 0.2);
+  border: 1px solid rgba(174, 129, 255, 0.4);
+  color: var(--color-accent);
+
+  &:hover:not(:disabled) {
     background: rgba(174, 129, 255, 0.4);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 
   &.added {
@@ -588,6 +603,33 @@
     border-color: rgba(80, 250, 123, 0.3);
     color: #50fa7b;
     cursor: default;
+  }
+}
+
+.action-reject-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.55);
+
+  &:hover {
+    background: rgba(255, 85, 85, 0.12);
+    border-color: rgba(255, 85, 85, 0.3);
+    color: #ff5555;
+  }
+}
+
+.action-todo-item.is-rejected {
+  opacity: 0.4;
+
+  .action-todo-text {
+    text-decoration: line-through;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .action-reject-btn {
+    background: rgba(255, 85, 85, 0.1);
+    border-color: rgba(255, 85, 85, 0.25);
+    color: #ff5555;
   }
 }
 

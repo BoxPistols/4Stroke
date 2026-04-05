@@ -166,13 +166,38 @@ export function renderIssueExtraction(result) {
 }
 
 /**
+ * 却下済みTODO管理
+ */
+const REJECTED_KEY = (mandaraId) => `insight_rejected_${mandaraId}`;
+
+function getRejectedTodos(mandaraId) {
+  if (!mandaraId) return new Set();
+  try {
+    return new Set(JSON.parse(localStorage.getItem(REJECTED_KEY(mandaraId)) || "[]"));
+  } catch {
+    return new Set();
+  }
+}
+
+function saveRejectedTodos(mandaraId, set) {
+  if (!mandaraId) return;
+  try {
+    localStorage.setItem(REJECTED_KEY(mandaraId), JSON.stringify(Array.from(set)));
+  } catch {}
+}
+
+/**
  * アクションプラン結果をレンダリング
+ * @param {object} result - アクションプラン結果
  * @param {function} onAddTodo - TODO追加コールバック (text) => void
  * @param {function} onCreateGarage - GARAGE作成コールバック (garageData) => void
+ * @param {string} [mandaraId] - 却下状態の永続化用
  */
-export function renderActionPlan(result, onAddTodo, onCreateGarage) {
+export function renderActionPlan(result, onAddTodo, onCreateGarage, mandaraId = null) {
   const container = document.getElementById("action-result");
   if (!container || !result) return;
+
+  const rejected = getRejectedTodos(mandaraId);
 
   // TODOs
   const todosHtml = (result.todos || [])
@@ -184,11 +209,17 @@ export function renderActionPlan(result, onAddTodo, onCreateGarage) {
         hold: "保留",
       }[todo.priority] || todo.priority;
 
+      const isRejected = rejected.has(todo.text);
+      const rejectedClass = isRejected ? " is-rejected" : "";
+
       return `
-        <div class="action-todo-item priority-${todo.priority}">
+        <div class="action-todo-item priority-${todo.priority}${rejectedClass}" data-text="${encodeURIComponent(todo.text)}">
           <span class="action-todo-priority">${priorityLabel}</span>
           <span class="action-todo-text">${todo.text}</span>
-          <button class="action-add-todo-btn" data-index="${i}" title="TODOに追加">+TODO</button>
+          <div class="action-todo-buttons">
+            <button class="action-add-todo-btn" data-index="${i}" title="TODOに追加"${isRejected ? " disabled" : ""}>+TODO</button>
+            <button class="action-reject-btn" data-index="${i}" title="${isRejected ? "却下を解除" : "却下（やらない）"}">${isRejected ? "↩戻す" : "却下"}</button>
+          </div>
         </div>`;
     })
     .join("");
@@ -246,6 +277,25 @@ export function renderActionPlan(result, onAddTodo, onCreateGarage) {
         e.target.disabled = true;
         e.target.classList.add("added");
       }
+    });
+  });
+
+  // Event: reject/却下
+  container.querySelectorAll(".action-reject-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const index = parseInt(e.target.dataset.index);
+      const todo = result.todos[index];
+      if (!todo) return;
+
+      const currentRejected = getRejectedTodos(mandaraId);
+      if (currentRejected.has(todo.text)) {
+        currentRejected.delete(todo.text);
+      } else {
+        currentRejected.add(todo.text);
+      }
+      saveRejectedTodos(mandaraId, currentRejected);
+      // 再描画
+      renderActionPlan(result, onAddTodo, onCreateGarage, mandaraId);
     });
   });
 

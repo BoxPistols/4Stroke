@@ -684,7 +684,7 @@ async function startInsightAnalysis() {
         } else if (phase === "issues") {
           renderIssueExtraction(result);
         } else if (phase === "action") {
-          renderActionPlan(result, handleInsightAddTodo, handleInsightCreateGarage);
+          renderActionPlan(result, handleInsightAddTodo, handleInsightCreateGarage, currentMandara?.id);
         }
       }
     });
