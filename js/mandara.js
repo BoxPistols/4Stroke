@@ -448,6 +448,9 @@ function closeListView() {
 function setupInsightEventListeners() {
   if (!insightController) return;
 
+  // API設定タブを初期描画 (ユーザーが初回クリックする前に準備)
+  renderApiSettings();
+
   // Insight button → 確認画面表示 (即分析しない)
   const insightBtn = document.getElementById("insight-btn");
   if (insightBtn) {
@@ -475,11 +478,15 @@ function setupInsightEventListeners() {
     });
   }
 
-  // Tab switching (API設定タブを開いたら描画)
+  // Tab switching - API設定タブを開いたらローカルバナーを消去し再描画
   document.querySelectorAll(".insight-tab").forEach((tab) => {
     tab.addEventListener("click", () => {
-      insightController.switchTab(tab.dataset.tab);
-      if (tab.dataset.tab === "api") {
+      const tabName = tab.dataset.tab;
+      insightController.switchTab(tabName);
+      if (tabName === "api") {
+        // バナーを消してAPI設定を再描画 (最新状態を反映)
+        const banner = document.getElementById("local-mode-banner");
+        if (banner) banner.remove();
         renderApiSettings();
       }
     });

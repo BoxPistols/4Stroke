@@ -1010,6 +1010,13 @@
   flex-wrap: wrap;
 }
 
+// API設定タブがアクティブなときはバナーを非表示
+// (タブ切替イベントで削除もしているが二重防御)
+.insight-tab-content#insight-tab-api.active ~ .local-mode-banner,
+.insight-content:has(#insight-tab-api.active) .local-mode-banner {
+  display: none;
+}
+
 .local-banner-info {
   display: flex;
   align-items: center;
