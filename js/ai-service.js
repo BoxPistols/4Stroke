@@ -84,6 +84,13 @@ async function callGeminiREST(apiKey, prompt, config) {
   if (!res.ok) {
     const errorBody = await res.text();
     console.error("[AI] Gemini REST error:", res.status, errorBody);
+    // 403 (PERMISSION_DENIED / SERVICE_DISABLED) や 400 (INVALID_KEY) はキー問題
+    if (res.status === 403 || res.status === 400) {
+      const err = new Error("API_KEY_INVALID");
+      err.status = res.status;
+      err.body = errorBody;
+      throw err;
+    }
     throw new Error(`Gemini API error: ${res.status}`);
   }
 
@@ -157,15 +164,38 @@ async function callAI(prompt, configOverrides = {}) {
   await ensureBackend();
   const config = { ...GENERATION_CONFIG, ...configOverrides };
 
-  switch (activeBackend) {
-    case "user-rest":
-      return await callGeminiREST(getUserApiKey(), prompt, config);
-    case "firebase":
-      return await callFirebaseAI(prompt, config);
-    case "firebase-rest":
-      return await callGeminiREST(getFirebaseApiKey(), prompt, config);
-    default:
-      throw new Error("API_KEY_REQUIRED");
+  try {
+    switch (activeBackend) {
+      case "user-rest":
+        return await callGeminiREST(getUserApiKey(), prompt, config);
+      case "firebase":
+        return await callFirebaseAI(prompt, config);
+      case "firebase-rest":
+        return await callGeminiREST(getFirebaseApiKey(), prompt, config);
+      default:
+        throw new Error("API_KEY_REQUIRED");
+    }
+  } catch (e) {
+    // Firebase apiKey で Generative Language API が未有効化などの場合
+    // → ユーザーキー入力を促すため API_KEY_REQUIRED に変換
+    if (e.message === "API_KEY_INVALID") {
+      if (activeBackend === "firebase-rest") {
+        console.warn(
+          "[AI] Firebase apiKey cannot access Generative Language API. " +
+          "User must provide their own Gemini API key."
+        );
+        activeBackend = null;
+        throw new Error("API_KEY_REQUIRED");
+      }
+      if (activeBackend === "user-rest") {
+        // ユーザー入力キーが無効 → 入力し直してもらう
+        console.warn("[AI] User-provided API key is invalid");
+        setUserApiKey("");
+        activeBackend = null;
+        throw new Error("API_KEY_REQUIRED");
+      }
+    }
+    throw e;
   }
 }
 
