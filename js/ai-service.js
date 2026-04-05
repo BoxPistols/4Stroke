@@ -1,50 +1,80 @@
 // AI Service - Unified interface for AI providers
 //
-// 責務: ユーザーが保存したAPIキーを使って、指定プロバイダーでテキスト/JSONを生成する
-// 将来的にClaudeやOpenAIを追加したい場合は ai-providers.js にプロバイダーを登録するだけで済む
+// 責務:
+// - アクティブなプロバイダー/モデルを管理
+// - モデルの tier に応じて共有キー or ユーザーキーを使い分け
+// - FREE tier の場合は日次レート制限を適用
 
-import { getProvider, ProviderKey, testProviderConnection } from "./ai-providers.js";
+import {
+  getProvider,
+  getDefaultModelId,
+  getModelInfo,
+  ProviderKey,
+  ModelTier,
+  testProviderConnection,
+  listProviders,
+} from "./ai-providers.js";
 import { AIError, ApiErrorCode } from "./ai-errors.js";
+import {
+  checkRateLimit,
+  incrementUsage,
+  getRemainingUsage,
+} from "./ai-rate-limiter.js";
+import { getSharedKey } from "./ai-config.js";
 
-// デフォルト設定
 const DEFAULT_PROVIDER = ProviderKey.GEMINI;
 const ACTIVE_PROVIDER_STORAGE = "ai_active_provider";
+const ACTIVE_MODEL_STORAGE = "ai_active_model";
 
 const GENERATION_CONFIG = {
   temperature: 0.7,
   topP: 0.9,
   topK: 40,
-  maxOutputTokens: 4096,
+  maxOutputTokens: 8192,
   responseMimeType: "application/json",
 };
 
-// --- アクティブプロバイダー管理 ---
+// --- アクティブプロバイダー/モデル管理 ---
 
-/**
- * 現在選択されているプロバイダーIDを取得
- */
 export function getActiveProvider() {
   try {
-    return localStorage.getItem(ACTIVE_PROVIDER_STORAGE) || DEFAULT_PROVIDER;
+    const stored = localStorage.getItem(ACTIVE_PROVIDER_STORAGE);
+    return stored || DEFAULT_PROVIDER;
   } catch {
     return DEFAULT_PROVIDER;
   }
 }
 
-/**
- * アクティブプロバイダーを設定
- */
 export function setActiveProvider(providerId) {
   try {
     localStorage.setItem(ACTIVE_PROVIDER_STORAGE, providerId);
+    // プロバイダーを変えたらデフォルトモデルに戻す
+    localStorage.setItem(ACTIVE_MODEL_STORAGE, getDefaultModelId(providerId));
   } catch {}
 }
 
-// --- APIキー管理 (プロバイダー別) ---
+export function getActiveModel() {
+  try {
+    const stored = localStorage.getItem(ACTIVE_MODEL_STORAGE);
+    const providerId = getActiveProvider();
+    // 保存されたモデルが現在のプロバイダーに属するか検証
+    if (stored && getModelInfo(providerId, stored)) {
+      return stored;
+    }
+    return getDefaultModelId(providerId);
+  } catch {
+    return getDefaultModelId(getActiveProvider());
+  }
+}
 
-/**
- * 指定プロバイダーのAPIキーを取得
- */
+export function setActiveModel(modelId) {
+  try {
+    localStorage.setItem(ACTIVE_MODEL_STORAGE, modelId);
+  } catch {}
+}
+
+// --- APIキー管理 ---
+
 export function getApiKey(providerId = getActiveProvider()) {
   try {
     const provider = getProvider(providerId);
@@ -54,9 +84,6 @@ export function getApiKey(providerId = getActiveProvider()) {
   }
 }
 
-/**
- * 指定プロバイダーのAPIキーを保存
- */
 export function setApiKey(key, providerId = getActiveProvider()) {
   const provider = getProvider(providerId);
   const trimmed = (key || "").trim();
@@ -70,20 +97,49 @@ export function setApiKey(key, providerId = getActiveProvider()) {
   console.log(`[AI] API key ${trimmed ? "set" : "cleared"} for ${providerId}`);
 }
 
-/**
- * APIキーを持っているか
- */
 export function hasApiKey(providerId = getActiveProvider()) {
   return !!getApiKey(providerId);
 }
 
+// --- キー解決ロジック ---
+
 /**
- * 接続テスト
- * @returns {Promise<{ok: boolean, error?: AIError}>}
+ * モデルの tier に応じて使うべきキーを決定
+ * FREE: ユーザーキー優先、なければ共有キー
+ * PREMIUM: ユーザーキーのみ
+ * @returns {{ apiKey: string, isUserKey: boolean, tier: string }}
  */
-export async function testConnection(apiKey, providerId = getActiveProvider()) {
+function resolveKey(providerId, modelId) {
+  const model = getModelInfo(providerId, modelId);
+  if (!model) {
+    throw new AIError(ApiErrorCode.INVALID_MODEL, { detail: modelId });
+  }
+
+  const userKey = getApiKey(providerId);
+
+  if (model.tier === ModelTier.PREMIUM) {
+    if (!userKey) {
+      throw new AIError(ApiErrorCode.API_KEY_REQUIRED, {
+        detail: `${model.label} は自身のAPIキーが必要です`,
+      });
+    }
+    return { apiKey: userKey, isUserKey: true, tier: model.tier };
+  }
+
+  // FREE tier
+  const sharedKey = getSharedKey(providerId);
+  const apiKey = userKey || sharedKey || "";
+  if (!apiKey) {
+    throw new AIError(ApiErrorCode.API_KEY_REQUIRED);
+  }
+  return { apiKey, isUserKey: !!userKey, tier: model.tier };
+}
+
+// --- テスト接続 ---
+
+export async function testConnection(apiKey, providerId = getActiveProvider(), modelId = null) {
   try {
-    await testProviderConnection(providerId, apiKey);
+    await testProviderConnection(providerId, apiKey, modelId);
     return { ok: true };
   } catch (e) {
     const err = e instanceof AIError ? e : new AIError(ApiErrorCode.PROVIDER_ERROR, { cause: e });
@@ -93,25 +149,32 @@ export async function testConnection(apiKey, providerId = getActiveProvider()) {
 
 // --- コア呼び出し ---
 
-/**
- * 指定プロバイダーで AI を呼び出す
- */
 async function callAI(prompt, configOverrides = {}) {
   const providerId = getActiveProvider();
-  const apiKey = getApiKey(providerId);
+  const modelId = getActiveModel();
+  const provider = getProvider(providerId);
 
-  if (!apiKey) {
-    throw new AIError(ApiErrorCode.API_KEY_REQUIRED);
+  // キー解決 (共有 or ユーザー)
+  const { apiKey, isUserKey, tier } = resolveKey(providerId, modelId);
+
+  // FREE tier + 共有キー利用時のみレート制限
+  const usageKey = `${providerId}:${modelId}`;
+  if (tier === ModelTier.FREE && !isUserKey) {
+    checkRateLimit(usageKey);
   }
 
-  const provider = getProvider(providerId);
   const config = { ...GENERATION_CONFIG, ...configOverrides };
 
   try {
-    return await provider.call(apiKey, provider.defaultModel, prompt, config);
+    const result = await provider.call(apiKey, modelId, prompt, config);
+    // 成功時にカウント増加（共有キー利用時のみ）
+    if (tier === ModelTier.FREE && !isUserKey) {
+      incrementUsage(usageKey);
+    }
+    return result;
   } catch (e) {
-    // APIキー無効の場合はキーをクリア（次回はREQUIRED扱い）
-    if (e instanceof AIError && e.code === ApiErrorCode.API_KEY_INVALID) {
+    // ユーザーキーが無効ならクリア
+    if (e instanceof AIError && e.code === ApiErrorCode.API_KEY_INVALID && isUserKey) {
       setApiKey("", providerId);
     }
     throw e;
@@ -120,9 +183,6 @@ async function callAI(prompt, configOverrides = {}) {
 
 // --- Public API ---
 
-/**
- * JSON レスポンスを取得
- */
 export async function generateJSON(prompt, configOverrides = {}) {
   const text = await callAI(prompt, {
     responseMimeType: "application/json",
@@ -134,12 +194,10 @@ export async function generateJSON(prompt, configOverrides = {}) {
   try {
     return JSON.parse(text);
   } catch {
-    // コードブロック内のJSON抽出
     const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
     if (jsonMatch) {
       try { return JSON.parse(jsonMatch[1].trim()); } catch {}
     }
-    // { から } までの範囲を抽出
     const braceMatch = text.match(/\{[\s\S]*\}/);
     if (braceMatch) {
       try { return JSON.parse(braceMatch[0]); } catch {}
@@ -149,36 +207,37 @@ export async function generateJSON(prompt, configOverrides = {}) {
   }
 }
 
-/**
- * プレーンテキストレスポンスを取得
- */
 export async function generateText(prompt) {
   return await callAI(prompt, { responseMimeType: "text/plain" });
 }
 
-/**
- * AI 機能が利用可能か（APIキーがあれば true）
- */
 export function isAIAvailable() {
-  return hasApiKey();
+  // 共有キーがあるか、ユーザーキーがあれば利用可能
+  for (const p of listProviders()) {
+    if (getApiKey(p.id) || getSharedKey(p.id)) return true;
+  }
+  return false;
 }
 
-/**
- * 現在のバックエンド情報 (デバッグ用)
- */
 export function getBackendInfo() {
   const providerId = getActiveProvider();
+  const modelId = getActiveModel();
   const provider = getProvider(providerId);
+  const modelInfo = getModelInfo(providerId, modelId);
   return {
     provider: providerId,
-    name: provider.name,
-    model: provider.defaultModel,
-    hasKey: hasApiKey(providerId),
+    providerName: provider.name,
+    model: modelId,
+    modelLabel: modelInfo?.label || modelId,
+    tier: modelInfo?.tier,
+    hasUserKey: hasApiKey(providerId),
+    remainingUsage: modelInfo?.tier === ModelTier.FREE
+      ? getRemainingUsage(`${providerId}:${modelId}`)
+      : null,
   };
 }
 
-// --- Backwards compatibility (既存コードとの互換性) ---
-
+// --- 後方互換エイリアス ---
 export const getUserApiKey = getApiKey;
 export const setUserApiKey = setApiKey;
 export const hasUserApiKey = hasApiKey;

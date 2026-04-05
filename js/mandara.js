@@ -31,13 +31,10 @@ import {
   clearCache as clearInsightCache,
 } from "./mandara-insight.js";
 import {
-  hasApiKey,
-  setApiKey,
-  testConnection,
-  getActiveProvider,
+  isAIAvailable as checkAIAvailable,
 } from "./ai-service.js";
-import { getProvider } from "./ai-providers.js";
 import { AIError, ApiErrorCode } from "./ai-errors.js";
+import { renderApiSettings } from "./mandara-insight-api-tab.js";
 import {
   openInsightPanel,
   closeInsightPanel,
@@ -697,23 +694,27 @@ async function startInsightAnalysis() {
 
     const code = error instanceof AIError ? error.code : null;
 
-    // APIキー必要 → ローカル分析にフォールバック
+    // APIキー必要 → ローカル分析にフォールバック + API設定タブへ誘導
     if (code === ApiErrorCode.API_KEY_REQUIRED) {
       console.log("[Insight] No valid API key, falling back to local analysis");
       runLocalFallback();
-      showToast("AI分析が利用できないため、ローカル分析を表示しています");
+      showToast("APIキー未設定のため、ローカル分析を表示しています");
       return;
     }
 
-    // キー無効 → モーダル再表示
+    // キー無効 → API設定タブを開く
     if (code === ApiErrorCode.API_KEY_INVALID) {
-      closeInsightPanel();
-      showApiKeyModal();
-      const status = document.getElementById("apikey-status");
-      if (status) {
-        status.textContent = error.userMessage;
-        status.className = "apikey-status error";
-      }
+      openInsightPanel();
+      switchTab("api");
+      renderApiSettings();
+      showToast("APIキーが無効です。API設定タブで再入力してください");
+      return;
+    }
+
+    // レート制限 → ローカル分析にフォールバック
+    if (code === ApiErrorCode.RATE_LIMITED) {
+      runLocalFallback();
+      showToast(error.userMessage);
       return;
     }
 
@@ -743,8 +744,9 @@ async function startCrossAnalysis() {
   } catch (error) {
     console.error("[Insight] Cross analysis failed:", error);
     const code = error instanceof AIError ? error.code : null;
-    if (code === ApiErrorCode.API_KEY_REQUIRED) {
-      showApiKeyModal();
+    if (code === ApiErrorCode.API_KEY_REQUIRED || code === ApiErrorCode.API_KEY_INVALID) {
+      switchTab("api");
+      renderApiSettings();
       return;
     }
     const message = error instanceof AIError
@@ -784,124 +786,19 @@ async function handleInsightCreateGarage(garageData) {
   }
 }
 
-// --- API Key Modal ---
+// --- API Settings Tab ---
 
-function showApiKeyModal() {
-  const modal = document.getElementById("apikey-modal");
-  if (!modal) return;
-  modal.classList.remove("is-hidden");
-  const input = document.getElementById("apikey-input");
-  if (input) input.focus();
+/**
+ * API設定タブを開く (旧 showApiKeyModal の代替)
+ */
+function showApiSettings() {
+  openInsightPanel();
+  switchTab("api");
+  renderApiSettings();
 }
 
-function hideApiKeyModal() {
-  const modal = document.getElementById("apikey-modal");
-  if (modal) modal.classList.add("is-hidden");
-}
-
-function setupApiKeyModalListeners() {
-  const saveBtn = document.getElementById("apikey-save-btn");
-  const cancelBtn = document.getElementById("apikey-cancel-btn");
-  const backdrop = document.querySelector(".apikey-modal-backdrop");
-  const toggleBtn = document.getElementById("apikey-toggle-visibility");
-  const input = document.getElementById("apikey-input");
-  const status = document.getElementById("apikey-status");
-
-  if (saveBtn) {
-    saveBtn.addEventListener("click", async () => {
-      const key = input?.value?.trim();
-      if (!key) {
-        if (status) {
-          status.textContent = "APIキーを入力してください";
-          status.className = "apikey-status error";
-        }
-        return;
-      }
-
-      // 保存してバックエンドをリセット
-      saveBtn.disabled = true;
-      saveBtn.textContent = "確認中...";
-      if (status) {
-        status.textContent = "APIキーを確認しています...";
-        status.className = "apikey-status checking";
-      }
-
-      // プロバイダーの testConnection で一括検証
-      try {
-        const providerId = getActiveProvider();
-        const result = await testConnection(key, providerId);
-
-        if (!result.ok) {
-          const err = result.error;
-          const isAuthError =
-            err.code === ApiErrorCode.API_KEY_INVALID ||
-            err.code === ApiErrorCode.AUTH_FAILED;
-          const isRateLimit = err.code === ApiErrorCode.RATE_LIMITED;
-
-          // キー問題以外は保存する（レート制限はキー自体は有効）
-          if (!isAuthError) {
-            setApiKey(key, providerId);
-          }
-
-          // レート制限の場合はキーを保存してモーダルを閉じ、ローカル分析にフォールバック
-          if (isRateLimit) {
-            hideApiKeyModal();
-            showToast("レート制限のため、ローカル分析を表示します");
-            runLocalFallback();
-            saveBtn.disabled = false;
-            saveBtn.textContent = "保存して分析開始";
-            return;
-          }
-
-          if (status) {
-            status.textContent = err.userMessage;
-            status.className = "apikey-status error";
-          }
-          saveBtn.disabled = false;
-          saveBtn.textContent = "保存して分析開始";
-          return;
-        }
-
-        // 接続成功 → 保存
-        setApiKey(key, getActiveProvider());
-
-        if (status) {
-          status.textContent = "APIキーを保存しました";
-          status.className = "apikey-status success";
-        }
-
-        hideApiKeyModal();
-        showToast("APIキーを保存しました");
-        startInsightAnalysis();
-      } catch (e) {
-        console.error("[AI] Key test error:", e);
-        if (status) {
-          status.textContent = `接続エラー: ${e.message}`;
-          status.className = "apikey-status error";
-        }
-      } finally {
-        saveBtn.disabled = false;
-        saveBtn.textContent = "保存して分析開始";
-      }
-    });
-  }
-
-  if (cancelBtn) {
-    cancelBtn.addEventListener("click", hideApiKeyModal);
-  }
-
-  if (backdrop) {
-    backdrop.addEventListener("click", hideApiKeyModal);
-  }
-
-  if (toggleBtn && input) {
-    toggleBtn.addEventListener("click", () => {
-      const isPassword = input.type === "password";
-      input.type = isPassword ? "text" : "password";
-      toggleBtn.textContent = isPassword ? "隠す" : "表示";
-    });
-  }
-}
+// 互換エイリアス
+const showApiKeyModal = showApiSettings;
 
 // Setup Insight event listeners
 function setupInsightEventListeners() {
@@ -932,10 +829,13 @@ function setupInsightEventListeners() {
     });
   }
 
-  // Tab switching
+  // Tab switching - API設定タブを開いたら描画
   document.querySelectorAll(".insight-tab").forEach((tab) => {
     tab.addEventListener("click", () => {
       switchTab(tab.dataset.tab);
+      if (tab.dataset.tab === "api") {
+        renderApiSettings();
+      }
     });
   });
 
@@ -944,9 +844,6 @@ function setupInsightEventListeners() {
   if (crossBtn) {
     crossBtn.addEventListener("click", startCrossAnalysis);
   }
-
-  // API key modal
-  setupApiKeyModalListeners();
 }
 
 // Setup event listeners

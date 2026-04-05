@@ -252,6 +252,7 @@
       </div>
 
       <div class="insight-tabs">
+        <button class="insight-tab" data-tab="api">API設定</button>
         <button class="insight-tab active" data-tab="structural">構造分析</button>
         <button class="insight-tab" data-tab="issues">課題抽出</button>
         <button class="insight-tab" data-tab="action">アクションプラン</button>
@@ -259,6 +260,11 @@
       </div>
 
       <div class="insight-content">
+        <!-- API Settings Tab -->
+        <div id="insight-tab-api" class="insight-tab-content">
+          <div id="api-settings" class="api-settings"></div>
+        </div>
+
         <!-- Structural Analysis Tab -->
         <div id="insight-tab-structural" class="insight-tab-content active">
           <div id="structural-result" class="insight-result">
@@ -300,51 +306,6 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- API Key Modal -->
-    <div id="apikey-modal" class="apikey-modal is-hidden">
-      <div class="apikey-modal-backdrop"></div>
-      <div class="apikey-modal-content">
-        <h3>Gemini API キー設定</h3>
-        <p class="apikey-description">
-          MANDARA Insight には Gemini API キーが必要です。<br />
-          <a
-            href="https://aistudio.google.com/apikey"
-            target="_blank"
-            rel="noopener"
-          >Google AI Studio</a> で無料のキーを取得できます。
-        </p>
-        <div class="apikey-input-group">
-          <input
-            type="password"
-            id="apikey-input"
-            class="apikey-input"
-            placeholder="AIza..."
-            autocomplete="off"
-          />
-          <button
-            type="button"
-            id="apikey-toggle-visibility"
-            class="apikey-toggle-btn"
-            title="表示切替"
-          >
-            表示
-          </button>
-        </div>
-        <div id="apikey-status" class="apikey-status"></div>
-        <div class="apikey-actions">
-          <button type="button" id="apikey-save-btn" class="btn btn-secondary">
-            保存して分析開始
-          </button>
-          <button type="button" id="apikey-cancel-btn" class="btn btn-danger">
-            キャンセル
-          </button>
-        </div>
-        <p class="apikey-note">
-          キーはブラウザのlocalStorageに保存されます。サーバーには送信されません。
-        </p>
       </div>
     </div>
 
