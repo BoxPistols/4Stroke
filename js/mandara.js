@@ -624,6 +624,108 @@ function closeListView() {
 // Last analysis results (for cross-tab references)
 let lastAnalysisResults = null;
 
+// Insightパネルを開いて確認画面を表示 (分析は開始しない)
+function showInsightIntro() {
+  if (!currentMandara) return;
+
+  const readiness = checkAnalysisReady(currentMandara);
+  const filledCount = readiness.filledCount ?? 0;
+
+  openInsightPanel();
+  switchTab("structural");
+  removeLocalBanner();
+
+  // 事前チェック: 入力不足
+  if (readiness.reason === "INSUFFICIENT_CONTENT") {
+    const container = document.getElementById("structural-result");
+    if (container) {
+      container.innerHTML = `
+        <div class="insight-intro">
+          <div class="insight-intro-icon">!</div>
+          <h3 class="insight-intro-title">入力が不足しています</h3>
+          <p class="insight-intro-text">
+            分析には最低${readiness.required}セル以上の入力が必要です。<br>
+            現在 ${filledCount} / 9 セルが記入されています。
+          </p>
+          <p class="insight-intro-hint">
+            マンダラのセルを埋めてから再度INSIGHTを開いてください。
+          </p>
+        </div>`;
+    }
+    return;
+  }
+
+  // AI利用不可 → ローカル分析可能な旨を案内
+  const aiAvailable = readiness.available;
+  const modeLabel = aiAvailable ? "AI分析" : "ローカル簡易分析";
+  const modeDesc = aiAvailable
+    ? "Gemini/GPTが3段階でマンダラを分析します。分析ごとにAPIを消費します。"
+    : "AI未使用のヒューリスティック分析を実行します (APIキー不要)。";
+
+  const container = document.getElementById("structural-result");
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="insight-intro">
+      <h3 class="insight-intro-title">${modeLabel}を実行しますか？</h3>
+      <div class="insight-intro-stats">
+        <div class="insight-intro-stat">
+          <span class="insight-intro-stat-label">記入セル</span>
+          <span class="insight-intro-stat-value">${filledCount} / 9</span>
+        </div>
+        <div class="insight-intro-stat">
+          <span class="insight-intro-stat-label">タイトル</span>
+          <span class="insight-intro-stat-value">${escapeHtmlLocal(currentMandara.title) || "(無題)"}</span>
+        </div>
+      </div>
+      <p class="insight-intro-text">${modeDesc}</p>
+      ${aiAvailable
+        ? `<p class="insight-intro-hint">構造分析 → 課題抽出 → アクションプラン の順に自動実行されます。</p>`
+        : `<p class="insight-intro-hint">AI分析を使うには API設定 タブでキーを設定してください。</p>`}
+      <div class="insight-intro-actions">
+        <button type="button" id="insight-start-btn" class="insight-intro-btn primary">
+          ${aiAvailable ? "AI分析を開始" : "ローカル分析を表示"}
+        </button>
+        ${aiAvailable
+          ? `<button type="button" id="insight-local-btn" class="insight-intro-btn secondary">ローカル簡易分析のみ</button>`
+          : `<button type="button" id="insight-api-btn" class="insight-intro-btn secondary">API設定を開く</button>`}
+      </div>
+    </div>`;
+
+  // イベント紐付け
+  const startBtn = document.getElementById("insight-start-btn");
+  if (startBtn) {
+    startBtn.addEventListener("click", () => {
+      if (aiAvailable) {
+        startInsightAnalysis();
+      } else {
+        runLocalFallback();
+      }
+    });
+  }
+  const localBtn = document.getElementById("insight-local-btn");
+  if (localBtn) {
+    localBtn.addEventListener("click", runLocalFallback);
+  }
+  const apiBtn = document.getElementById("insight-api-btn");
+  if (apiBtn) {
+    apiBtn.addEventListener("click", () => {
+      switchTab("api");
+      renderApiSettings();
+    });
+  }
+}
+
+// HTMLエスケープ (mandara.js内の軽量ヘルパー)
+function escapeHtmlLocal(str) {
+  return String(str == null ? "" : str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // Run local (non-AI) analysis
 function runLocalFallback() {
   if (!currentMandara) return;
@@ -844,14 +946,14 @@ const showApiKeyModal = showApiSettings;
 
 // Setup Insight event listeners
 function setupInsightEventListeners() {
-  // Insight button
+  // Insight button - 即分析開始ではなく確認画面を表示
   const insightBtn = document.getElementById("insight-btn");
   if (insightBtn) {
     insightBtn.addEventListener("click", () => {
       if (isInsightPanelOpen()) {
         closeInsightPanel();
       } else {
-        startInsightAnalysis();
+        showInsightIntro();
       }
     });
   }
