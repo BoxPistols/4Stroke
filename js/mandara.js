@@ -35,6 +35,7 @@ import {
 } from "./ai-service.js";
 import { AIError, ApiErrorCode } from "./ai-errors.js";
 import { renderApiSettings } from "./mandara-insight-api-tab.js";
+import { ensureSharedKeysLoaded } from "./ai-config.js";
 import {
   openInsightPanel,
   closeInsightPanel,
@@ -1155,6 +1156,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // Initialize app logic
 async function initializeApp() {
+  // 共有APIキーを先にロード (存在すれば)
+  await ensureSharedKeysLoaded();
+
   // Load all mandaras
   await loadAllMandaras();
 
