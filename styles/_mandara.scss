@@ -120,10 +120,10 @@ body:has(.mandara-editor) {
   display: grid;
   grid-template-columns: 1fr 400px;
   gap: var(--spacing-xl);
-  // 9マスグリッドを1画面に収めるため高さを制約
-  // (header + editor padding + title + nav を引いた残りを使う)
-  height: calc(100vh - 240px);
-  min-height: 520px;
+  // 9マスグリッドを1画面に収めるため高さを制約しつつ、
+  // 過度な引き伸ばし (高解像度ディスプレイでセルが大きすぎる) を防ぐ
+  // clamp(最小, 推奨, 最大) で 520px 〜 760px の範囲内に収める
+  height: clamp(520px, calc(100vh - 240px), 760px);
   align-items: stretch;
   transition: grid-template-columns 0.2s ease;
 
