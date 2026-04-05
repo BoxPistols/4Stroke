@@ -6,51 +6,32 @@ import {
   Storage,
 } from "./storage-service.js";
 import { TIMINGS } from "./constants.js";
-import {
-  generateId,
-  createNewMandara as createMandaraLogic,
-  addTag as addTagLogic,
-  editTag as editTagLogic,
-  removeTag as removeTagLogic,
-  addTodo as addTodoLogic,
-  editTodo as editTodoLogic,
-  toggleTodo as toggleTodoLogic,
-  removeTodo as removeTodoLogic,
-  reorderTodo as reorderTodoLogic,
-} from "./mandara-logic.js";
-import { setupTodoDragAndDrop } from "./todo-drag.js";
+import { createNewMandara as createMandaraLogic } from "./mandara-logic.js";
 import {
   renderMandaraList as renderMandaraListView,
   showListView as showListViewModule,
   closeListView as closeListViewModule,
 } from "./mandara-list-view.js";
-import {
-  checkAnalysisReady,
-  runFullAnalysis,
-  runCrossAnalysis,
-  clearCache as clearInsightCache,
-} from "./mandara-insight.js";
-import {
-  isAIAvailable as checkAIAvailable,
-} from "./ai-service.js";
-import { AIError, ApiErrorCode } from "./ai-errors.js";
-import { renderApiSettings } from "./mandara-insight-api-tab.js";
+import { clearCache as clearInsightCache } from "./mandara-insight.js";
 import { ensureSharedKeysLoaded } from "./ai-config.js";
-import {
-  openInsightPanel,
-  closeInsightPanel,
-  isInsightPanelOpen,
-  switchTab,
-  showLoading,
-  showError,
-  renderStructuralAnalysis,
-  renderIssueExtraction,
-  renderActionPlan,
-  renderCrossAnalysis,
-  renderLocalAnalysis,
-  removeLocalBanner,
-} from "./mandara-insight-ui.js";
-import { analyzeLocally } from "./mandara-local-analyzer.js";
+import { createInsightController } from "./mandara-insight-controller.js";
+import { renderApiSettings } from "./mandara-insight-api-tab.js";
+import { createTagsTodosUI } from "./mandara-tags-todos-ui.js";
+
+// Controllers (初期化時に生成される)
+let insightController = null;
+let tagsTodosUI = null;
+
+// タグ/TODO 操作のラッパー (初期化前でも安全に呼べる)
+const renderTags = () => tagsTodosUI?.renderTags();
+const addTag = (tag) => tagsTodosUI?.addTag(tag);
+const editTag = (index) => tagsTodosUI?.editTag(index);
+const removeTag = (tag) => tagsTodosUI?.removeTag(tag);
+const renderTodos = () => tagsTodosUI?.renderTodos();
+const addTodo = (text) => tagsTodosUI?.addTodo(text);
+const editTodo = (id) => tagsTodosUI?.editTodo(id);
+const toggleTodo = (id) => tagsTodosUI?.toggleTodo(id);
+const removeTodo = (id) => tagsTodosUI?.removeTodo(id);
 
 // Current state
 let currentUserId = null;
@@ -234,163 +215,6 @@ function debouncedSave() {
   }, TIMINGS.DEBOUNCE_DELAY);
 }
 
-// Render tags
-function renderTags() {
-  const container = document.getElementById("tags-container");
-  if (!container || !currentMandara) return;
-
-  container.innerHTML = "";
-  (currentMandara.tags || []).forEach((tag, index) => {
-    const tagEl = document.createElement("span");
-    tagEl.className = "tag";
-
-    const tagText = document.createElement("span");
-    tagText.className = "tag-text";
-    tagText.textContent = tag;
-    tagText.dataset.index = index;
-    tagText.title = "Click to edit";
-    tagEl.appendChild(tagText);
-
-    const removeBtn = document.createElement("button");
-    removeBtn.className = "tag-remove";
-    removeBtn.dataset.tag = tag;
-    removeBtn.textContent = "×";
-    removeBtn.setAttribute("type", "button");
-    removeBtn.setAttribute("aria-label", `Remove tag ${tag}`);
-
-    tagEl.appendChild(removeBtn);
-    container.appendChild(tagEl);
-  });
-
-}
-
-// Add tag
-function addTag(tag) {
-  if (addTagLogic(currentMandara, tag)) {
-    renderTags();
-    saveCurrentMandara();
-  }
-}
-
-// Edit tag
-function editTag(index) {
-  if (!currentMandara || !currentMandara.tags) return;
-  const oldTag = currentMandara.tags[index];
-  const newTag = prompt("タグを編集:", oldTag);
-  try {
-    if (editTagLogic(currentMandara, index, newTag)) {
-      renderTags();
-      saveCurrentMandara();
-    } else if (newTag !== null && newTag.trim() === "") {
-      if (confirm("タグを削除しますか？")) removeTag(oldTag);
-    }
-  } catch (e) {
-    if (e.message === "DUPLICATE_TAG") alert("そのタグは既に存在します");
-    else console.error(e);
-  }
-}
-
-// Remove tag
-function removeTag(tag) {
-  if (removeTagLogic(currentMandara, tag)) {
-    renderTags();
-    saveCurrentMandara();
-  }
-}
-
-// Render todos
-function renderTodos() {
-  const container = document.getElementById("todos-container");
-  if (!container || !currentMandara) return;
-
-  container.innerHTML = "";
-  (currentMandara.todos || []).forEach((todo, index) => {
-    const todoEl = document.createElement("div");
-    todoEl.className = "todo-item";
-    todoEl.draggable = true;
-    todoEl.dataset.index = index;
-    todoEl.dataset.id = todo.id;
-    todoEl.innerHTML = `
-      <span class="todo-drag-handle" title="ドラッグして並び替え">☰</span>
-      <input type="checkbox" class="todo-checkbox" data-id="${todo.id}" ${
-      todo.completed ? "checked" : ""
-    }>
-      <span class="todo-text ${todo.completed ? "completed" : ""}" data-id="${
-      todo.id
-    }" title="Click to edit">${todo.text}</span>
-      <button type="button" class="todo-remove" data-id="${todo.id}">×</button>
-    `;
-    container.appendChild(todoEl);
-  });
-
-  // Setup drag and drop after rendering
-  setupTodoDragAndDrop(container, {
-    onReorder: (fromIndex, toIndex) => {
-      if (reorderTodoLogic(currentMandara, fromIndex, toIndex)) {
-        console.log("[INFO] Todo reordered:", fromIndex, "->", toIndex);
-        renderTodos();
-        saveCurrentMandara();
-      }
-    },
-  });
-
-  console.log("[INFO] Rendered todos:", currentMandara.todos?.length || 0);
-}
-
-// Add todo
-function addTodo(text) {
-  const todo = addTodoLogic(currentMandara, text);
-  if (todo) {
-    console.log("[INFO] Todo added:", todo);
-    renderTodos();
-    saveCurrentMandara();
-  } else {
-    console.log("[INFO] Todo not added (empty)");
-  }
-}
-
-// Edit todo
-function editTodo(id) {
-  if (!currentMandara || !currentMandara.todos) return;
-
-  const todo = currentMandara.todos.find((t) => t.id === id);
-  if (todo) {
-    const newText = prompt("TODOを編集:", todo.text);
-
-    if (editTodoLogic(currentMandara, id, newText)) {
-      console.log("[INFO] Todo edited:", id);
-      renderTodos();
-      saveCurrentMandara();
-    } else if (newText !== null && newText.trim() === "") {
-      // Logic module returns false for empty, handle delete confirmation here
-      if (confirm("TODOを削除しますか？")) {
-        removeTodo(id);
-      }
-    }
-  }
-}
-
-// Toggle todo
-function toggleTodo(id) {
-  if (toggleTodoLogic(currentMandara, id)) {
-    console.log("[INFO] Todo toggled:", id);
-    renderTodos();
-    saveCurrentMandara();
-  } else {
-    console.warn("[WARN] Todo not found:", id);
-  }
-}
-
-// Remove todo
-function removeTodo(id) {
-  if (removeTodoLogic(currentMandara, id)) {
-    console.log("[INFO] Todo removed:", id);
-    renderTodos();
-    saveCurrentMandara();
-  } else {
-    console.log("[WARN] Cannot remove todo");
-  }
-}
 
 // Delete current mandara
 async function deleteCurrentMandara() {
@@ -619,341 +443,19 @@ function closeListView() {
   closeListViewModule();
 }
 
-// --- Insight Mode ---
 
-// Last analysis results (for cross-tab references)
-let lastAnalysisResults = null;
-
-// Insightパネルを開いて確認画面を表示 (分析は開始しない)
-function showInsightIntro() {
-  if (!currentMandara) return;
-
-  const readiness = checkAnalysisReady(currentMandara);
-  const filledCount = readiness.filledCount ?? 0;
-
-  openInsightPanel();
-  switchTab("structural");
-  removeLocalBanner();
-
-  // 事前チェック: 入力不足
-  if (readiness.reason === "INSUFFICIENT_CONTENT") {
-    const container = document.getElementById("structural-result");
-    if (container) {
-      container.innerHTML = `
-        <div class="insight-intro">
-          <div class="insight-intro-icon">!</div>
-          <h3 class="insight-intro-title">入力が不足しています</h3>
-          <p class="insight-intro-text">
-            分析には最低${readiness.required}セル以上の入力が必要です。<br>
-            現在 ${filledCount} / 9 セルが記入されています。
-          </p>
-          <p class="insight-intro-hint">
-            マンダラのセルを埋めてから再度INSIGHTを開いてください。
-          </p>
-        </div>`;
-    }
-    return;
-  }
-
-  // AI利用不可 → ローカル分析可能な旨を案内
-  const aiAvailable = readiness.available;
-  const modeLabel = aiAvailable ? "AI分析" : "ローカル簡易分析";
-  const modeDesc = aiAvailable
-    ? "Gemini/GPTが3段階でマンダラを分析します。分析ごとにAPIを消費します。"
-    : "AI未使用のヒューリスティック分析を実行します (APIキー不要)。";
-
-  const container = document.getElementById("structural-result");
-  if (!container) return;
-
-  container.innerHTML = `
-    <div class="insight-intro">
-      <h3 class="insight-intro-title">${modeLabel}を実行しますか？</h3>
-      <div class="insight-intro-stats">
-        <div class="insight-intro-stat">
-          <span class="insight-intro-stat-label">記入セル</span>
-          <span class="insight-intro-stat-value">${filledCount} / 9</span>
-        </div>
-        <div class="insight-intro-stat">
-          <span class="insight-intro-stat-label">タイトル</span>
-          <span class="insight-intro-stat-value">${escapeHtmlLocal(currentMandara.title) || "(無題)"}</span>
-        </div>
-      </div>
-      <p class="insight-intro-text">${modeDesc}</p>
-      ${aiAvailable
-        ? `<p class="insight-intro-hint">構造分析 → 課題抽出 → アクションプラン の順に自動実行されます。</p>`
-        : `<p class="insight-intro-hint">AI分析を使うには API設定 タブでキーを設定してください。</p>`}
-      <div class="insight-intro-actions">
-        <button type="button" id="insight-start-btn" class="insight-intro-btn primary">
-          ${aiAvailable ? "AI分析を開始" : "ローカル分析を表示"}
-        </button>
-        ${aiAvailable
-          ? `<button type="button" id="insight-local-btn" class="insight-intro-btn secondary">ローカル簡易分析のみ</button>`
-          : `<button type="button" id="insight-api-btn" class="insight-intro-btn secondary">API設定を開く</button>`}
-      </div>
-    </div>`;
-
-  // イベント紐付け
-  const startBtn = document.getElementById("insight-start-btn");
-  if (startBtn) {
-    startBtn.addEventListener("click", () => {
-      if (aiAvailable) {
-        startInsightAnalysis();
-      } else {
-        runLocalFallback();
-      }
-    });
-  }
-  const localBtn = document.getElementById("insight-local-btn");
-  if (localBtn) {
-    localBtn.addEventListener("click", runLocalFallback);
-  }
-  const apiBtn = document.getElementById("insight-api-btn");
-  if (apiBtn) {
-    apiBtn.addEventListener("click", () => {
-      switchTab("api");
-      renderApiSettings();
-    });
-  }
-}
-
-// HTMLエスケープ (mandara.js内の軽量ヘルパー)
-function escapeHtmlLocal(str) {
-  return String(str == null ? "" : str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-// Run local (non-AI) analysis
-function runLocalFallback() {
-  if (!currentMandara) return;
-
-  console.log("[Insight] Running local fallback analysis");
-  const result = analyzeLocally(currentMandara);
-  openInsightPanel();
-  switchTab("structural");
-  renderLocalAnalysis(
-    result,
-    handleInsightAddTodo,
-    () => showApiKeyModal()
-  );
-}
-
-// Start full analysis on current mandara
-async function startInsightAnalysis() {
-  if (!currentMandara) return;
-
-  // Save current state before analysis
-  await saveCurrentMandara();
-
-  const readiness = checkAnalysisReady(currentMandara);
-  if (!readiness.available) {
-    if (readiness.reason === "INSUFFICIENT_CONTENT") {
-      alert(`分析には最低${readiness.required}セル以上の入力が必要です（現在${readiness.filledCount}セル）`);
-      return;
-    }
-    if (readiness.reason === "NO_MANDARA") {
-      alert("マンダラが選択されていません");
-      return;
-    }
-    // AI_NOT_AVAILABLE → ローカル分析にフォールバック
-    runLocalFallback();
-    return;
-  }
-
-  openInsightPanel();
-  switchTab("structural");
-  removeLocalBanner();
-  lastAnalysisResults = null;
-
-  try {
-    lastAnalysisResults = await runFullAnalysis(currentMandara, (phase, result) => {
-      if (!result) {
-        // Phase starting - show loading
-        const loadingMessages = {
-          structural: "構造分析中...",
-          issues: "課題抽出中...",
-          action: "アクションプラン生成中...",
-        };
-        showLoading(`${phase === "action" ? "action" : phase}-result`, loadingMessages[phase]);
-        switchTab(phase === "action" ? "action" : phase);
-      } else {
-        // Phase complete - render result
-        if (phase === "structural") {
-          renderStructuralAnalysis(result);
-        } else if (phase === "issues") {
-          renderIssueExtraction(result);
-        } else if (phase === "action") {
-          renderActionPlan(result, handleInsightAddTodo, handleInsightCreateGarage, currentMandara?.id);
-        }
-      }
-    });
-
-    console.log("[Insight] Full analysis complete");
-  } catch (error) {
-    console.error("[Insight] Analysis failed:", error);
-
-    const code = error instanceof AIError ? error.code : null;
-
-    // APIキー必要 → ローカル分析にフォールバック + API設定タブへ誘導
-    if (code === ApiErrorCode.API_KEY_REQUIRED) {
-      console.log("[Insight] No valid API key, falling back to local analysis");
-      runLocalFallback();
-      showToast("APIキー未設定のため、ローカル分析を表示しています");
-      return;
-    }
-
-    // キー無効 → API設定タブを開く
-    if (code === ApiErrorCode.API_KEY_INVALID) {
-      openInsightPanel();
-      switchTab("api");
-      renderApiSettings();
-      showToast("APIキーが無効です。API設定タブで再入力してください");
-      return;
-    }
-
-    // レート制限 → ローカル分析にフォールバック
-    if (code === ApiErrorCode.RATE_LIMITED) {
-      runLocalFallback();
-      showToast(error.userMessage);
-      return;
-    }
-
-    // その他のエラー → タブ内に表示
-    const activeTab = document.querySelector(".insight-tab.active");
-    const tabName = activeTab?.dataset.tab || "structural";
-    const message = error instanceof AIError
-      ? error.userMessage
-      : `分析中にエラーが発生しました: ${error.message}`;
-    showError(`${tabName}-result`, message);
-  }
-}
-
-// Run cross analysis across all mandaras
-async function startCrossAnalysis() {
-  if (allMandaras.length < 2) {
-    alert("横断分析には2つ以上のマンダラが必要です");
-    return;
-  }
-
-  showLoading("cross-result", `${allMandaras.length}件のマンダラを横断分析中...`);
-
-  try {
-    const result = await runCrossAnalysis(allMandaras);
-    renderCrossAnalysis(result);
-    console.log("[Insight] Cross analysis complete");
-  } catch (error) {
-    console.error("[Insight] Cross analysis failed:", error);
-    const code = error instanceof AIError ? error.code : null;
-    if (code === ApiErrorCode.API_KEY_REQUIRED || code === ApiErrorCode.API_KEY_INVALID) {
-      switchTab("api");
-      renderApiSettings();
-      return;
-    }
-    const message = error instanceof AIError
-      ? error.userMessage
-      : `横断分析中にエラーが発生しました: ${error.message}`;
-    showError("cross-result", message);
-  }
-}
-
-// Handle TODO addition from insight panel
-function handleInsightAddTodo(text) {
-  addTodo(text);
-  showToast("TODOに追加しました");
-}
-
-// Handle GARAGE creation from insight panel
-async function handleInsightCreateGarage(garageData) {
-  try {
-    // 既存の全GARAGEを読み込んで、空のスロットを探す
-    const allGarages = await Storage.loadAllGarages(currentUserId);
-    const slots = ["garageA", "garageB", "garageC", "garageD"];
-
-    const isEmptyGarage = (g) =>
-      !g || (!g.title && !g.stroke1 && !g.stroke2 && !g.stroke3 && !g.stroke4);
-
-    // 空のGARAGEを優先選択
-    let targetSlot = slots.find((id) => isEmptyGarage(allGarages[id]));
-
-    // 全て埋まっている場合、上書き先をユーザーに確認
-    if (!targetSlot) {
-      const options = slots.map((id) => {
-        const g = allGarages[id];
-        const title = g?.title?.trim() || "(無題)";
-        return `${id.replace("garage", "GARAGE-")}: ${title}`;
-      }).join("\n");
-
-      const userChoice = prompt(
-        `空のGARAGEがありません。上書きするGARAGEを選んでください:\n\n${options}\n\nA / B / C / D を入力 (キャンセルで中止):`,
-        "A"
-      );
-
-      if (!userChoice) {
-        showToast("GARAGE反映をキャンセルしました");
-        return;
-      }
-
-      const letter = userChoice.trim().toUpperCase();
-      if (!["A", "B", "C", "D"].includes(letter)) {
-        alert("無効な入力です。A/B/C/Dのいずれかを入力してください");
-        return;
-      }
-      targetSlot = `garage${letter}`;
-
-      if (!confirm(`GARAGE-${letter} の既存内容を上書きします。よろしいですか？`)) {
-        return;
-      }
-    }
-
-    // 指定スロットへ保存
-    await Storage.saveStroke(currentUserId, targetSlot, "title", garageData.title || "");
-    await Storage.saveStroke(currentUserId, targetSlot, "stroke1", garageData.stroke1_key || "");
-    await Storage.saveStroke(currentUserId, targetSlot, "stroke2", garageData.stroke2_issue || "");
-    await Storage.saveStroke(currentUserId, targetSlot, "stroke3", garageData.stroke3_action || "");
-    await Storage.saveStroke(currentUserId, targetSlot, "stroke4", garageData.stroke4_publish || "");
-
-    // Update linkedGarageId
-    if (currentMandara) {
-      currentMandara.linkedGarageId = targetSlot;
-      await saveCurrentMandara();
-    }
-
-    const letter = targetSlot.replace("garage", "");
-    showToast(`GARAGE-${letter}に反映しました`);
-    console.log("[Insight] GARAGE created:", targetSlot, garageData.title);
-  } catch (error) {
-    console.error("[Insight] Failed to create GARAGE:", error);
-    alert("GARAGE作成に失敗しました");
-  }
-}
-
-// --- API Settings Tab ---
-
-/**
- * API設定タブを開く (旧 showApiKeyModal の代替)
- */
-function showApiSettings() {
-  openInsightPanel();
-  switchTab("api");
-  renderApiSettings();
-}
-
-// 互換エイリアス
-const showApiKeyModal = showApiSettings;
-
-// Setup Insight event listeners
+// Setup Insight event listeners (uses insightController)
 function setupInsightEventListeners() {
-  // Insight button - 即分析開始ではなく確認画面を表示
+  if (!insightController) return;
+
+  // Insight button → 確認画面表示 (即分析しない)
   const insightBtn = document.getElementById("insight-btn");
   if (insightBtn) {
     insightBtn.addEventListener("click", () => {
-      if (isInsightPanelOpen()) {
-        closeInsightPanel();
+      if (insightController.isInsightPanelOpen()) {
+        insightController.closeInsightPanel();
       } else {
-        showInsightIntro();
+        insightController.showInsightIntro();
       }
     });
   }
@@ -961,22 +463,22 @@ function setupInsightEventListeners() {
   // Close button
   const closeBtn = document.getElementById("insight-close-btn");
   if (closeBtn) {
-    closeBtn.addEventListener("click", closeInsightPanel);
+    closeBtn.addEventListener("click", insightController.closeInsightPanel);
   }
 
-  // Rerun button
+  // Rerun button (キャッシュクリア後に再分析)
   const rerunBtn = document.getElementById("insight-rerun-btn");
   if (rerunBtn) {
     rerunBtn.addEventListener("click", () => {
       clearInsightCache();
-      startInsightAnalysis();
+      insightController.startInsightAnalysis();
     });
   }
 
-  // Tab switching - API設定タブを開いたら描画
+  // Tab switching (API設定タブを開いたら描画)
   document.querySelectorAll(".insight-tab").forEach((tab) => {
     tab.addEventListener("click", () => {
-      switchTab(tab.dataset.tab);
+      insightController.switchTab(tab.dataset.tab);
       if (tab.dataset.tab === "api") {
         renderApiSettings();
       }
@@ -986,7 +488,7 @@ function setupInsightEventListeners() {
   // Cross analysis button
   const crossBtn = document.getElementById("run-cross-analysis-btn");
   if (crossBtn) {
-    crossBtn.addEventListener("click", startCrossAnalysis);
+    crossBtn.addEventListener("click", insightController.startCrossAnalysis);
   }
 }
 
@@ -1301,6 +803,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function initializeApp() {
   // 共有APIキーを先にロード (存在すれば)
   await ensureSharedKeysLoaded();
+
+  // タグ/TODO UIコントローラーを初期化
+  tagsTodosUI = createTagsTodosUI({
+    getCurrentMandara: () => currentMandara,
+    saveCurrentMandara,
+  });
+
+  // Insight コントローラーを初期化 (状態参照とコールバックを注入)
+  insightController = createInsightController({
+    getCurrentMandara: () => currentMandara,
+    getAllMandaras: () => allMandaras,
+    getCurrentUserId: () => currentUserId,
+    saveCurrentMandara,
+    addTodo,
+    showToast,
+    storage: Storage,
+  });
 
   // Load all mandaras
   await loadAllMandaras();
