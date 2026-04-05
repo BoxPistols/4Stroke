@@ -836,10 +836,21 @@ function setupApiKeyModalListeners() {
           const isAuthError =
             err.code === ApiErrorCode.API_KEY_INVALID ||
             err.code === ApiErrorCode.AUTH_FAILED;
+          const isRateLimit = err.code === ApiErrorCode.RATE_LIMITED;
 
-          // キー問題の場合のみ保存しない
+          // キー問題以外は保存する（レート制限はキー自体は有効）
           if (!isAuthError) {
             setApiKey(key, providerId);
+          }
+
+          // レート制限の場合はキーを保存してモーダルを閉じ、ローカル分析にフォールバック
+          if (isRateLimit) {
+            hideApiKeyModal();
+            showToast("レート制限のため、ローカル分析を表示します");
+            runLocalFallback();
+            saveBtn.disabled = false;
+            saveBtn.textContent = "保存して分析開始";
+            return;
           }
 
           if (status) {

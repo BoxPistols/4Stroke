@@ -24,7 +24,7 @@ export const ApiErrorCode = Object.freeze({
  * エラーコード → 日本語メッセージのマップ
  */
 const ERROR_MESSAGES = {
-  RATE_LIMITED: "レート制限に達しました",
+  RATE_LIMITED: "レート制限またはクォータ超過です。しばらく待ってから再試行してください",
   AUTH_FAILED: "認証に失敗しました",
   API_KEY_REQUIRED: "APIキーが必要です",
   API_KEY_INVALID: "APIキーが無効です",

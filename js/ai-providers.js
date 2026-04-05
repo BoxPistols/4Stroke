@@ -97,7 +97,7 @@ async function callGemini(apiKey, modelId, prompt, config) {
 const PROVIDER_REGISTRY = Object.freeze({
   [ProviderKey.GEMINI]: {
     name: "Gemini",
-    defaultModel: "gemini-2.0-flash",
+    defaultModel: "gemini-2.5-flash",
     storageKey: "gemini_api_key",
     apiKeyHint: "AIza...",
     apiKeyUrl: "https://aistudio.google.com/apikey",
