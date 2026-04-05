@@ -210,6 +210,39 @@ function saveRejectedTodos(mandaraId, set) {
 }
 
 /**
+ * TODOフィルター状態 (localStorage 永続化)
+ * priorities: 表示する優先度の Set
+ * showRejected: 却下済みを表示するか
+ */
+const FILTER_KEY = "insight_todo_filter";
+const DEFAULT_FILTER = { priorities: ["urgent", "planned", "delegate", "hold"], showRejected: false };
+
+function getTodoFilter() {
+  try {
+    const raw = localStorage.getItem(FILTER_KEY);
+    if (!raw) return { ...DEFAULT_FILTER };
+    const parsed = JSON.parse(raw);
+    return {
+      priorities: Array.isArray(parsed.priorities) && parsed.priorities.length > 0
+        ? parsed.priorities
+        : DEFAULT_FILTER.priorities,
+      showRejected: !!parsed.showRejected,
+    };
+  } catch {
+    return { ...DEFAULT_FILTER };
+  }
+}
+
+function saveTodoFilter(filter) {
+  try {
+    localStorage.setItem(FILTER_KEY, JSON.stringify(filter));
+  } catch {}
+}
+
+// 優先度ソート順 (urgent が最上位)
+const PRIORITY_ORDER = { urgent: 0, planned: 1, delegate: 2, hold: 3 };
+
+/**
  * アクションプラン結果をレンダリング
  * @param {object} result - アクションプラン結果
  * @param {function} onAddTodo - TODO追加コールバック (text) => void
@@ -221,35 +254,83 @@ export function renderActionPlan(result, onAddTodo, onCreateGarage, mandaraId = 
   if (!container || !result) return;
 
   const rejected = getRejectedTodos(mandaraId);
+  const filter = getTodoFilter();
 
   // 事前サニタイズ: 未知の priority もCSSクラスに使う
   const safePriority = (p) =>
     /^(urgent|planned|delegate|hold)$/.test(p) ? p : "hold";
 
-  // TODOs
-  const todosHtml = (result.todos || [])
-    .map((todo, i) => {
-      const priorityLabel = {
-        urgent: "すぐやる",
-        planned: "計画する",
-        delegate: "委任する",
-        hold: "保留",
-      }[todo.priority] || "保留";
+  const priorityLabels = {
+    urgent: "すぐやる",
+    planned: "計画する",
+    delegate: "委任する",
+    hold: "保留",
+  };
 
-      const isRejected = rejected.has(todo.text);
-      const rejectedClass = isRejected ? " is-rejected" : "";
+  // 全TODOに元のindexを保持 (フィルタ/ソート後も正しく参照できるように)
+  const allTodos = (result.todos || []).map((t, originalIndex) => ({
+    ...t,
+    originalIndex,
+    safePriority: safePriority(t.priority),
+    isRejected: rejected.has(t.text),
+  }));
 
-      return `
-        <div class="action-todo-item priority-${safePriority(todo.priority)}${rejectedClass}">
-          <span class="action-todo-priority">${priorityLabel}</span>
-          <span class="action-todo-text">${escapeHtml(todo.text)}</span>
-          <div class="action-todo-buttons">
-            <button class="action-add-todo-btn" data-index="${i}" title="TODOに追加"${isRejected ? " disabled" : ""}>+TODO</button>
-            <button class="action-reject-btn" data-index="${i}" title="${isRejected ? "却下を解除" : "却下（やらない）"}">${isRejected ? "↩戻す" : "却下"}</button>
-          </div>
-        </div>`;
+  // 優先度別のカウント
+  const counts = { urgent: 0, planned: 0, delegate: 0, hold: 0 };
+  allTodos.forEach((t) => {
+    counts[t.safePriority] = (counts[t.safePriority] || 0) + 1;
+  });
+  const rejectedCount = allTodos.filter((t) => t.isRejected).length;
+
+  // フィルター適用
+  const prioritySet = new Set(filter.priorities);
+  const filteredTodos = allTodos
+    .filter((t) => prioritySet.has(t.safePriority))
+    .filter((t) => filter.showRejected || !t.isRejected);
+
+  // 優先度順にソート
+  filteredTodos.sort((a, b) =>
+    (PRIORITY_ORDER[a.safePriority] ?? 99) - (PRIORITY_ORDER[b.safePriority] ?? 99)
+  );
+
+  // フィルターチップHTML
+  const chipsHtml = ["urgent", "planned", "delegate", "hold"]
+    .map((p) => {
+      const active = prioritySet.has(p);
+      const count = counts[p];
+      return `<button type="button" class="todo-filter-chip priority-${p} ${active ? "active" : ""}" data-priority="${p}" title="${active ? "非表示" : "表示"}にする">
+        ${priorityLabels[p]} <span class="chip-count">${count}</span>
+      </button>`;
     })
     .join("");
+
+  const rejectChipHtml = rejectedCount > 0
+    ? `<button type="button" class="todo-filter-chip rejected-chip ${filter.showRejected ? "active" : ""}" data-toggle="rejected" title="却下済みを${filter.showRejected ? "隠す" : "表示"}">
+        却下 <span class="chip-count">${rejectedCount}</span>
+      </button>`
+    : "";
+
+  // TODO項目HTML
+  const todosHtml = filteredTodos.length > 0
+    ? filteredTodos.map((todo) => {
+        const rejectedClass = todo.isRejected ? " is-rejected" : "";
+        return `
+          <div class="action-todo-item priority-${todo.safePriority}${rejectedClass}">
+            <span class="action-todo-priority">${priorityLabels[todo.safePriority]}</span>
+            <span class="action-todo-text">${escapeHtml(todo.text)}</span>
+            <div class="action-todo-buttons">
+              <button class="action-add-todo-btn" data-index="${todo.originalIndex}" title="TODOに追加"${todo.isRejected ? " disabled" : ""}>+TODO</button>
+              <button class="action-reject-btn" data-index="${todo.originalIndex}" title="${todo.isRejected ? "却下を解除" : "却下（やらない）"}">${todo.isRejected ? "↩戻す" : "却下"}</button>
+            </div>
+          </div>`;
+      }).join("")
+    : `<div class="insight-placeholder">表示対象がありません (フィルタを変更してください)</div>`;
+
+  const filterBarHtml = `
+    <div class="todo-filter-bar">
+      ${chipsHtml}
+      ${rejectChipHtml}
+    </div>`;
 
   // GARAGE proposal
   const garage = result.garageProposal;
@@ -285,6 +366,7 @@ export function renderActionPlan(result, onAddTodo, onCreateGarage, mandaraId = 
 
     <div class="insight-section">
       <h4 class="insight-section-title">TODO提案</h4>
+      ${filterBarHtml}
       <div class="action-todos-list">${todosHtml}</div>
     </div>
 
@@ -292,6 +374,26 @@ export function renderActionPlan(result, onAddTodo, onCreateGarage, mandaraId = 
 
     ${garageHtml ? `<div class="insight-section"><h4 class="insight-section-title">GARAGE連携提案</h4>${garageHtml}</div>` : ""}
   `;
+
+  // Event: filter chip toggle
+  container.querySelectorAll(".todo-filter-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const currentFilter = getTodoFilter();
+      if (chip.dataset.toggle === "rejected") {
+        currentFilter.showRejected = !currentFilter.showRejected;
+      } else {
+        const p = chip.dataset.priority;
+        const set = new Set(currentFilter.priorities);
+        if (set.has(p)) set.delete(p);
+        else set.add(p);
+        // 全て外すと使いづらいので、最後の1つは削除できないように保護
+        if (set.size === 0) return;
+        currentFilter.priorities = Array.from(set);
+      }
+      saveTodoFilter(currentFilter);
+      renderActionPlan(result, onAddTodo, onCreateGarage, mandaraId);
+    });
+  });
 
   // Event: add individual TODO
   container.querySelectorAll(".action-add-todo-btn").forEach((btn) => {

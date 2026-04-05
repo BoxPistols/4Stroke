@@ -166,10 +166,10 @@
   border: 3px solid rgba(174, 129, 255, 0.2);
   border-top-color: var(--color-accent);
   border-radius: 50%;
-  animation: insightSpin 0.8s linear infinite;
+  animation: insight-spin 0.8s linear infinite;
 }
 
-@keyframes insightSpin {
+@keyframes insight-spin {
   to { transform: rotate(360deg); }
 }
 
@@ -531,6 +531,76 @@
   &::before {
     content: "→ ";
     color: rgba(174, 129, 255, 0.7);
+  }
+}
+
+// TODOフィルターバー
+.todo-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+}
+
+.todo-filter-chip {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-family: var(--font-japanese);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.45);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  .chip-count {
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  &:hover {
+    color: rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  // アクティブ状態: 優先度ごとの色
+  &.active {
+    &.priority-urgent {
+      background: rgba(255, 85, 85, 0.15);
+      color: #ff5555;
+      border-color: rgba(255, 85, 85, 0.3);
+    }
+    &.priority-planned {
+      background: rgba(139, 233, 253, 0.15);
+      color: #8be9fd;
+      border-color: rgba(139, 233, 253, 0.3);
+    }
+    &.priority-delegate {
+      background: rgba(241, 250, 140, 0.15);
+      color: #f1fa8c;
+      border-color: rgba(241, 250, 140, 0.3);
+    }
+    &.priority-hold {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.8);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    &.rejected-chip {
+      background: rgba(255, 85, 85, 0.1);
+      color: #ff5555;
+      border-color: rgba(255, 85, 85, 0.25);
+      text-decoration: line-through;
+    }
   }
 }
 
