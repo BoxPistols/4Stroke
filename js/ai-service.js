@@ -75,31 +75,88 @@ async function callGeminiREST(apiKey, prompt, config) {
     },
   };
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+  let res;
+  try {
+    res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  } catch (e) {
+    console.error("[AI] Network error:", e);
+    throw new Error(`ネットワークエラー: ${e.message}`);
+  }
 
   if (!res.ok) {
     const errorBody = await res.text();
     console.error("[AI] Gemini REST error:", res.status, errorBody);
-    // 403 (PERMISSION_DENIED / SERVICE_DISABLED) や 400 (INVALID_KEY) はキー問題
-    if (res.status === 403 || res.status === 400) {
+
+    // エラー本文から原因を判定
+    let parsedError = null;
+    try {
+      parsedError = JSON.parse(errorBody);
+    } catch {}
+
+    const reason = parsedError?.error?.status || "";
+    const message = parsedError?.error?.message || errorBody.slice(0, 200);
+
+    // キー問題 (認証/権限)
+    if (
+      res.status === 403 ||
+      reason === "PERMISSION_DENIED" ||
+      reason === "UNAUTHENTICATED" ||
+      (res.status === 400 && /API key/i.test(message))
+    ) {
       const err = new Error("API_KEY_INVALID");
       err.status = res.status;
       err.body = errorBody;
+      err.reason = reason;
+      err.detail = message;
       throw err;
     }
-    throw new Error(`Gemini API error: ${res.status}`);
+
+    // レート制限
+    if (res.status === 429) {
+      throw new Error(`レート制限に達しました。少し待ってから再試行してください。`);
+    }
+
+    // その他（プロンプトエラー、サーバーエラー等）: 実際のメッセージを含める
+    throw new Error(`Gemini API (${res.status}): ${message}`);
   }
 
   const data = await res.json();
+  console.log("[AI] Response candidates:", data.candidates?.length);
+
   const candidate = data.candidates?.[0];
-  if (!candidate?.content?.parts?.[0]?.text) {
-    throw new Error("Empty response from Gemini API");
+  if (!candidate) {
+    // promptFeedback で拒否理由が返ることがある
+    const blockReason = data.promptFeedback?.blockReason;
+    if (blockReason) {
+      throw new Error(`プロンプトがブロックされました: ${blockReason}`);
+    }
+    throw new Error("AIからのレスポンスが空です");
   }
-  return candidate.content.parts[0].text;
+
+  // finish reason をチェック
+  if (candidate.finishReason === "SAFETY") {
+    throw new Error("AIの安全フィルタによりブロックされました");
+  }
+  if (candidate.finishReason === "MAX_TOKENS") {
+    console.warn("[AI] Response truncated at max tokens");
+  }
+
+  // 全テキストパートを結合（thinking blocksに対応）
+  const text = (candidate.content?.parts || [])
+    .map((p) => p.text)
+    .filter(Boolean)
+    .join("");
+
+  if (!text) {
+    console.error("[AI] No text in response:", JSON.stringify(candidate).slice(0, 300));
+    throw new Error(`AIレスポンスにテキストがありません (finish: ${candidate.finishReason || "unknown"})`);
+  }
+
+  return text;
 }
 
 // --- Firebase AI SDK ---

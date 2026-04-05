@@ -691,19 +691,27 @@ async function startInsightAnalysis() {
   } catch (error) {
     console.error("[Insight] Analysis failed:", error);
 
-    // APIキー必要 or APIエラー → ローカル分析にフォールバック + 通知
-    const needsApiKey =
-      error.message === "API_KEY_REQUIRED" ||
-      error.message?.includes("Gemini API error") ||
-      error.message?.includes("API_KEY_INVALID");
-
-    if (needsApiKey) {
-      console.log("[Insight] Falling back to local analysis");
+    // APIキーが必要な状態 → ローカル分析にフォールバック
+    if (error.message === "API_KEY_REQUIRED") {
+      console.log("[Insight] No valid API key, falling back to local analysis");
       runLocalFallback();
       showToast("AI分析が利用できないため、ローカル分析を表示しています");
       return;
     }
 
+    // キー無効 → モーダルを再表示
+    if (error.message === "API_KEY_INVALID") {
+      closeInsightPanel();
+      showApiKeyModal();
+      const status = document.getElementById("apikey-status");
+      if (status) {
+        status.textContent = `APIキーが無効です: ${error.detail || ""}`;
+        status.className = "apikey-status error";
+      }
+      return;
+    }
+
+    // その他のAPIエラー → タブ内にエラー詳細表示 + 再入力への導線
     const activeTab = document.querySelector(".insight-tab.active");
     const tabName = activeTab?.dataset.tab || "structural";
     showError(`${tabName}-result`, `分析中にエラーが発生しました: ${error.message}`);
@@ -822,9 +830,47 @@ function setupApiKeyModalListeners() {
         if (!res.ok) {
           const errBody = await res.text();
           console.warn("[AI] Key test failed:", res.status, errBody);
-          setUserApiKey(""); // 無効なキーをクリア
+
+          // エラー本文を詳細にパース
+          let detail = "";
+          let isAuthError = false;
+          try {
+            const parsed = JSON.parse(errBody);
+            detail = parsed?.error?.message || "";
+            const reason = parsed?.error?.status || "";
+            isAuthError =
+              res.status === 403 ||
+              res.status === 401 ||
+              reason === "PERMISSION_DENIED" ||
+              reason === "UNAUTHENTICATED" ||
+              (res.status === 400 && /API key/i.test(detail));
+          } catch {
+            detail = errBody.slice(0, 150);
+          }
+
+          // キー問題の場合のみクリア
+          if (isAuthError) {
+            setUserApiKey("");
+          }
+
           if (status) {
-            status.textContent = `APIキーが無効です (${res.status})。キーを確認してください。`;
+            const shortDetail = detail.length > 120 ? detail.slice(0, 120) + "..." : detail;
+            status.textContent = isAuthError
+              ? `APIキーが無効です: ${shortDetail}`
+              : `APIエラー (${res.status}): ${shortDetail}`;
+            status.className = "apikey-status error";
+          }
+          saveBtn.disabled = false;
+          saveBtn.textContent = "保存して分析開始";
+          return;
+        }
+
+        // レスポンス本文を検証（candidates があるかチェック）
+        const data = await res.json();
+        if (!data.candidates || data.candidates.length === 0) {
+          console.warn("[AI] Test response has no candidates:", data);
+          if (status) {
+            status.textContent = "APIは応答しましたが、想定外のレスポンス形式です";
             status.className = "apikey-status error";
           }
           saveBtn.disabled = false;
@@ -843,9 +889,9 @@ function setupApiKeyModalListeners() {
         startInsightAnalysis();
       } catch (e) {
         console.error("[AI] Key test error:", e);
-        setUserApiKey("");
+        // ネットワークエラーではキーは消さない
         if (status) {
-          status.textContent = "接続エラー。ネットワークを確認してください。";
+          status.textContent = `接続エラー: ${e.message}`;
           status.className = "apikey-status error";
         }
       } finally {
