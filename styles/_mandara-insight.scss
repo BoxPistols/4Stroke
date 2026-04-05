@@ -280,10 +280,10 @@
   font-size: 14px;
   line-height: 1.7;
   margin-bottom: 20px;
-  padding: 12px 16px;
+  padding: 14px 16px;
   background: rgba(174, 129, 255, 0.08);
+  border: 1px solid rgba(174, 129, 255, 0.15);
   border-radius: 8px;
-  border-left: 3px solid var(--color-accent);
 }
 
 // Cell Analysis
@@ -291,17 +291,19 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 12px;
-  border-radius: 6px;
-  margin-bottom: 4px;
+  padding: 10px 12px;
+  margin-bottom: 2px;
   font-family: var(--font-japanese);
   font-size: 13px;
-  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 
-  &.relevance-high { border-left: 3px solid #50fa7b; }
-  &.relevance-medium { border-left: 3px solid #f1fa8c; }
-  &.relevance-low { border-left: 3px solid #ff5555; }
-  &.relevance-empty { border-left: 3px solid rgba(255, 255, 255, 0.2); }
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &.relevance-empty {
+    opacity: 0.5;
+  }
 }
 
 .cell-number {
@@ -314,10 +316,14 @@
   font-size: 11px;
   padding: 2px 8px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.7);
   min-width: 24px;
   text-align: center;
+
+  .relevance-high & { background: rgba(80, 250, 123, 0.15); color: #50fa7b; }
+  .relevance-medium & { background: rgba(241, 250, 140, 0.15); color: #f1fa8c; }
+  .relevance-low & { background: rgba(255, 85, 85, 0.15); color: #ff5555; }
 }
 
 .cell-comment {
@@ -408,13 +414,13 @@
 .suggestion-item {
   padding: 10px 14px;
   background: rgba(174, 129, 255, 0.08);
+  border: 1px solid rgba(174, 129, 255, 0.15);
   border-radius: 6px;
   margin-bottom: 6px;
   color: rgba(255, 255, 255, 0.8);
   font-family: var(--font-japanese);
   font-size: 13px;
   line-height: 1.5;
-  border-left: 3px solid var(--color-accent);
 }
 
 // Risk Badge
@@ -454,9 +460,15 @@
   margin-bottom: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
 
-  &.severity-high { border-left: 4px solid #ff5555; }
-  &.severity-medium { border-left: 4px solid #f1fa8c; }
-  &.severity-low { border-left: 4px solid rgba(255, 255, 255, 0.3); }
+  &.severity-high {
+    background: rgba(255, 85, 85, 0.06);
+    border-color: rgba(255, 85, 85, 0.2);
+  }
+
+  &.severity-medium {
+    background: rgba(241, 250, 140, 0.04);
+    border-color: rgba(241, 250, 140, 0.15);
+  }
 }
 
 .issue-header {
@@ -510,10 +522,16 @@
   font-size: 13px;
   color: rgba(174, 129, 255, 0.9);
   font-family: var(--font-japanese);
-  padding: 6px 10px;
+  padding: 8px 10px;
   background: rgba(174, 129, 255, 0.08);
+  border: 1px solid rgba(174, 129, 255, 0.15);
   border-radius: 4px;
   margin-top: 8px;
+
+  &::before {
+    content: "→ ";
+    color: rgba(174, 129, 255, 0.7);
+  }
 }
 
 // Action Plan - TODOs
@@ -523,23 +541,23 @@
   gap: 8px;
   padding: 10px 12px;
   background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 6px;
   margin-bottom: 6px;
-
-  &.priority-urgent { border-left: 3px solid #ff5555; }
-  &.priority-planned { border-left: 3px solid #8be9fd; }
-  &.priority-delegate { border-left: 3px solid #f1fa8c; }
-  &.priority-hold { border-left: 3px solid rgba(255, 255, 255, 0.2); }
 }
 
 .action-todo-priority {
   font-size: 11px;
   padding: 2px 8px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.6);
   white-space: nowrap;
   font-family: var(--font-japanese);
+
+  .priority-urgent & { background: rgba(255, 85, 85, 0.15); color: #ff5555; }
+  .priority-planned & { background: rgba(139, 233, 253, 0.15); color: #8be9fd; }
+  .priority-delegate & { background: rgba(241, 250, 140, 0.15); color: #f1fa8c; }
 }
 
 .action-todo-text {
@@ -728,9 +746,9 @@
 .cross-theme-card {
   padding: 12px;
   background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(174, 129, 255, 0.15);
   border-radius: 8px;
   margin-bottom: 8px;
-  border-left: 3px solid var(--color-accent);
 }
 
 .cross-theme-name {
@@ -813,13 +831,13 @@
   li {
     padding: 10px 14px;
     background: rgba(174, 129, 255, 0.08);
+    border: 1px solid rgba(174, 129, 255, 0.15);
     border-radius: 6px;
     margin-bottom: 6px;
     color: rgba(255, 255, 255, 0.8);
     font-family: var(--font-japanese);
     font-size: 13px;
     line-height: 1.6;
-    border-left: 3px solid var(--color-accent);
   }
 }
 
@@ -937,21 +955,47 @@
   overflow-y: auto;
 }
 
-// Cell position / center badge for local analysis
+// Cell list for local analysis
+.local-cell-list {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 2px 12px;
+}
+
+.cell-analysis-item.is-center {
+  .cell-number {
+    color: var(--color-accent);
+  }
+}
+
 .cell-position {
   font-size: 11px;
   color: rgba(255, 255, 255, 0.4);
   font-family: var(--font-japanese);
-  min-width: 40px;
+  min-width: 32px;
 }
 
-.cell-center-badge {
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 8px;
-  background: rgba(174, 129, 255, 0.25);
-  color: var(--color-accent);
-  font-weight: bold;
+.cell-preview {
+  flex: 1;
+  color: rgba(255, 255, 255, 0.75);
+  font-family: var(--font-japanese);
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &.empty {
+    color: rgba(255, 255, 255, 0.25);
+  }
+}
+
+.cell-charcount {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+  font-family: var(--font-japanese);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 // API Key Modal

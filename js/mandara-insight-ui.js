@@ -382,16 +382,20 @@ function renderLocalStructural(result) {
 
   const cellsHtml = result.cellsOverview
     .map((cell) => {
-      const stateLabel = cell.isEmpty ? "空" : `${cell.charCount}文字`;
       const stateClass = cell.isEmpty ? "relevance-empty" : "relevance-high";
-      const centerBadge = cell.isCenter ? '<span class="cell-center-badge">中心</span>' : "";
+      const centerClass = cell.isCenter ? " is-center" : "";
+      const preview = cell.isEmpty
+        ? '<span class="cell-preview empty">—</span>'
+        : `<span class="cell-preview">${escapeHtml(cell.content).slice(0, 40)}${cell.content.length > 40 ? "…" : ""}</span>`;
+      const charInfo = cell.isEmpty
+        ? ""
+        : `<span class="cell-charcount">${cell.charCount}字</span>`;
       return `
-        <div class="cell-analysis-item ${stateClass}">
+        <div class="cell-analysis-item ${stateClass}${centerClass}">
           <span class="cell-number">セル${cell.cellNumber}</span>
           <span class="cell-position">${cell.position}</span>
-          ${centerBadge}
-          <span class="cell-relevance">${stateLabel}</span>
-          <span class="cell-comment">${cell.isEmpty ? "" : escapeHtml(cell.content).slice(0, 40) + (cell.content.length > 40 ? "..." : "")}</span>
+          ${preview}
+          ${charInfo}
         </div>`;
     })
     .join("");
@@ -417,7 +421,7 @@ function renderLocalStructural(result) {
 
     <div class="insight-section">
       <h4 class="insight-section-title">セル一覧</h4>
-      <div class="cell-analysis-list">${cellsHtml}</div>
+      <div class="cell-analysis-list local-cell-list">${cellsHtml}</div>
     </div>
 
     <div class="insight-section">
