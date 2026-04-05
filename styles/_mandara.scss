@@ -63,6 +63,7 @@ body:has(.mandara-editor) {
   .mandara-meta {
     display: flex;
     gap: var(--spacing-lg);
+    align-items: center;
     margin-top: var(--spacing-md);
     font-size: var(--font-size-sm);
     color: rgba(255, 255, 255, 0.6);
@@ -71,6 +72,46 @@ body:has(.mandara-editor) {
     @media (max-width: 768px) {
       flex-direction: column;
       gap: var(--spacing-xs);
+      align-items: flex-start;
+    }
+  }
+
+  // サイドバー幅切替ボタン
+  .sidebar-size-toggle {
+    display: inline-flex;
+    gap: 2px;
+    margin-left: auto;
+    padding: 2px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+
+    @media (max-width: 1024px) {
+      display: none; // モバイル/タブレットは縦積みなので不要
+    }
+  }
+
+  .sidebar-size-btn {
+    width: 26px;
+    height: 22px;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.45);
+    font-family: var(--font-primary);
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover {
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    &.active {
+      background: rgba(174, 129, 255, 0.25);
+      color: var(--color-accent);
     }
   }
 }
@@ -84,11 +125,25 @@ body:has(.mandara-editor) {
   height: calc(100vh - 240px);
   min-height: 520px;
   align-items: stretch;
+  transition: grid-template-columns 0.2s ease;
+
+  // サイドバー幅の切替 (body の data-sidebar-size 属性で制御)
+  body[data-sidebar-size="medium"] & {
+    grid-template-columns: 1fr 560px;
+  }
+  body[data-sidebar-size="wide"] & {
+    grid-template-columns: 1fr 720px;
+  }
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
     height: auto;
     min-height: auto;
+
+    body[data-sidebar-size="medium"] &,
+    body[data-sidebar-size="wide"] & {
+      grid-template-columns: 1fr;
+    }
   }
 }
 

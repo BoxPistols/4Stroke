@@ -17,6 +17,7 @@ import { ensureSharedKeysLoaded } from "./ai-config.js";
 import { createInsightController } from "./mandara-insight-controller.js";
 import { renderApiSettings } from "./mandara-insight-api-tab.js";
 import { createTagsTodosUI } from "./mandara-tags-todos-ui.js";
+import { initSidebarSize } from "./sidebar-size.js";
 
 // Controllers (初期化時に生成される)
 let insightController = null;
@@ -765,6 +766,9 @@ function setupEventListeners() {
 // Initialize app
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("[INFO] Mandara app starting...");
+
+  // サイドバー幅切替ボタンを即座に初期化 (データ読込みを待たずに)
+  initSidebarSize();
 
   if (isOnlineMode()) {
     // Online mode - require authentication
