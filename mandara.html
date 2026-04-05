@@ -53,6 +53,11 @@
             SEARCH
           </button>
         </li>
+        <li>
+          <button id="insight-btn" class="insight-btn" title="AI Insight">
+            INSIGHT
+          </button>
+        </li>
         <li class="user-info">
           <button
             id="logout-btn"
@@ -229,6 +234,117 @@
 
       <div id="mandara-list" class="mandara-list">
         <!-- Will be populated by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Insight Panel -->
+    <div id="insight-panel" class="insight-panel is-hidden">
+      <div class="insight-panel-header">
+        <h2 class="insight-panel-title">MANDARA Insight</h2>
+        <div class="insight-panel-actions">
+          <button id="insight-rerun-btn" class="btn btn-secondary insight-rerun-btn" title="再分析">
+            再分析
+          </button>
+          <button id="insight-close-btn" class="insight-close-btn" title="Close">
+            &times;
+          </button>
+        </div>
+      </div>
+
+      <div class="insight-tabs">
+        <button class="insight-tab active" data-tab="structural">構造分析</button>
+        <button class="insight-tab" data-tab="issues">課題抽出</button>
+        <button class="insight-tab" data-tab="action">アクションプラン</button>
+        <button class="insight-tab" data-tab="cross">横断分析</button>
+      </div>
+
+      <div class="insight-content">
+        <!-- Structural Analysis Tab -->
+        <div id="insight-tab-structural" class="insight-tab-content active">
+          <div id="structural-result" class="insight-result">
+            <div class="insight-placeholder">
+              INSIGHTボタンで分析を開始できます
+            </div>
+          </div>
+        </div>
+
+        <!-- Issue Extraction Tab -->
+        <div id="insight-tab-issues" class="insight-tab-content">
+          <div id="issues-result" class="insight-result">
+            <div class="insight-placeholder">
+              構造分析後に課題抽出が実行されます
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Plan Tab -->
+        <div id="insight-tab-action" class="insight-tab-content">
+          <div id="action-result" class="insight-result">
+            <div class="insight-placeholder">
+              課題抽出後にアクションプランが生成されます
+            </div>
+          </div>
+        </div>
+
+        <!-- Cross Analysis Tab -->
+        <div id="insight-tab-cross" class="insight-tab-content">
+          <div class="insight-cross-controls">
+            <button id="run-cross-analysis-btn" class="btn btn-secondary">
+              横断分析を実行
+            </button>
+            <span class="insight-cross-hint">全マンダラを横断的に分析します</span>
+          </div>
+          <div id="cross-result" class="insight-result">
+            <div class="insight-placeholder">
+              横断分析はボタンで個別に実行できます
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- API Key Modal -->
+    <div id="apikey-modal" class="apikey-modal is-hidden">
+      <div class="apikey-modal-backdrop"></div>
+      <div class="apikey-modal-content">
+        <h3>Gemini API キー設定</h3>
+        <p class="apikey-description">
+          MANDARA Insight には Gemini API キーが必要です。<br />
+          <a
+            href="https://aistudio.google.com/apikey"
+            target="_blank"
+            rel="noopener"
+          >Google AI Studio</a> で無料のキーを取得できます。
+        </p>
+        <div class="apikey-input-group">
+          <input
+            type="password"
+            id="apikey-input"
+            class="apikey-input"
+            placeholder="AIza..."
+            autocomplete="off"
+          />
+          <button
+            type="button"
+            id="apikey-toggle-visibility"
+            class="apikey-toggle-btn"
+            title="表示切替"
+          >
+            表示
+          </button>
+        </div>
+        <div id="apikey-status" class="apikey-status"></div>
+        <div class="apikey-actions">
+          <button type="button" id="apikey-save-btn" class="btn btn-secondary">
+            保��して分析開始
+          </button>
+          <button type="button" id="apikey-cancel-btn" class="btn btn-danger">
+            キャンセル
+          </button>
+        </div>
+        <p class="apikey-note">
+          キーはブラウザのlocalStorageに保存されます。サーバーには送信されません。
+        </p>
       </div>
     </div>
 

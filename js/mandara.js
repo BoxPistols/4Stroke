@@ -24,6 +24,28 @@ import {
   showListView as showListViewModule,
   closeListView as closeListViewModule,
 } from "./mandara-list-view.js";
+import {
+  checkAnalysisReady,
+  runFullAnalysis,
+  runCrossAnalysis,
+  clearCache as clearInsightCache,
+} from "./mandara-insight.js";
+import {
+  hasUserApiKey,
+  setUserApiKey,
+} from "./ai-service.js";
+import {
+  openInsightPanel,
+  closeInsightPanel,
+  isInsightPanelOpen,
+  switchTab,
+  showLoading,
+  showError,
+  renderStructuralAnalysis,
+  renderIssueExtraction,
+  renderActionPlan,
+  renderCrossAnalysis,
+} from "./mandara-insight-ui.js";
 
 // Current state
 let currentUserId = null;
@@ -592,6 +614,278 @@ function closeListView() {
   closeListViewModule();
 }
 
+// --- Insight Mode ---
+
+// Last analysis results (for cross-tab references)
+let lastAnalysisResults = null;
+
+// Start full analysis on current mandara
+async function startInsightAnalysis() {
+  if (!currentMandara) return;
+
+  // Save current state before analysis
+  await saveCurrentMandara();
+
+  const readiness = checkAnalysisReady(currentMandara);
+  if (!readiness.available) {
+    const messages = {
+      AI_NOT_AVAILABLE: "AI機能はオンラインモードでのみ利用できます",
+      NO_MANDARA: "マンダラが選択されていません",
+      INSUFFICIENT_CONTENT: `分析には最低${readiness.required}セル以上の入力が必要です（現在${readiness.filledCount}セル）`,
+    };
+    alert(messages[readiness.reason] || "分析を開始できません");
+    return;
+  }
+
+  openInsightPanel();
+  switchTab("structural");
+  lastAnalysisResults = null;
+
+  try {
+    lastAnalysisResults = await runFullAnalysis(currentMandara, (phase, result) => {
+      if (!result) {
+        // Phase starting - show loading
+        const loadingMessages = {
+          structural: "構造分析中...",
+          issues: "課題抽出中...",
+          action: "アクションプラン生成中...",
+        };
+        showLoading(`${phase === "action" ? "action" : phase}-result`, loadingMessages[phase]);
+        switchTab(phase === "action" ? "action" : phase);
+      } else {
+        // Phase complete - render result
+        if (phase === "structural") {
+          renderStructuralAnalysis(result);
+        } else if (phase === "issues") {
+          renderIssueExtraction(result);
+        } else if (phase === "action") {
+          renderActionPlan(result, handleInsightAddTodo, handleInsightCreateGarage);
+        }
+      }
+    });
+
+    console.log("[Insight] Full analysis complete");
+  } catch (error) {
+    console.error("[Insight] Analysis failed:", error);
+    if (error.message === "API_KEY_REQUIRED") {
+      closeInsightPanel();
+      showApiKeyModal();
+      return;
+    }
+    const activeTab = document.querySelector(".insight-tab.active");
+    const tabName = activeTab?.dataset.tab || "structural";
+    showError(`${tabName}-result`, `分析中にエラーが発生しました: ${error.message}`);
+  }
+}
+
+// Run cross analysis across all mandaras
+async function startCrossAnalysis() {
+  if (allMandaras.length < 2) {
+    alert("横断分析には2つ以上のマンダラが必要です");
+    return;
+  }
+
+  showLoading("cross-result", `${allMandaras.length}件のマンダラを横断分析中...`);
+
+  try {
+    const result = await runCrossAnalysis(allMandaras);
+    renderCrossAnalysis(result);
+    console.log("[Insight] Cross analysis complete");
+  } catch (error) {
+    console.error("[Insight] Cross analysis failed:", error);
+    if (error.message === "API_KEY_REQUIRED") {
+      showApiKeyModal();
+      return;
+    }
+    showError("cross-result", `横断分析中にエラーが発生しました: ${error.message}`);
+  }
+}
+
+// Handle TODO addition from insight panel
+function handleInsightAddTodo(text) {
+  addTodo(text);
+  showToast("TODOに追加しました");
+}
+
+// Handle GARAGE creation from insight panel
+async function handleInsightCreateGarage(garageData) {
+  try {
+    // Save to GARAGE A's strokes (or first available)
+    await Storage.saveStroke(currentUserId, "garageA", "title", garageData.title || "");
+    await Storage.saveStroke(currentUserId, "garageA", "stroke1", garageData.stroke1_key || "");
+    await Storage.saveStroke(currentUserId, "garageA", "stroke2", garageData.stroke2_issue || "");
+    await Storage.saveStroke(currentUserId, "garageA", "stroke3", garageData.stroke3_action || "");
+    await Storage.saveStroke(currentUserId, "garageA", "stroke4", garageData.stroke4_publish || "");
+
+    // Update linkedGarageId
+    if (currentMandara) {
+      currentMandara.linkedGarageId = "garageA";
+      await saveCurrentMandara();
+    }
+
+    showToast("GARAGE-Aに反映しました");
+    console.log("[Insight] GARAGE created from insight:", garageData.title);
+  } catch (error) {
+    console.error("[Insight] Failed to create GARAGE:", error);
+    alert("GARAGE作成に失敗しました");
+  }
+}
+
+// --- API Key Modal ---
+
+function showApiKeyModal() {
+  const modal = document.getElementById("apikey-modal");
+  if (!modal) return;
+  modal.classList.remove("is-hidden");
+  const input = document.getElementById("apikey-input");
+  if (input) input.focus();
+}
+
+function hideApiKeyModal() {
+  const modal = document.getElementById("apikey-modal");
+  if (modal) modal.classList.add("is-hidden");
+}
+
+function setupApiKeyModalListeners() {
+  const saveBtn = document.getElementById("apikey-save-btn");
+  const cancelBtn = document.getElementById("apikey-cancel-btn");
+  const backdrop = document.querySelector(".apikey-modal-backdrop");
+  const toggleBtn = document.getElementById("apikey-toggle-visibility");
+  const input = document.getElementById("apikey-input");
+  const status = document.getElementById("apikey-status");
+
+  if (saveBtn) {
+    saveBtn.addEventListener("click", async () => {
+      const key = input?.value?.trim();
+      if (!key) {
+        if (status) {
+          status.textContent = "APIキーを入力してください";
+          status.className = "apikey-status error";
+        }
+        return;
+      }
+
+      // 保存してバックエンドをリセット
+      saveBtn.disabled = true;
+      saveBtn.textContent = "確認中...";
+      if (status) {
+        status.textContent = "APIキーを確認しています...";
+        status.className = "apikey-status checking";
+      }
+
+      setUserApiKey(key);
+
+      // 簡易テスト
+      try {
+        const testUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+        const res = await fetch(testUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: [{ text: "hi" }] }],
+            generationConfig: { maxOutputTokens: 8 },
+          }),
+        });
+
+        if (!res.ok) {
+          const errBody = await res.text();
+          console.warn("[AI] Key test failed:", res.status, errBody);
+          setUserApiKey(""); // 無効なキーをクリア
+          if (status) {
+            status.textContent = `APIキーが無効です (${res.status})。キーを確認してください。`;
+            status.className = "apikey-status error";
+          }
+          saveBtn.disabled = false;
+          saveBtn.textContent = "保存して分析開始";
+          return;
+        }
+
+        if (status) {
+          status.textContent = "APIキーを保存しました";
+          status.className = "apikey-status success";
+        }
+
+        hideApiKeyModal();
+        showToast("APIキーを保存しました");
+        // 分析を開始
+        startInsightAnalysis();
+      } catch (e) {
+        console.error("[AI] Key test error:", e);
+        setUserApiKey("");
+        if (status) {
+          status.textContent = "接続エラー。ネットワークを確認してください。";
+          status.className = "apikey-status error";
+        }
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = "保存して分析開始";
+      }
+    });
+  }
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", hideApiKeyModal);
+  }
+
+  if (backdrop) {
+    backdrop.addEventListener("click", hideApiKeyModal);
+  }
+
+  if (toggleBtn && input) {
+    toggleBtn.addEventListener("click", () => {
+      const isPassword = input.type === "password";
+      input.type = isPassword ? "text" : "password";
+      toggleBtn.textContent = isPassword ? "隠す" : "表示";
+    });
+  }
+}
+
+// Setup Insight event listeners
+function setupInsightEventListeners() {
+  // Insight button
+  const insightBtn = document.getElementById("insight-btn");
+  if (insightBtn) {
+    insightBtn.addEventListener("click", () => {
+      if (isInsightPanelOpen()) {
+        closeInsightPanel();
+      } else {
+        startInsightAnalysis();
+      }
+    });
+  }
+
+  // Close button
+  const closeBtn = document.getElementById("insight-close-btn");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", closeInsightPanel);
+  }
+
+  // Rerun button
+  const rerunBtn = document.getElementById("insight-rerun-btn");
+  if (rerunBtn) {
+    rerunBtn.addEventListener("click", () => {
+      clearInsightCache();
+      startInsightAnalysis();
+    });
+  }
+
+  // Tab switching
+  document.querySelectorAll(".insight-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      switchTab(tab.dataset.tab);
+    });
+  });
+
+  // Cross analysis button
+  const crossBtn = document.getElementById("run-cross-analysis-btn");
+  if (crossBtn) {
+    crossBtn.addEventListener("click", startCrossAnalysis);
+  }
+
+  // API key modal
+  setupApiKeyModalListeners();
+}
+
 // Setup event listeners
 function setupEventListeners() {
   // Title input
@@ -973,6 +1267,7 @@ async function initializeApp() {
 
   // Setup event listeners
   setupEventListeners();
+  setupInsightEventListeners();
 
   console.log("[INFO] Mandara app initialized");
 }
