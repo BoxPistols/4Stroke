@@ -9,7 +9,8 @@ dist
 .env.swp
 
 # Generated files (from .env via scripts/)
-js/ai-keys.generated.js
+js/env-config.generated.js
+# js/ai-keys.generated.js (Legacy, merged into env-config.generated.js)
 
 # Test coverage
 coverage

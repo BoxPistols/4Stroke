@@ -9,16 +9,20 @@
  * ローカル開発時は、このファイルに個人情報を記載してください
  */
 
+import { ENV_CONFIG } from './env-config.generated.js';
+
 const getEmailFromEnv = () => {
-  // グローバル設定オブジェクトから読み込み
+  // 1. グローバル設定オブジェクト（Vercel等の注入用）
   if (typeof window !== 'undefined' && window.__CONFIG__?.ALLOWED_GOOGLE_EMAIL) {
-    console.log('[INFO] Using email from global config:', window.__CONFIG__.ALLOWED_GOOGLE_EMAIL);
     return window.__CONFIG__.ALLOWED_GOOGLE_EMAIL;
   }
 
-  // デフォルト値（ローカル開発用）
-  console.log('[INFO] Using default email from config.js');
-  return 'ito.atsu.mail@gmail.com';
+  // 2. 生成された環境設定ファイルから取得
+  if (ENV_CONFIG.APP.ALLOWED_GOOGLE_EMAIL) {
+    return ENV_CONFIG.APP.ALLOWED_GOOGLE_EMAIL;
+  }
+
+  return '';
 };
 
 export const CONFIG = {

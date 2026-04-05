@@ -20,12 +20,12 @@ async function loadGeneratedKeys() {
   if (cachedKeys !== null) return cachedKeys;
 
   try {
-    const mod = await import("./ai-keys.generated.js");
-    cachedKeys = mod.GENERATED_SHARED_KEYS || {};
-    console.log("[ai-config] Loaded generated keys");
+    const mod = await import("./env-config.generated.js");
+    cachedKeys = mod.ENV_CONFIG.AI.sharedKeys || {};
+    console.log("[ai-config] Loaded shared keys from env-config.generated.js");
   } catch (e) {
     // ファイル未生成時は空で動作させる
-    console.log("[ai-config] ai-keys.generated.js not found, using empty shared keys");
+    console.log("[ai-config] env-config.generated.js not found, using empty shared keys");
     cachedKeys = {};
   }
 
