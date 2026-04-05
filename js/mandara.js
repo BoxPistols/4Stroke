@@ -766,21 +766,62 @@ function handleInsightAddTodo(text) {
 // Handle GARAGE creation from insight panel
 async function handleInsightCreateGarage(garageData) {
   try {
-    // Save to GARAGE A's strokes (or first available)
-    await Storage.saveStroke(currentUserId, "garageA", "title", garageData.title || "");
-    await Storage.saveStroke(currentUserId, "garageA", "stroke1", garageData.stroke1_key || "");
-    await Storage.saveStroke(currentUserId, "garageA", "stroke2", garageData.stroke2_issue || "");
-    await Storage.saveStroke(currentUserId, "garageA", "stroke3", garageData.stroke3_action || "");
-    await Storage.saveStroke(currentUserId, "garageA", "stroke4", garageData.stroke4_publish || "");
+    // 既存の全GARAGEを読み込んで、空のスロットを探す
+    const allGarages = await Storage.loadAllGarages(currentUserId);
+    const slots = ["garageA", "garageB", "garageC", "garageD"];
+
+    const isEmptyGarage = (g) =>
+      !g || (!g.title && !g.stroke1 && !g.stroke2 && !g.stroke3 && !g.stroke4);
+
+    // 空のGARAGEを優先選択
+    let targetSlot = slots.find((id) => isEmptyGarage(allGarages[id]));
+
+    // 全て埋まっている場合、上書き先をユーザーに確認
+    if (!targetSlot) {
+      const options = slots.map((id) => {
+        const g = allGarages[id];
+        const title = g?.title?.trim() || "(無題)";
+        return `${id.replace("garage", "GARAGE-")}: ${title}`;
+      }).join("\n");
+
+      const userChoice = prompt(
+        `空のGARAGEがありません。上書きするGARAGEを選んでください:\n\n${options}\n\nA / B / C / D を入力 (キャンセルで中止):`,
+        "A"
+      );
+
+      if (!userChoice) {
+        showToast("GARAGE反映をキャンセルしました");
+        return;
+      }
+
+      const letter = userChoice.trim().toUpperCase();
+      if (!["A", "B", "C", "D"].includes(letter)) {
+        alert("無効な入力です。A/B/C/Dのいずれかを入力してください");
+        return;
+      }
+      targetSlot = `garage${letter}`;
+
+      if (!confirm(`GARAGE-${letter} の既存内容を上書きします。よろしいですか？`)) {
+        return;
+      }
+    }
+
+    // 指定スロットへ保存
+    await Storage.saveStroke(currentUserId, targetSlot, "title", garageData.title || "");
+    await Storage.saveStroke(currentUserId, targetSlot, "stroke1", garageData.stroke1_key || "");
+    await Storage.saveStroke(currentUserId, targetSlot, "stroke2", garageData.stroke2_issue || "");
+    await Storage.saveStroke(currentUserId, targetSlot, "stroke3", garageData.stroke3_action || "");
+    await Storage.saveStroke(currentUserId, targetSlot, "stroke4", garageData.stroke4_publish || "");
 
     // Update linkedGarageId
     if (currentMandara) {
-      currentMandara.linkedGarageId = "garageA";
+      currentMandara.linkedGarageId = targetSlot;
       await saveCurrentMandara();
     }
 
-    showToast("GARAGE-Aに反映しました");
-    console.log("[Insight] GARAGE created from insight:", garageData.title);
+    const letter = targetSlot.replace("garage", "");
+    showToast(`GARAGE-${letter}に反映しました`);
+    console.log("[Insight] GARAGE created:", targetSlot, garageData.title);
   } catch (error) {
     console.error("[Insight] Failed to create GARAGE:", error);
     alert("GARAGE作成に失敗しました");

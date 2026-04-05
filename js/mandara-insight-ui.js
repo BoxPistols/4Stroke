@@ -1,6 +1,18 @@
 // MANDARA Insight - UI Rendering Module
 
 /**
+ * HTML エスケープ (AI レスポンス由来の文字列挿入時に必須)
+ */
+function escapeHtml(str) {
+  return String(str == null ? "" : str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+/**
  * Insightパネルを開く
  */
 export function openInsightPanel() {
@@ -85,11 +97,12 @@ export function renderStructuralAnalysis(result) {
   const cellAnalysisHtml = (result.cellAnalysis || [])
     .map((cell) => {
       const relevanceClass = cell.relevance || "empty";
+      const cellNum = Number(cell.cellNumber) || "?";
       return `
         <div class="cell-analysis-item relevance-${relevanceClass}">
-          <span class="cell-number">セル${cell.cellNumber}</span>
-          <span class="cell-relevance">${relevanceLabel(cell.relevance)}</span>
-          <span class="cell-comment">${cell.comment || ""}</span>
+          <span class="cell-number">セル${cellNum}</span>
+          <span class="cell-relevance">${escapeHtml(relevanceLabel(cell.relevance))}</span>
+          <span class="cell-comment">${escapeHtml(cell.comment)}</span>
         </div>`;
     })
     .join("");
@@ -98,13 +111,15 @@ export function renderStructuralAnalysis(result) {
   const relationsHtml = renderRelationships(result.relationships);
   const suggestionsHtml = renderSuggestions(result.suggestions);
 
+  const scoreNum = Number(result.coherenceScore) || 0;
+
   container.innerHTML = `
     <div class="insight-score-card">
       <div class="score-circle ${scoreClass}">
-        <span class="score-value">${result.coherenceScore}</span>
+        <span class="score-value">${scoreNum}</span>
         <span class="score-label">/10</span>
       </div>
-      <div class="score-summary">${result.summary || ""}</div>
+      <div class="score-summary">${escapeHtml(result.summary)}</div>
     </div>
 
     <div class="insight-section">
@@ -128,36 +143,44 @@ export function renderIssueExtraction(result) {
   const issues = result.issues || [];
   const riskClass = result.overallRisk || "low";
 
+  // AIが返す未知のseverity/typeも事前にサニタイズしてクラスに使う
+  const safeSeverity = (s) => (/^(high|medium|low)$/.test(s) ? s : "low");
+  const safeRisk = (r) => (/^(high|medium|low)$/.test(r) ? r : "low");
+
   const issuesHtml = issues
     .map((issue) => {
-      const severityLabel = { high: "高", medium: "中", low: "低" }[issue.severity] || issue.severity;
+      const severityLabel = { high: "高", medium: "中", low: "低" }[issue.severity] || "低";
       const typeLabel = {
         contradiction: "矛盾",
         risk: "リスク",
         dependency: "依存",
         ambiguity: "曖昧",
         gap: "欠落",
-      }[issue.type] || issue.type;
+      }[issue.type] || escapeHtml(issue.type || "");
+      const sev = safeSeverity(issue.severity);
+      const relatedCells = Array.isArray(issue.relatedCells)
+        ? issue.relatedCells.map((c) => `セル${Number(c) || "?"}`).join(", ")
+        : "";
 
       return `
-        <div class="issue-card severity-${issue.severity}">
+        <div class="issue-card severity-${sev}">
           <div class="issue-header">
             <span class="issue-severity">${severityLabel}</span>
             <span class="issue-type">${typeLabel}</span>
-            <span class="issue-title">${issue.title}</span>
+            <span class="issue-title">${escapeHtml(issue.title)}</span>
           </div>
-          <div class="issue-description">${issue.description}</div>
-          ${issue.relatedCells ? `<div class="issue-cells">関連: ${issue.relatedCells.map((c) => `セル${c}`).join(", ")}</div>` : ""}
-          ${issue.suggestion ? `<div class="issue-suggestion">${issue.suggestion}</div>` : ""}
+          <div class="issue-description">${escapeHtml(issue.description)}</div>
+          ${relatedCells ? `<div class="issue-cells">関連: ${relatedCells}</div>` : ""}
+          ${issue.suggestion ? `<div class="issue-suggestion">${escapeHtml(issue.suggestion)}</div>` : ""}
         </div>`;
     })
     .join("");
 
   container.innerHTML = `
-    <div class="insight-risk-badge risk-${riskClass}">
-      全体リスク: ${{ high: "高", medium: "中", low: "低" }[riskClass] || riskClass}
+    <div class="insight-risk-badge risk-${safeRisk(riskClass)}">
+      全体リスク: ${{ high: "高", medium: "中", low: "低" }[safeRisk(riskClass)]}
     </div>
-    <div class="insight-summary">${result.summary || ""}</div>
+    <div class="insight-summary">${escapeHtml(result.summary)}</div>
     <div class="insight-section">
       <h4 class="insight-section-title">抽出された課題 (${issues.length}件)</h4>
       <div class="issues-list">${issuesHtml || '<div class="insight-placeholder">課題は見つかりませんでした</div>'}</div>
@@ -199,6 +222,10 @@ export function renderActionPlan(result, onAddTodo, onCreateGarage, mandaraId = 
 
   const rejected = getRejectedTodos(mandaraId);
 
+  // 事前サニタイズ: 未知の priority もCSSクラスに使う
+  const safePriority = (p) =>
+    /^(urgent|planned|delegate|hold)$/.test(p) ? p : "hold";
+
   // TODOs
   const todosHtml = (result.todos || [])
     .map((todo, i) => {
@@ -207,15 +234,15 @@ export function renderActionPlan(result, onAddTodo, onCreateGarage, mandaraId = 
         planned: "計画する",
         delegate: "委任する",
         hold: "保留",
-      }[todo.priority] || todo.priority;
+      }[todo.priority] || "保留";
 
       const isRejected = rejected.has(todo.text);
       const rejectedClass = isRejected ? " is-rejected" : "";
 
       return `
-        <div class="action-todo-item priority-${todo.priority}${rejectedClass}" data-text="${encodeURIComponent(todo.text)}">
+        <div class="action-todo-item priority-${safePriority(todo.priority)}${rejectedClass}">
           <span class="action-todo-priority">${priorityLabel}</span>
-          <span class="action-todo-text">${todo.text}</span>
+          <span class="action-todo-text">${escapeHtml(todo.text)}</span>
           <div class="action-todo-buttons">
             <button class="action-add-todo-btn" data-index="${i}" title="TODOに追加"${isRejected ? " disabled" : ""}>+TODO</button>
             <button class="action-reject-btn" data-index="${i}" title="${isRejected ? "却下を解除" : "却下（やらない）"}">${isRejected ? "↩戻す" : "却下"}</button>
@@ -229,12 +256,12 @@ export function renderActionPlan(result, onAddTodo, onCreateGarage, mandaraId = 
   const garageHtml = garage
     ? `
     <div class="action-garage-proposal">
-      <h5>${garage.title || "GARAGE提案"}</h5>
+      <h5>${escapeHtml(garage.title || "GARAGE提案")}</h5>
       <div class="garage-strokes">
-        <div class="garage-stroke"><span class="stroke-label">Key</span><span class="stroke-text">${garage.stroke1_key || ""}</span></div>
-        <div class="garage-stroke"><span class="stroke-label">Issue</span><span class="stroke-text">${garage.stroke2_issue || ""}</span></div>
-        <div class="garage-stroke"><span class="stroke-label">Action</span><span class="stroke-text">${garage.stroke3_action || ""}</span></div>
-        <div class="garage-stroke"><span class="stroke-label">Publish</span><span class="stroke-text">${garage.stroke4_publish || ""}</span></div>
+        <div class="garage-stroke"><span class="stroke-label">Key</span><span class="stroke-text">${escapeHtml(garage.stroke1_key)}</span></div>
+        <div class="garage-stroke"><span class="stroke-label">Issue</span><span class="stroke-text">${escapeHtml(garage.stroke2_issue)}</span></div>
+        <div class="garage-stroke"><span class="stroke-label">Action</span><span class="stroke-text">${escapeHtml(garage.stroke3_action)}</span></div>
+        <div class="garage-stroke"><span class="stroke-label">Publish</span><span class="stroke-text">${escapeHtml(garage.stroke4_publish)}</span></div>
       </div>
       <button class="btn btn-secondary action-create-garage-btn">GARAGEに反映</button>
     </div>`
@@ -245,11 +272,11 @@ export function renderActionPlan(result, onAddTodo, onCreateGarage, mandaraId = 
 
   // First three steps
   const stepsHtml = (result.firstThreeSteps || [])
-    .map((step, i) => `<div class="first-step"><span class="step-number">${i + 1}</span><span>${step}</span></div>`)
+    .map((step, i) => `<div class="first-step"><span class="step-number">${i + 1}</span><span>${escapeHtml(step)}</span></div>`)
     .join("");
 
   container.innerHTML = `
-    <div class="insight-summary">${result.summary || ""}</div>
+    <div class="insight-summary">${escapeHtml(result.summary)}</div>
 
     <div class="insight-section">
       <h4 class="insight-section-title">まず取り組む3ステップ</h4>
@@ -322,9 +349,9 @@ export function renderCrossAnalysis(result) {
     .map(
       (theme) => `
       <div class="cross-theme-card">
-        <div class="cross-theme-name">${theme.theme}</div>
-        <div class="cross-theme-appears">${(theme.appearsIn || []).join(", ")}</div>
-        <div class="cross-theme-significance">${theme.significance || ""}</div>
+        <div class="cross-theme-name">${escapeHtml(theme.theme)}</div>
+        <div class="cross-theme-appears">${escapeHtml((theme.appearsIn || []).join(", "))}</div>
+        <div class="cross-theme-significance">${escapeHtml(theme.significance)}</div>
       </div>`
     )
     .join("");
@@ -333,10 +360,10 @@ export function renderCrossAnalysis(result) {
     .map(
       (dep) => `
       <div class="cross-dep-item">
-        <span class="cross-dep-from">${dep.from}</span>
+        <span class="cross-dep-from">${escapeHtml(dep.from)}</span>
         <span class="cross-dep-arrow">&rarr;</span>
-        <span class="cross-dep-to">${dep.to}</span>
-        <span class="cross-dep-desc">${dep.description}</span>
+        <span class="cross-dep-to">${escapeHtml(dep.to)}</span>
+        <span class="cross-dep-desc">${escapeHtml(dep.description)}</span>
       </div>`
     )
     .join("");
@@ -345,18 +372,18 @@ export function renderCrossAnalysis(result) {
     .map(
       (overlap) => `
       <div class="cross-overlap-item">
-        <div class="cross-overlap-desc">${overlap.description}</div>
-        <div class="cross-overlap-rec">${overlap.recommendation || ""}</div>
+        <div class="cross-overlap-desc">${escapeHtml(overlap.description)}</div>
+        <div class="cross-overlap-rec">${escapeHtml(overlap.recommendation)}</div>
       </div>`
     )
     .join("");
 
   const insightsHtml = (result.strategicInsights || [])
-    .map((insight) => `<li>${insight}</li>`)
+    .map((insight) => `<li>${escapeHtml(insight)}</li>`)
     .join("");
 
   container.innerHTML = `
-    <div class="insight-summary">${result.summary || ""}</div>
+    <div class="insight-summary">${escapeHtml(result.summary)}</div>
 
     ${themesHtml ? `<div class="insight-section"><h4 class="insight-section-title">共通テーマ</h4><div class="cross-themes">${themesHtml}</div></div>` : ""}
 
@@ -577,15 +604,6 @@ function renderLocalAction(result, onAddTodo) {
   });
 }
 
-function escapeHtml(str) {
-  return (str || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
 // --- Helper renderers ---
 
 function relevanceLabel(relevance) {
@@ -596,10 +614,10 @@ function renderCoverage(coverage) {
   if (!coverage) return "";
 
   const coveredHtml = (coverage.covered || [])
-    .map((item) => `<span class="coverage-tag covered">${item}</span>`)
+    .map((item) => `<span class="coverage-tag covered">${escapeHtml(item)}</span>`)
     .join("");
   const missingHtml = (coverage.missing || [])
-    .map((item) => `<span class="coverage-tag missing">${item}</span>`)
+    .map((item) => `<span class="coverage-tag missing">${escapeHtml(item)}</span>`)
     .join("");
 
   return `
@@ -613,13 +631,16 @@ function renderCoverage(coverage) {
 function renderRelationships(relationships) {
   if (!relationships || relationships.length === 0) return "";
 
+  // 既知のタイプのみCSSクラスに使う
+  const safeType = (t) => (/^(支持|補完|対立|因果|独立)$/.test(t) ? t : "独立");
+
   const html = relationships
     .map(
       (rel) => `
       <div class="relation-item">
-        <span class="relation-cells">セル${rel.from} &harr; セル${rel.to}</span>
-        <span class="relation-type type-${rel.type}">${rel.type}</span>
-        <span class="relation-desc">${rel.description || ""}</span>
+        <span class="relation-cells">セル${Number(rel.from) || "?"} &harr; セル${Number(rel.to) || "?"}</span>
+        <span class="relation-type type-${safeType(rel.type)}">${escapeHtml(rel.type)}</span>
+        <span class="relation-desc">${escapeHtml(rel.description)}</span>
       </div>`
     )
     .join("");
@@ -635,7 +656,7 @@ function renderSuggestions(suggestions) {
   if (!suggestions || suggestions.length === 0) return "";
 
   const html = suggestions
-    .map((s) => `<li class="suggestion-item">${s}</li>`)
+    .map((s) => `<li class="suggestion-item">${escapeHtml(s)}</li>`)
     .join("");
 
   return `
@@ -658,7 +679,7 @@ function renderPriorityMatrix(matrix) {
   const html = quadrants
     .map((q) => {
       const items = matrix[q.key] || [];
-      const itemsHtml = items.map((item) => `<li>${item}</li>`).join("");
+      const itemsHtml = items.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
       return `
         <div class="matrix-quadrant ${q.className}">
           <div class="matrix-label">${q.label}</div>
