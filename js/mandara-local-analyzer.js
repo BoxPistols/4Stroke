@@ -205,41 +205,45 @@ function buildSummary(mandara, filled, empty, completeness, issueCount) {
 function buildMarkdown(mandara, cellsOverview) {
   const lines = [];
 
-  lines.push(`# ${mandara.title || "(無題)"}\n`);
-
-  lines.push(`## 中心テーマ`);
-  const center = cellsOverview.find((c) => c.cellNumber === 5);
-  lines.push(center.content || "_(未設定)_");
+  lines.push(`タイトル: ${mandara.title || "(無題)"}`);
   lines.push("");
 
-  lines.push(`## 周辺セル`);
+  lines.push("中心テーマ");
+  const center = cellsOverview.find((c) => c.cellNumber === 5);
+  lines.push(`  ${center.content || "(未設定)"}`);
+  lines.push("");
+
+  lines.push("周辺セル");
   [1, 2, 3, 4, 6, 7, 8, 9].forEach((i) => {
     const cell = cellsOverview.find((c) => c.cellNumber === i);
-    const content = cell.content || "_(空)_";
-    lines.push(`- **${i} (${cell.position})**: ${content}`);
+    const content = cell.content || "(空)";
+    lines.push(`  ${i} ${cell.position}: ${content}`);
   });
   lines.push("");
 
   if (mandara.memo?.trim()) {
-    lines.push(`## 備考メモ`);
-    lines.push(mandara.memo.trim());
+    lines.push("備考メモ");
+    mandara.memo.trim().split("\n").forEach((line) => {
+      lines.push(`  ${line}`);
+    });
     lines.push("");
   }
 
   if ((mandara.tags || []).length > 0) {
-    lines.push(`## タグ`);
-    lines.push(mandara.tags.map((t) => `\`${t}\``).join(" "));
+    lines.push("タグ");
+    lines.push(`  ${mandara.tags.join("、")}`);
     lines.push("");
   }
 
   const todos = mandara.todos || [];
   if (todos.length > 0) {
-    lines.push(`## TODO`);
+    lines.push("TODO");
     todos.forEach((t) => {
-      lines.push(`- [${t.completed ? "x" : " "}] ${t.text}`);
+      const mark = t.completed ? "済" : "・";
+      lines.push(`  ${mark} ${t.text}`);
     });
     lines.push("");
   }
 
-  return lines.join("\n");
+  return lines.join("\n").trimEnd();
 }

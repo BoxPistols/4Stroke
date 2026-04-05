@@ -421,7 +421,7 @@ function renderLocalStructural(result) {
     </div>
 
     <div class="insight-section">
-      <h4 class="insight-section-title">整理されたコンテンツ</h4>
+      <h4 class="insight-section-title">コンテンツ一覧</h4>
       <pre class="local-markdown">${escapeHtml(result.markdown)}</pre>
     </div>
   `;
