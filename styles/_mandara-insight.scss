@@ -72,6 +72,54 @@
   font-size: 13px !important;
 }
 
+// エクスポートメニュー (MD出力)
+.insight-export-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.insight-export-btn {
+  padding: 6px 14px !important;
+  font-size: 13px !important;
+}
+
+.insight-export-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 200px;
+  background: rgba(24, 24, 40, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  padding: 4px;
+  z-index: 2100;
+
+  &.is-hidden {
+    display: none;
+  }
+
+  button {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: var(--font-japanese);
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover {
+      background: rgba(174, 129, 255, 0.15);
+      color: var(--color-white);
+    }
+  }
+}
+
 .insight-close-btn {
   width: 36px;
   height: 36px;

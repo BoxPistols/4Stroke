@@ -247,6 +247,15 @@
       <div class="insight-panel-header">
         <h2 class="insight-panel-title">MANDARA Insight</h2>
         <div class="insight-panel-actions">
+          <div class="insight-export-menu">
+            <button id="insight-export-btn" class="btn btn-secondary insight-export-btn" title="Markdownとして出力">
+              MD出力
+            </button>
+            <div id="insight-export-dropdown" class="insight-export-dropdown is-hidden">
+              <button type="button" id="insight-export-copy">クリップボードにコピー</button>
+              <button type="button" id="insight-export-download">ファイル保存 (.md)</button>
+            </div>
+          </div>
           <button id="insight-rerun-btn" class="btn btn-secondary insight-rerun-btn" title="再分析">
             再分析
           </button>

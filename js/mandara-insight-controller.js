@@ -25,6 +25,11 @@ import {
 import { analyzeLocally } from "./mandara-local-analyzer.js";
 import { renderApiSettings } from "./mandara-insight-api-tab.js";
 import { AIError, ApiErrorCode } from "./ai-errors.js";
+import {
+  buildMarkdownReport,
+  copyToClipboard,
+  downloadAsFile,
+} from "./mandara-insight-export.js";
 
 /**
  * HTMLエスケープ (イントロ画面の値挿入用)
@@ -50,6 +55,9 @@ function escapeHtml(str) {
  * }
  */
 export function createInsightController(context) {
+  // 最新の分析結果 (エクスポート用) — { structural, issues, action } or { local }
+  let lastResults = null;
+
   /**
    * Insightパネルを開いて確認画面を表示 (分析は開始しない)
    */
@@ -152,6 +160,7 @@ export function createInsightController(context) {
 
     console.log("[Insight] Running local fallback analysis");
     const result = analyzeLocally(currentMandara);
+    lastResults = { local: result };
     openInsightPanel();
     switchTab("structural");
     renderLocalAnalysis(
@@ -196,6 +205,7 @@ export function createInsightController(context) {
     removeLocalBanner();
 
     try {
+      lastResults = { structural: null, issues: null, action: null };
       await runFullAnalysis(currentMandara, (phase, result) => {
         if (!result) {
           const loadingMessages = {
@@ -206,6 +216,7 @@ export function createInsightController(context) {
           showLoading(`${phase === "action" ? "action" : phase}-result`, loadingMessages[phase]);
           switchTab(phase === "action" ? "action" : phase);
         } else {
+          lastResults[phase] = result;
           if (phase === "structural") {
             renderStructuralAnalysis(result);
           } else if (phase === "issues") {
@@ -368,12 +379,62 @@ export function createInsightController(context) {
     renderApiSettings();
   }
 
+  /**
+   * 現在の分析結果を Markdown 文字列として取得
+   */
+  function getMarkdown() {
+    const mandara = context.getCurrentMandara();
+    if (!lastResults) return null;
+    return buildMarkdownReport(mandara, lastResults);
+  }
+
+  /**
+   * Markdown をクリップボードにコピー
+   */
+  async function copyMarkdown() {
+    const md = getMarkdown();
+    if (!md) {
+      context.showToast("エクスポートする分析結果がありません");
+      return false;
+    }
+    const ok = await copyToClipboard(md);
+    context.showToast(ok ? "Markdown をコピーしました" : "コピーに失敗しました");
+    return ok;
+  }
+
+  /**
+   * Markdown を .md ファイルとしてダウンロード
+   */
+  function downloadMarkdown() {
+    const md = getMarkdown();
+    if (!md) {
+      context.showToast("エクスポートする分析結果がありません");
+      return false;
+    }
+    const mandara = context.getCurrentMandara();
+    downloadAsFile(md, mandara?.title);
+    context.showToast("Markdown をダウンロードしました");
+    return true;
+  }
+
+  /**
+   * エクスポート可能か (分析結果があるか)
+   */
+  function hasResults() {
+    return !!lastResults;
+  }
+
   return {
     showInsightIntro,
     runLocalFallback,
     startInsightAnalysis,
     startCrossAnalysis,
     showApiSettings,
+    // Export
+    getMarkdown,
+    copyMarkdown,
+    downloadMarkdown,
+    hasResults,
     // Panel controls re-exported for convenience
     openInsightPanel,
     closeInsightPanel,

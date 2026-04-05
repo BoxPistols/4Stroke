@@ -479,6 +479,37 @@ function setupInsightEventListeners() {
     });
   }
 
+  // Export menu (MD出力)
+  const exportBtn = document.getElementById("insight-export-btn");
+  const exportDropdown = document.getElementById("insight-export-dropdown");
+  const copyBtn = document.getElementById("insight-export-copy");
+  const downloadBtn = document.getElementById("insight-export-download");
+
+  if (exportBtn && exportDropdown) {
+    exportBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      exportDropdown.classList.toggle("is-hidden");
+    });
+    // ドロップダウン外クリックで閉じる
+    document.addEventListener("click", (e) => {
+      if (!exportBtn.contains(e.target) && !exportDropdown.contains(e.target)) {
+        exportDropdown.classList.add("is-hidden");
+      }
+    });
+  }
+  if (copyBtn) {
+    copyBtn.addEventListener("click", async () => {
+      exportDropdown.classList.add("is-hidden");
+      await insightController.copyMarkdown();
+    });
+  }
+  if (downloadBtn) {
+    downloadBtn.addEventListener("click", () => {
+      exportDropdown.classList.add("is-hidden");
+      insightController.downloadMarkdown();
+    });
+  }
+
   // Tab switching - API設定タブを開いたらローカルバナーを消去し再描画
   document.querySelectorAll(".insight-tab").forEach((tab) => {
     tab.addEventListener("click", () => {
