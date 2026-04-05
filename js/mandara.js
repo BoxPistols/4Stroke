@@ -45,7 +45,10 @@ import {
   renderIssueExtraction,
   renderActionPlan,
   renderCrossAnalysis,
+  renderLocalAnalysis,
+  removeLocalBanner,
 } from "./mandara-insight-ui.js";
+import { analyzeLocally } from "./mandara-local-analyzer.js";
 
 // Current state
 let currentUserId = null;
@@ -619,6 +622,21 @@ function closeListView() {
 // Last analysis results (for cross-tab references)
 let lastAnalysisResults = null;
 
+// Run local (non-AI) analysis
+function runLocalFallback() {
+  if (!currentMandara) return;
+
+  console.log("[Insight] Running local fallback analysis");
+  const result = analyzeLocally(currentMandara);
+  openInsightPanel();
+  switchTab("structural");
+  renderLocalAnalysis(
+    result,
+    handleInsightAddTodo,
+    () => showApiKeyModal()
+  );
+}
+
 // Start full analysis on current mandara
 async function startInsightAnalysis() {
   if (!currentMandara) return;
@@ -628,17 +646,22 @@ async function startInsightAnalysis() {
 
   const readiness = checkAnalysisReady(currentMandara);
   if (!readiness.available) {
-    const messages = {
-      AI_NOT_AVAILABLE: "AI機能はオンラインモードでのみ利用できます",
-      NO_MANDARA: "マンダラが選択されていません",
-      INSUFFICIENT_CONTENT: `分析には最低${readiness.required}セル以上の入力が必要です（現在${readiness.filledCount}セル）`,
-    };
-    alert(messages[readiness.reason] || "分析を開始できません");
+    if (readiness.reason === "INSUFFICIENT_CONTENT") {
+      alert(`分析には最低${readiness.required}セル以上の入力が必要です（現在${readiness.filledCount}セル）`);
+      return;
+    }
+    if (readiness.reason === "NO_MANDARA") {
+      alert("マンダラが選択されていません");
+      return;
+    }
+    // AI_NOT_AVAILABLE → ローカル分析にフォールバック
+    runLocalFallback();
     return;
   }
 
   openInsightPanel();
   switchTab("structural");
+  removeLocalBanner();
   lastAnalysisResults = null;
 
   try {
@@ -667,11 +690,20 @@ async function startInsightAnalysis() {
     console.log("[Insight] Full analysis complete");
   } catch (error) {
     console.error("[Insight] Analysis failed:", error);
-    if (error.message === "API_KEY_REQUIRED") {
-      closeInsightPanel();
-      showApiKeyModal();
+
+    // APIキー必要 or APIエラー → ローカル分析にフォールバック + 通知
+    const needsApiKey =
+      error.message === "API_KEY_REQUIRED" ||
+      error.message?.includes("Gemini API error") ||
+      error.message?.includes("API_KEY_INVALID");
+
+    if (needsApiKey) {
+      console.log("[Insight] Falling back to local analysis");
+      runLocalFallback();
+      showToast("AI分析が利用できないため、ローカル分析を表示しています");
       return;
     }
+
     const activeTab = document.querySelector(".insight-tab.active");
     const tabName = activeTab?.dataset.tab || "structural";
     showError(`${tabName}-result`, `分析中にエラーが発生しました: ${error.message}`);

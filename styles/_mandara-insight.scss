@@ -823,6 +823,137 @@
   }
 }
 
+// Local Mode Banner
+.local-mode-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, rgba(241, 250, 140, 0.12), rgba(241, 250, 140, 0.05));
+  border: 1px solid rgba(241, 250, 140, 0.3);
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.local-banner-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.local-banner-icon {
+  background: rgba(241, 250, 140, 0.25);
+  color: #f1fa8c;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: bold;
+  font-family: var(--font-japanese);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.local-banner-text {
+  color: rgba(255, 255, 255, 0.75);
+  font-family: var(--font-japanese);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.local-banner-action {
+  padding: 6px 14px;
+  background: linear-gradient(135deg, rgba(174, 129, 255, 0.9), rgba(128, 0, 128, 0.9));
+  border: none;
+  border-radius: 6px;
+  color: var(--color-white);
+  font-family: var(--font-japanese);
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover {
+    background: linear-gradient(135deg, rgba(174, 129, 255, 1), rgba(128, 0, 128, 1));
+    box-shadow: 0 2px 8px rgba(174, 129, 255, 0.4);
+  }
+}
+
+// Local stats
+.local-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.local-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 6px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+}
+
+.local-stat-label {
+  color: rgba(255, 255, 255, 0.4);
+  font-family: var(--font-japanese);
+  font-size: 10px;
+  margin-bottom: 4px;
+}
+
+.local-stat-value {
+  color: var(--color-white);
+  font-weight: bold;
+  font-size: 14px;
+}
+
+// Local markdown preview
+.local-markdown {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+  margin: 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+// Cell position / center badge for local analysis
+.cell-position {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: var(--font-japanese);
+  min-width: 40px;
+}
+
+.cell-center-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  background: rgba(174, 129, 255, 0.25);
+  color: var(--color-accent);
+  font-weight: bold;
+}
+
 // API Key Modal
 .apikey-modal {
   position: fixed;

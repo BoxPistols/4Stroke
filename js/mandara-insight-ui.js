@@ -318,6 +318,220 @@ export function renderCrossAnalysis(result) {
   `;
 }
 
+/**
+ * ローカル分析結果を全タブに一括レンダリング
+ * @param {object} result - ローカル分析結果
+ * @param {function} onAddTodo - TODO追加コールバック
+ * @param {function} onRequestAI - AI分析を使うコールバック
+ */
+export function renderLocalAnalysis(result, onAddTodo, onRequestAI) {
+  // バナーをパネル上部に表示
+  renderLocalBanner(onRequestAI);
+
+  // 構造分析タブ
+  renderLocalStructural(result);
+  // 課題抽出タブ
+  renderLocalIssues(result);
+  // アクションプランタブ
+  renderLocalAction(result, onAddTodo);
+}
+
+/**
+ * ローカルモードのバナー
+ */
+function renderLocalBanner(onRequestAI) {
+  const existing = document.getElementById("local-mode-banner");
+  if (existing) existing.remove();
+
+  const banner = document.createElement("div");
+  banner.id = "local-mode-banner";
+  banner.className = "local-mode-banner";
+  banner.innerHTML = `
+    <div class="local-banner-info">
+      <span class="local-banner-icon">ローカル</span>
+      <span class="local-banner-text">AI未使用の簡易分析です。より深い洞察にはAI分析をご利用ください。</span>
+    </div>
+    <button type="button" class="local-banner-action" id="local-enable-ai-btn">AI分析を使う</button>
+  `;
+
+  const content = document.querySelector(".insight-content");
+  if (content) {
+    content.insertBefore(banner, content.firstChild);
+  }
+
+  const btn = document.getElementById("local-enable-ai-btn");
+  if (btn && onRequestAI) {
+    btn.addEventListener("click", onRequestAI);
+  }
+}
+
+/**
+ * ローカルバナーを削除（AI分析に切り替わった時用）
+ */
+export function removeLocalBanner() {
+  const banner = document.getElementById("local-mode-banner");
+  if (banner) banner.remove();
+}
+
+function renderLocalStructural(result) {
+  const container = document.getElementById("structural-result");
+  if (!container) return;
+
+  const scoreClass =
+    result.completeness >= 70 ? "high" : result.completeness >= 40 ? "medium" : "low";
+
+  const cellsHtml = result.cellsOverview
+    .map((cell) => {
+      const stateLabel = cell.isEmpty ? "空" : `${cell.charCount}文字`;
+      const stateClass = cell.isEmpty ? "relevance-empty" : "relevance-high";
+      const centerBadge = cell.isCenter ? '<span class="cell-center-badge">中心</span>' : "";
+      return `
+        <div class="cell-analysis-item ${stateClass}">
+          <span class="cell-number">セル${cell.cellNumber}</span>
+          <span class="cell-position">${cell.position}</span>
+          ${centerBadge}
+          <span class="cell-relevance">${stateLabel}</span>
+          <span class="cell-comment">${cell.isEmpty ? "" : escapeHtml(cell.content).slice(0, 40) + (cell.content.length > 40 ? "..." : "")}</span>
+        </div>`;
+    })
+    .join("");
+
+  const statsHtml = `
+    <div class="local-stats">
+      <div class="local-stat"><span class="local-stat-label">記入済み</span><span class="local-stat-value">${result.filledCount}/9</span></div>
+      <div class="local-stat"><span class="local-stat-label">総文字数</span><span class="local-stat-value">${result.stats.totalChars}</span></div>
+      <div class="local-stat"><span class="local-stat-label">平均</span><span class="local-stat-value">${result.stats.avgCharsPerCell}字/セル</span></div>
+      <div class="local-stat"><span class="local-stat-label">タグ</span><span class="local-stat-value">${result.stats.tagCount}</span></div>
+    </div>`;
+
+  container.innerHTML = `
+    <div class="insight-score-card">
+      <div class="score-circle ${scoreClass}">
+        <span class="score-value">${result.completeness}</span>
+        <span class="score-label">%</span>
+      </div>
+      <div class="score-summary">${escapeHtml(result.summary)}</div>
+    </div>
+
+    ${statsHtml}
+
+    <div class="insight-section">
+      <h4 class="insight-section-title">セル一覧</h4>
+      <div class="cell-analysis-list">${cellsHtml}</div>
+    </div>
+
+    <div class="insight-section">
+      <h4 class="insight-section-title">整理されたコンテンツ</h4>
+      <pre class="local-markdown">${escapeHtml(result.markdown)}</pre>
+    </div>
+  `;
+}
+
+function renderLocalIssues(result) {
+  const container = document.getElementById("issues-result");
+  if (!container) return;
+
+  const issues = result.issues || [];
+  const overallRisk = issues.some((i) => i.severity === "high")
+    ? "high"
+    : issues.some((i) => i.severity === "medium")
+    ? "medium"
+    : "low";
+
+  const issuesHtml = issues
+    .map((issue) => {
+      const severityLabel = { high: "高", medium: "中", low: "低" }[issue.severity];
+      const typeLabel = { gap: "欠落", ambiguity: "曖昧" }[issue.type] || issue.type;
+      return `
+        <div class="issue-card severity-${issue.severity}">
+          <div class="issue-header">
+            <span class="issue-severity">${severityLabel}</span>
+            <span class="issue-type">${typeLabel}</span>
+            <span class="issue-title">${escapeHtml(issue.title)}</span>
+          </div>
+          <div class="issue-description">${escapeHtml(issue.description)}</div>
+          ${issue.relatedCells.length > 0 ? `<div class="issue-cells">関連: ${issue.relatedCells.map((c) => `セル${c}`).join(", ")}</div>` : ""}
+          ${issue.suggestion ? `<div class="issue-suggestion">${escapeHtml(issue.suggestion)}</div>` : ""}
+        </div>`;
+    })
+    .join("");
+
+  container.innerHTML = `
+    <div class="insight-risk-badge risk-${overallRisk}">
+      全体リスク: ${{ high: "高", medium: "中", low: "低" }[overallRisk]}
+    </div>
+    <div class="insight-summary">ヒューリスティック分析で検出した${issues.length}件のポイントです。</div>
+    <div class="insight-section">
+      <h4 class="insight-section-title">検出された課題 (${issues.length}件)</h4>
+      <div class="issues-list">${issuesHtml || '<div class="insight-placeholder">特に問題は見つかりませんでした</div>'}</div>
+    </div>
+  `;
+}
+
+function renderLocalAction(result, onAddTodo) {
+  const container = document.getElementById("action-result");
+  if (!container) return;
+
+  const todos = result.suggestedTodos || [];
+
+  const todosHtml = todos
+    .map((todo, i) => {
+      const priorityLabel = {
+        urgent: "すぐやる",
+        planned: "計画する",
+      }[todo.priority] || todo.priority;
+
+      return `
+        <div class="action-todo-item priority-${todo.priority}">
+          <span class="action-todo-priority">${priorityLabel}</span>
+          <span class="action-todo-text">${escapeHtml(todo.text)}</span>
+          <button class="action-add-todo-btn" data-index="${i}" title="TODOに追加">+TODO</button>
+        </div>`;
+    })
+    .join("");
+
+  container.innerHTML = `
+    <div class="insight-summary">ローカル分析による基本的なアクション提案です。</div>
+
+    <div class="insight-section">
+      <h4 class="insight-section-title">推奨アクション (${todos.length}件)</h4>
+      <div class="action-todos-list">${todosHtml || '<div class="insight-placeholder">現状で特に追加すべきアクションはありません</div>'}</div>
+    </div>
+
+    <div class="insight-section">
+      <h4 class="insight-section-title">AI分析でさらに得られる洞察</h4>
+      <ul class="suggestions-list">
+        <li class="suggestion-item">セル間の論理的関係性の分析</li>
+        <li class="suggestion-item">矛盾・リスク・依存関係の自動検出</li>
+        <li class="suggestion-item">GARAGE 4ストロークへの自動変換</li>
+        <li class="suggestion-item">優先度マトリクスの自動生成</li>
+      </ul>
+    </div>
+  `;
+
+  container.querySelectorAll(".action-add-todo-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const index = parseInt(e.target.dataset.index);
+      const todo = todos[index];
+      if (todo && onAddTodo) {
+        onAddTodo(todo.text);
+        e.target.textContent = "追加済";
+        e.target.disabled = true;
+        e.target.classList.add("added");
+      }
+    });
+  });
+}
+
+function escapeHtml(str) {
+  return (str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // --- Helper renderers ---
 
 function relevanceLabel(relevance) {
