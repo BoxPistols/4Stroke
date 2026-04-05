@@ -1,18 +1,14 @@
-// AI Service - Gemini API
+// AI Service - Unified interface for AI providers
 //
-// APIキー優先順位:
-//  1. ユーザーが手動入力したキー (localStorage)
-//  2. Firebase config の apiKey
-//
-// バックエンド優先順位:
-//  1. ユーザーキーで Gemini REST API
-//  2. Firebase AI SDK (Vertex AI in Firebase)
-//  3. Firebase apiKey で Gemini REST API
+// 責務: ユーザーが保存したAPIキーを使って、指定プロバイダーでテキスト/JSONを生成する
+// 将来的にClaudeやOpenAIを追加したい場合は ai-providers.js にプロバイダーを登録するだけで済む
 
-import { app } from "./firebase-config.js";
+import { getProvider, ProviderKey, testProviderConnection } from "./ai-providers.js";
+import { AIError, ApiErrorCode } from "./ai-errors.js";
 
-const MODEL_NAME = "gemini-2.0-flash";
-const USER_API_KEY_STORAGE = "gemini_api_key";
+// デフォルト設定
+const DEFAULT_PROVIDER = ProviderKey.GEMINI;
+const ACTIVE_PROVIDER_STORAGE = "ai_active_provider";
 
 const GENERATION_CONFIG = {
   temperature: 0.7,
@@ -22,235 +18,101 @@ const GENERATION_CONFIG = {
   responseMimeType: "application/json",
 };
 
-let activeBackend = null; // "user-rest" | "firebase" | "firebase-rest" | null
-let firebaseModel = null;
+// --- アクティブプロバイダー管理 ---
 
-// --- API Key management ---
-
-export function getUserApiKey() {
+/**
+ * 現在選択されているプロバイダーIDを取得
+ */
+export function getActiveProvider() {
   try {
-    return localStorage.getItem(USER_API_KEY_STORAGE) || "";
+    return localStorage.getItem(ACTIVE_PROVIDER_STORAGE) || DEFAULT_PROVIDER;
+  } catch {
+    return DEFAULT_PROVIDER;
+  }
+}
+
+/**
+ * アクティブプロバイダーを設定
+ */
+export function setActiveProvider(providerId) {
+  try {
+    localStorage.setItem(ACTIVE_PROVIDER_STORAGE, providerId);
+  } catch {}
+}
+
+// --- APIキー管理 (プロバイダー別) ---
+
+/**
+ * 指定プロバイダーのAPIキーを取得
+ */
+export function getApiKey(providerId = getActiveProvider()) {
+  try {
+    const provider = getProvider(providerId);
+    return localStorage.getItem(provider.storageKey) || "";
   } catch {
     return "";
   }
 }
 
-export function setUserApiKey(key) {
+/**
+ * 指定プロバイダーのAPIキーを保存
+ */
+export function setApiKey(key, providerId = getActiveProvider()) {
+  const provider = getProvider(providerId);
   const trimmed = (key || "").trim();
-  if (trimmed) {
-    localStorage.setItem(USER_API_KEY_STORAGE, trimmed);
-  } else {
-    localStorage.removeItem(USER_API_KEY_STORAGE);
-  }
-  // バックエンドをリセットして次回再判定
-  activeBackend = null;
-  firebaseModel = null;
-  console.log("[AI] API key updated, backend reset");
+  try {
+    if (trimmed) {
+      localStorage.setItem(provider.storageKey, trimmed);
+    } else {
+      localStorage.removeItem(provider.storageKey);
+    }
+  } catch {}
+  console.log(`[AI] API key ${trimmed ? "set" : "cleared"} for ${providerId}`);
 }
 
-function getFirebaseApiKey() {
-  try {
-    return app?.options?.apiKey || null;
-  } catch {
-    return null;
-  }
+/**
+ * APIキーを持っているか
+ */
+export function hasApiKey(providerId = getActiveProvider()) {
+  return !!getApiKey(providerId);
 }
 
-// --- Gemini REST API ---
-
-const GEMINI_API_BASE =
-  "https://generativelanguage.googleapis.com/v1beta/models";
-
-async function callGeminiREST(apiKey, prompt, config) {
-  const url = `${GEMINI_API_BASE}/${MODEL_NAME}:generateContent?key=${apiKey}`;
-
-  const body = {
-    contents: [{ role: "user", parts: [{ text: prompt }] }],
-    generationConfig: {
-      temperature: config.temperature,
-      topP: config.topP,
-      topK: config.topK,
-      maxOutputTokens: config.maxOutputTokens,
-      responseMimeType: config.responseMimeType,
-    },
-  };
-
-  let res;
+/**
+ * 接続テスト
+ * @returns {Promise<{ok: boolean, error?: AIError}>}
+ */
+export async function testConnection(apiKey, providerId = getActiveProvider()) {
   try {
-    res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    await testProviderConnection(providerId, apiKey);
+    return { ok: true };
   } catch (e) {
-    console.error("[AI] Network error:", e);
-    throw new Error(`ネットワークエラー: ${e.message}`);
+    const err = e instanceof AIError ? e : new AIError(ApiErrorCode.PROVIDER_ERROR, { cause: e });
+    return { ok: false, error: err };
   }
-
-  if (!res.ok) {
-    const errorBody = await res.text();
-    console.error("[AI] Gemini REST error:", res.status, errorBody);
-
-    // エラー本文から原因を判定
-    let parsedError = null;
-    try {
-      parsedError = JSON.parse(errorBody);
-    } catch {}
-
-    const reason = parsedError?.error?.status || "";
-    const message = parsedError?.error?.message || errorBody.slice(0, 200);
-
-    // キー問題 (認証/権限)
-    if (
-      res.status === 403 ||
-      reason === "PERMISSION_DENIED" ||
-      reason === "UNAUTHENTICATED" ||
-      (res.status === 400 && /API key/i.test(message))
-    ) {
-      const err = new Error("API_KEY_INVALID");
-      err.status = res.status;
-      err.body = errorBody;
-      err.reason = reason;
-      err.detail = message;
-      throw err;
-    }
-
-    // レート制限
-    if (res.status === 429) {
-      throw new Error(`レート制限に達しました。少し待ってから再試行してください。`);
-    }
-
-    // その他（プロンプトエラー、サーバーエラー等）: 実際のメッセージを含める
-    throw new Error(`Gemini API (${res.status}): ${message}`);
-  }
-
-  const data = await res.json();
-  console.log("[AI] Response candidates:", data.candidates?.length);
-
-  const candidate = data.candidates?.[0];
-  if (!candidate) {
-    // promptFeedback で拒否理由が返ることがある
-    const blockReason = data.promptFeedback?.blockReason;
-    if (blockReason) {
-      throw new Error(`プロンプトがブロックされました: ${blockReason}`);
-    }
-    throw new Error("AIからのレスポンスが空です");
-  }
-
-  // finish reason をチェック
-  if (candidate.finishReason === "SAFETY") {
-    throw new Error("AIの安全フィルタによりブロックされました");
-  }
-  if (candidate.finishReason === "MAX_TOKENS") {
-    console.warn("[AI] Response truncated at max tokens");
-  }
-
-  // 全テキストパートを結合（thinking blocksに対応）
-  const text = (candidate.content?.parts || [])
-    .map((p) => p.text)
-    .filter(Boolean)
-    .join("");
-
-  if (!text) {
-    console.error("[AI] No text in response:", JSON.stringify(candidate).slice(0, 300));
-    throw new Error(`AIレスポンスにテキストがありません (finish: ${candidate.finishReason || "unknown"})`);
-  }
-
-  return text;
 }
 
-// --- Firebase AI SDK ---
+// --- コア呼び出し ---
 
-async function initFirebaseAI() {
-  const { getAI, getGenerativeModel } = await import(
-    "https://www.gstatic.com/firebasejs/11.8.1/firebase-ai.js"
-  );
-  const ai = getAI(app);
-  firebaseModel = getGenerativeModel(ai, { model: MODEL_NAME });
-}
-
-async function callFirebaseAI(prompt, config) {
-  const result = await firebaseModel.generateContent({
-    contents: [{ role: "user", parts: [{ text: prompt }] }],
-    generationConfig: config,
-  });
-  return result.response.text();
-}
-
-// --- Backend selection ---
-
-async function ensureBackend() {
-  if (activeBackend) return;
-
-  // 1. ユーザー入力キー → Gemini REST
-  const userKey = getUserApiKey();
-  if (userKey) {
-    activeBackend = "user-rest";
-    console.log("[AI] Using user-provided API key → Gemini REST");
-    return;
-  }
-
-  // 2. Firebase AI SDK
-  try {
-    await initFirebaseAI();
-    // 軽量テスト
-    await firebaseModel.generateContent({
-      contents: [{ role: "user", parts: [{ text: "test" }] }],
-      generationConfig: { maxOutputTokens: 8 },
-    });
-    activeBackend = "firebase";
-    console.log("[AI] Using Firebase AI backend");
-    return;
-  } catch (e) {
-    console.warn("[AI] Firebase AI not available:", e.message);
-    firebaseModel = null;
-  }
-
-  // 3. Firebase apiKey → Gemini REST
-  const fbKey = getFirebaseApiKey();
-  if (fbKey) {
-    activeBackend = "firebase-rest";
-    console.log("[AI] Using Firebase apiKey → Gemini REST");
-    return;
-  }
-
-  throw new Error("API_KEY_REQUIRED");
-}
-
+/**
+ * 指定プロバイダーで AI を呼び出す
+ */
 async function callAI(prompt, configOverrides = {}) {
-  await ensureBackend();
+  const providerId = getActiveProvider();
+  const apiKey = getApiKey(providerId);
+
+  if (!apiKey) {
+    throw new AIError(ApiErrorCode.API_KEY_REQUIRED);
+  }
+
+  const provider = getProvider(providerId);
   const config = { ...GENERATION_CONFIG, ...configOverrides };
 
   try {
-    switch (activeBackend) {
-      case "user-rest":
-        return await callGeminiREST(getUserApiKey(), prompt, config);
-      case "firebase":
-        return await callFirebaseAI(prompt, config);
-      case "firebase-rest":
-        return await callGeminiREST(getFirebaseApiKey(), prompt, config);
-      default:
-        throw new Error("API_KEY_REQUIRED");
-    }
+    return await provider.call(apiKey, provider.defaultModel, prompt, config);
   } catch (e) {
-    // Firebase apiKey で Generative Language API が未有効化などの場合
-    // → ユーザーキー入力を促すため API_KEY_REQUIRED に変換
-    if (e.message === "API_KEY_INVALID") {
-      if (activeBackend === "firebase-rest") {
-        console.warn(
-          "[AI] Firebase apiKey cannot access Generative Language API. " +
-          "User must provide their own Gemini API key."
-        );
-        activeBackend = null;
-        throw new Error("API_KEY_REQUIRED");
-      }
-      if (activeBackend === "user-rest") {
-        // ユーザー入力キーが無効 → 入力し直してもらう
-        console.warn("[AI] User-provided API key is invalid");
-        setUserApiKey("");
-        activeBackend = null;
-        throw new Error("API_KEY_REQUIRED");
-      }
+    // APIキー無効の場合はキーをクリア（次回はREQUIRED扱い）
+    if (e instanceof AIError && e.code === ApiErrorCode.API_KEY_INVALID) {
+      setApiKey("", providerId);
     }
     throw e;
   }
@@ -258,6 +120,9 @@ async function callAI(prompt, configOverrides = {}) {
 
 // --- Public API ---
 
+/**
+ * JSON レスポンスを取得
+ */
 export async function generateJSON(prompt, configOverrides = {}) {
   const text = await callAI(prompt, {
     responseMimeType: "application/json",
@@ -269,29 +134,51 @@ export async function generateJSON(prompt, configOverrides = {}) {
   try {
     return JSON.parse(text);
   } catch {
+    // コードブロック内のJSON抽出
     const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (jsonMatch) return JSON.parse(jsonMatch[1].trim());
-
+    if (jsonMatch) {
+      try { return JSON.parse(jsonMatch[1].trim()); } catch {}
+    }
+    // { から } までの範囲を抽出
     const braceMatch = text.match(/\{[\s\S]*\}/);
-    if (braceMatch) return JSON.parse(braceMatch[0]);
-
+    if (braceMatch) {
+      try { return JSON.parse(braceMatch[0]); } catch {}
+    }
     console.error("[AI] Failed to parse JSON:", text.slice(0, 300));
-    throw new Error("AIレスポンスのJSON解析に失敗しました");
+    throw new AIError(ApiErrorCode.PARSE_ERROR);
   }
 }
 
+/**
+ * プレーンテキストレスポンスを取得
+ */
 export async function generateText(prompt) {
   return await callAI(prompt, { responseMimeType: "text/plain" });
 }
 
+/**
+ * AI 機能が利用可能か（APIキーがあれば true）
+ */
 export function isAIAvailable() {
-  return !!(getUserApiKey() || getFirebaseApiKey());
+  return hasApiKey();
 }
 
-export function hasUserApiKey() {
-  return !!getUserApiKey();
-}
-
+/**
+ * 現在のバックエンド情報 (デバッグ用)
+ */
 export function getBackendInfo() {
-  return { activeBackend, model: MODEL_NAME, hasUserKey: !!getUserApiKey() };
+  const providerId = getActiveProvider();
+  const provider = getProvider(providerId);
+  return {
+    provider: providerId,
+    name: provider.name,
+    model: provider.defaultModel,
+    hasKey: hasApiKey(providerId),
+  };
 }
+
+// --- Backwards compatibility (既存コードとの互換性) ---
+
+export const getUserApiKey = getApiKey;
+export const setUserApiKey = setApiKey;
+export const hasUserApiKey = hasApiKey;
