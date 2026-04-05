@@ -565,14 +565,24 @@
       if (!isAuthAvailable()) {
         console.warn('[LOGIN] Firebase is not configured on this environment');
         const warning = document.createElement('div');
-        warning.style.cssText = 'padding: 16px; margin: 16px; background: rgba(241, 250, 140, 0.15); border: 1px solid rgba(241, 250, 140, 0.4); border-radius: 8px; color: #f1fa8c; font-family: sans-serif; text-align: center;';
-        warning.innerHTML = 'この環境ではログイン機能が無効化されています。<br><a href="main.html" style="color: #fff; text-decoration: underline;">ローカルモードで利用する</a>';
+        warning.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; padding: 12px 20px; background: rgba(241, 250, 140, 0.95); color: #1a1a2e; font-family: sans-serif; font-size: 14px; text-align: center; z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,0.3);';
+        warning.innerHTML = 'ログイン機能はこの環境では無効化されています。 <a href="main.html" style="color: #1a1a2e; text-decoration: underline; font-weight: bold;">ローカルモードで利用する →</a>';
         document.body.insertBefore(warning, document.body.firstChild);
-        // ログインボタンを無効化
-        document.querySelectorAll('button').forEach(btn => {
-          btn.disabled = true;
-          btn.style.opacity = '0.4';
-          btn.style.cursor = 'not-allowed';
+        // ログインボタンのみ無効化 (ローカルモードボタンは有効のまま)
+        const loginButtonIds = [
+          'google-login',
+          'github-login',
+          'email-link-login-btn',
+          'email-login-btn',
+          'email-register-btn',
+        ];
+        loginButtonIds.forEach(id => {
+          const btn = document.getElementById(id);
+          if (btn) {
+            btn.disabled = true;
+            btn.style.opacity = '0.4';
+            btn.style.cursor = 'not-allowed';
+          }
         });
       }
 
