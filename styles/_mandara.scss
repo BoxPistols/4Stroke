@@ -76,94 +76,110 @@ body:has(.mandara-editor) {
     }
   }
 
-  // ビュー設定ボタン群 (文字サイズ・サイドバー幅・サイドバー折りたたみ)
+  // ビュー設定ツールバー (文字サイズ・サイドバー幅・折りたたみ)
+  // - 全コントロールを共通の高さ・角丸・パディングに揃える
+  // - role="toolbar" + role="group" + aria-pressed で a11y 対応
   .mandara-view-toggles {
+    --toggle-h: 30px;     // 外枠の高さ (全グループ共通)
+    --toggle-btn-h: 24px; // 内側ボタンの高さ
+    --toggle-radius: 8px;
+    --toggle-bg: rgba(0, 0, 0, 0.3);
+    --toggle-border: rgba(255, 255, 255, 0.12);
+
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-sm);
     margin-left: auto;
 
     @media (max-width: 1024px) {
-      // モバイル/タブレットは縦積みでサイドバー幅切替が無意味なので非表示
+      // モバイル/タブレットは縦積みで意味がないので非表示
       display: none;
     }
   }
 
-  // 文字サイズ・サイドバー幅切替ボタン (ボタングループ)
-  .font-size-toggle,
-  .sidebar-size-toggle {
+  .view-toggle-group {
     display: inline-flex;
     align-items: center;
-    gap: 2px;
-    padding: 2px;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
+    height: var(--toggle-h);
+    padding: 0 3px;
+    background: var(--toggle-bg);
+    border: 1px solid var(--toggle-border);
+    border-radius: var(--toggle-radius);
+    gap: 1px;
+
+    // 単独ボタンを収めるラッパー (折りたたみボタン用) はパディングなし
+    &--single {
+      padding: 0;
+    }
   }
 
-  .toggle-label {
-    color: rgba(255, 255, 255, 0.45);
-    font-family: var(--font-japanese);
-    font-size: 10px;
-    font-weight: bold;
-    padding: 0 4px 0 2px;
-    user-select: none;
-  }
-
-  .font-size-btn,
-  .sidebar-size-btn {
-    width: 26px;
-    height: 22px;
-    border: none;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.45);
+  .view-toggle-label {
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 8px 0 6px;
+    margin-right: 2px;
+    color: rgba(255, 255, 255, 0.55);
     font-family: var(--font-primary);
     font-size: 11px;
-    font-weight: bold;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.15s;
-
-    &:hover {
-      color: rgba(255, 255, 255, 0.9);
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    &.active {
-      background: rgba(174, 129, 255, 0.25);
-      color: var(--color-accent);
-    }
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    user-select: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  .font-size-btn {
-    font-family: var(--font-japanese);
-  }
-
-  // サイドバー折りたたみボタン
-  .sidebar-collapse-btn {
-    width: 28px;
-    height: 26px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.3);
+  .view-toggle-btn {
+    height: var(--toggle-btn-h);
+    min-width: 26px;
+    padding: 0 8px;
+    border: none;
+    background: transparent;
     color: rgba(255, 255, 255, 0.55);
-    font-size: 14px;
-    line-height: 1;
-    border-radius: 6px;
+    font-family: var(--font-primary);
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 5px;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: background 0.15s ease, color 0.15s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    line-height: 1;
 
     &:hover {
       color: rgba(255, 255, 255, 0.95);
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 1px;
     }
 
     &[aria-pressed="true"] {
       background: rgba(174, 129, 255, 0.25);
       color: var(--color-accent);
-      border-color: rgba(174, 129, 255, 0.4);
+    }
+
+    // 日本語ラベルのボタン (小/中/大) は和文フォントに切替
+    &.font-size-btn {
+      font-family: var(--font-japanese);
+      font-size: 12px;
+    }
+
+    // アイコンボタン (折りたたみ) は外枠と同じ高さに
+    &--icon {
+      height: var(--toggle-h);
+      width: var(--toggle-h);
+      min-width: var(--toggle-h);
+      padding: 0;
+      font-size: 15px;
+      border-radius: var(--toggle-radius);
+
+      &[aria-pressed="true"] {
+        // アイコンボタンは active 時に枠ごと色付け
+        border: 1px solid rgba(174, 129, 255, 0.45);
+      }
     }
   }
 }

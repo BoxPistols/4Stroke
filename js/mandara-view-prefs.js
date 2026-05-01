@@ -27,8 +27,9 @@ function writeFontSize(size) {
 
 function applyFontSize(size) {
   document.body.setAttribute("data-cell-font-size", size);
+  // aria-pressed で a11y/CSS 双方の選択状態を表現
   document.querySelectorAll(".font-size-btn").forEach((btn) => {
-    btn.classList.toggle("active", btn.dataset.size === size);
+    btn.setAttribute("aria-pressed", btn.dataset.size === size ? "true" : "false");
   });
 }
 

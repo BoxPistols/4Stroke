@@ -2242,6 +2242,11 @@ body:has(.mandara-editor) {
   }
 }
 .mandara-header .mandara-view-toggles {
+  --toggle-h: 30px;
+  --toggle-btn-h: 24px;
+  --toggle-radius: 8px;
+  --toggle-bg: rgba(0, 0, 0, 0.3);
+  --toggle-border: rgba(255, 255, 255, 0.12);
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-sm);
@@ -2252,74 +2257,77 @@ body:has(.mandara-editor) {
     display: none;
   }
 }
-.mandara-header .font-size-toggle,
-.mandara-header .sidebar-size-toggle {
+.mandara-header .view-toggle-group {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  padding: 2px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
+  height: var(--toggle-h);
+  padding: 0 3px;
+  background: var(--toggle-bg);
+  border: 1px solid var(--toggle-border);
+  border-radius: var(--toggle-radius);
+  gap: 1px;
 }
-.mandara-header .toggle-label {
-  color: rgba(255, 255, 255, 0.45);
-  font-family: var(--font-japanese);
-  font-size: 10px;
-  font-weight: bold;
-  padding: 0 4px 0 2px;
-  user-select: none;
+.mandara-header .view-toggle-group--single {
+  padding: 0;
 }
-.mandara-header .font-size-btn,
-.mandara-header .sidebar-size-btn {
-  width: 26px;
-  height: 22px;
-  border: none;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.45);
+.mandara-header .view-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 8px 0 6px;
+  margin-right: 2px;
+  color: rgba(255, 255, 255, 0.55);
   font-family: var(--font-primary);
   font-size: 11px;
-  font-weight: bold;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.15s;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  user-select: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
-.mandara-header .font-size-btn:hover,
-.mandara-header .sidebar-size-btn:hover {
-  color: rgba(255, 255, 255, 0.9);
-  background: rgba(255, 255, 255, 0.06);
-}
-.mandara-header .font-size-btn.active,
-.mandara-header .sidebar-size-btn.active {
-  background: rgba(174, 129, 255, 0.25);
-  color: var(--color-accent);
-}
-.mandara-header .font-size-btn {
-  font-family: var(--font-japanese);
-}
-.mandara-header .sidebar-collapse-btn {
-  width: 28px;
-  height: 26px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(0, 0, 0, 0.3);
+.mandara-header .view-toggle-btn {
+  height: var(--toggle-btn-h);
+  min-width: 26px;
+  padding: 0 8px;
+  border: none;
+  background: transparent;
   color: rgba(255, 255, 255, 0.55);
-  font-size: 14px;
-  line-height: 1;
-  border-radius: 6px;
+  font-family: var(--font-primary);
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 5px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: background 0.15s ease, color 0.15s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  line-height: 1;
 }
-.mandara-header .sidebar-collapse-btn:hover {
+.mandara-header .view-toggle-btn:hover {
   color: rgba(255, 255, 255, 0.95);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
 }
-.mandara-header .sidebar-collapse-btn[aria-pressed=true] {
+.mandara-header .view-toggle-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+.mandara-header .view-toggle-btn[aria-pressed=true] {
   background: rgba(174, 129, 255, 0.25);
   color: var(--color-accent);
-  border-color: rgba(174, 129, 255, 0.4);
+}
+.mandara-header .view-toggle-btn.font-size-btn {
+  font-family: var(--font-japanese);
+  font-size: 12px;
+}
+.mandara-header .view-toggle-btn--icon {
+  height: var(--toggle-h);
+  width: var(--toggle-h);
+  min-width: var(--toggle-h);
+  padding: 0;
+  font-size: 15px;
+  border-radius: var(--toggle-radius);
+}
+.mandara-header .view-toggle-btn--icon[aria-pressed=true] {
+  border: 1px solid rgba(174, 129, 255, 0.45);
 }
 
 .mandara-content {
