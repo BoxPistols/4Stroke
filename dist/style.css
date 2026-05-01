@@ -98,6 +98,11 @@
   --container-width-mobile: 44px;
   --container-width-mobile-sm: 40px;
   --container-width-expanded: 160px;
+  --mandara-cell-font-size: 20px;
+  --mandara-cell-placeholder-font-size: 16px;
+  --mandara-cell-center-font-size: 24px;
+  --mandara-cell-center-placeholder-font-size: 18px;
+  --mandara-memo-font-size: 16px;
   --nav-bottom-mobile: 10vh;
   --nav-bottom-desktop: 2vh;
 }
@@ -2236,20 +2241,36 @@ body:has(.mandara-editor) {
     align-items: flex-start;
   }
 }
+.mandara-header .mandara-view-toggles {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-left: auto;
+}
+@media (max-width: 1024px) {
+  .mandara-header .mandara-view-toggles {
+    display: none;
+  }
+}
+.mandara-header .font-size-toggle,
 .mandara-header .sidebar-size-toggle {
   display: inline-flex;
+  align-items: center;
   gap: 2px;
-  margin-left: auto;
   padding: 2px;
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
 }
-@media (max-width: 1024px) {
-  .mandara-header .sidebar-size-toggle {
-    display: none;
-  }
+.mandara-header .toggle-label {
+  color: rgba(255, 255, 255, 0.45);
+  font-family: var(--font-japanese);
+  font-size: 10px;
+  font-weight: bold;
+  padding: 0 4px 0 2px;
+  user-select: none;
 }
+.mandara-header .font-size-btn,
 .mandara-header .sidebar-size-btn {
   width: 26px;
   height: 22px;
@@ -2263,13 +2284,42 @@ body:has(.mandara-editor) {
   cursor: pointer;
   transition: all 0.15s;
 }
+.mandara-header .font-size-btn:hover,
 .mandara-header .sidebar-size-btn:hover {
   color: rgba(255, 255, 255, 0.9);
   background: rgba(255, 255, 255, 0.06);
 }
+.mandara-header .font-size-btn.active,
 .mandara-header .sidebar-size-btn.active {
   background: rgba(174, 129, 255, 0.25);
   color: var(--color-accent);
+}
+.mandara-header .font-size-btn {
+  font-family: var(--font-japanese);
+}
+.mandara-header .sidebar-collapse-btn {
+  width: 28px;
+  height: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+  line-height: 1;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.mandara-header .sidebar-collapse-btn:hover {
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.08);
+}
+.mandara-header .sidebar-collapse-btn[aria-pressed=true] {
+  background: rgba(174, 129, 255, 0.25);
+  color: var(--color-accent);
+  border-color: rgba(174, 129, 255, 0.4);
 }
 
 .mandara-content {
@@ -2286,6 +2336,9 @@ body[data-sidebar-size=medium] .mandara-content {
 body[data-sidebar-size=wide] .mandara-content {
   grid-template-columns: 1fr 720px;
 }
+body[data-sidebar-collapsed=true] .mandara-content {
+  grid-template-columns: 1fr;
+}
 @media (max-width: 1024px) {
   .mandara-content {
     grid-template-columns: 1fr;
@@ -2295,6 +2348,10 @@ body[data-sidebar-size=wide] .mandara-content {
   body[data-sidebar-size=medium] .mandara-content, body[data-sidebar-size=wide] .mandara-content {
     grid-template-columns: 1fr;
   }
+}
+
+body[data-sidebar-collapsed=true] .mandara-memo-area {
+  display: none;
 }
 
 .mandara-grid {
@@ -2325,7 +2382,7 @@ body[data-sidebar-size=wide] .mandara-content {
   padding: var(--spacing-md);
   color: var(--color-white);
   font-family: var(--font-japanese);
-  font-size: 20px;
+  font-size: var(--mandara-cell-font-size);
   resize: none;
   transition: all var(--transition-normal);
   height: 100%;
@@ -2333,7 +2390,7 @@ body[data-sidebar-size=wide] .mandara-content {
 }
 .mandara-cell::placeholder {
   color: rgba(255, 255, 255, 0.4);
-  font-size: 16px;
+  font-size: var(--mandara-cell-placeholder-font-size);
 }
 .mandara-cell:focus {
   outline: none;
@@ -2345,7 +2402,7 @@ body[data-sidebar-size=wide] .mandara-content {
   background: rgba(174, 129, 255, 0.2);
   border-color: var(--color-accent);
   font-weight: bold;
-  font-size: 24px;
+  font-size: var(--mandara-cell-center-font-size);
   text-align: center;
   display: flex;
   align-items: center;
@@ -2353,7 +2410,23 @@ body[data-sidebar-size=wide] .mandara-content {
 }
 .mandara-cell.mandara-center::placeholder {
   font-weight: bold;
-  font-size: 18px;
+  font-size: var(--mandara-cell-center-placeholder-font-size);
+}
+
+body[data-cell-font-size=small] {
+  --mandara-cell-font-size: 15px;
+  --mandara-cell-placeholder-font-size: 13px;
+  --mandara-cell-center-font-size: 18px;
+  --mandara-cell-center-placeholder-font-size: 14px;
+  --mandara-memo-font-size: 14px;
+}
+
+body[data-cell-font-size=large] {
+  --mandara-cell-font-size: 26px;
+  --mandara-cell-placeholder-font-size: 20px;
+  --mandara-cell-center-font-size: 32px;
+  --mandara-cell-center-placeholder-font-size: 22px;
+  --mandara-memo-font-size: 18px;
 }
 
 .mandara-memo-area {
@@ -2416,7 +2489,7 @@ body[data-sidebar-size=wide] .mandara-content {
   padding: var(--spacing-lg);
   color: var(--color-white);
   font-family: var(--font-japanese);
-  font-size: 16px;
+  font-size: var(--mandara-memo-font-size);
   line-height: 1.6;
   resize: vertical;
   transition: all var(--transition-normal);

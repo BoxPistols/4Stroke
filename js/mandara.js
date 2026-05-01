@@ -20,6 +20,7 @@ import { createInsightController } from "./mandara-insight-controller.js";
 import { renderApiSettings } from "./mandara-insight-api-tab.js";
 import { createTagsTodosUI } from "./mandara-tags-todos-ui.js";
 import { initSidebarSize } from "./sidebar-size.js";
+import { initMandaraViewPrefs } from "./mandara-view-prefs.js";
 import { isImeComposing } from "./utils/keyboard.js";
 
 // Controllers (初期化時に生成される)
@@ -805,8 +806,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   await waitForFirebaseCheck();
   downgradeToLocalIfNeeded();
 
-  // サイドバー幅切替ボタンを即座に初期化 (データ読込みを待たずに)
+  // ビュー設定 (サイドバー幅・文字サイズ・サイドバー折りたたみ) を即座に
+  // 初期化。データ読込みを待たずに body 属性を反映できるようにする。
   initSidebarSize();
+  initMandaraViewPrefs();
 
   if (isOnlineMode()) {
     // Online mode - require authentication

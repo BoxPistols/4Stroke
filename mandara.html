@@ -82,10 +82,27 @@
         <div class="mandara-meta">
           <span id="created-date" class="meta-date">作成: -</span>
           <span id="updated-date" class="meta-date">更新: -</span>
-          <div class="sidebar-size-toggle" title="サイドバーの幅を変更">
-            <button type="button" class="sidebar-size-btn" data-size="narrow" title="標準 (400px)">S</button>
-            <button type="button" class="sidebar-size-btn" data-size="medium" title="中 (560px)">M</button>
-            <button type="button" class="sidebar-size-btn" data-size="wide" title="広 (720px)">L</button>
+          <div class="mandara-view-toggles">
+            <div class="font-size-toggle" title="マスの文字サイズを変更">
+              <span class="toggle-label" aria-hidden="true">字</span>
+              <button type="button" class="font-size-btn" data-size="small" title="小">小</button>
+              <button type="button" class="font-size-btn" data-size="medium" title="中">中</button>
+              <button type="button" class="font-size-btn" data-size="large" title="大">大</button>
+            </div>
+            <div class="sidebar-size-toggle" title="サイドバーの幅を変更">
+              <span class="toggle-label" aria-hidden="true">幅</span>
+              <button type="button" class="sidebar-size-btn" data-size="narrow" title="標準 (400px)">S</button>
+              <button type="button" class="sidebar-size-btn" data-size="medium" title="中 (560px)">M</button>
+              <button type="button" class="sidebar-size-btn" data-size="wide" title="広 (720px)">L</button>
+            </div>
+            <button
+              type="button"
+              id="sidebar-collapse-btn"
+              class="sidebar-collapse-btn"
+              title="サイドバーを折りたたむ / 表示"
+              aria-pressed="false"
+              aria-label="サイドバーを折りたたむ"
+            >⇥</button>
           </div>
         </div>
       </div>

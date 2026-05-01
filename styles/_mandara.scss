@@ -76,21 +76,41 @@ body:has(.mandara-editor) {
     }
   }
 
-  // サイドバー幅切替ボタン
+  // ビュー設定ボタン群 (文字サイズ・サイドバー幅・サイドバー折りたたみ)
+  .mandara-view-toggles {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-left: auto;
+
+    @media (max-width: 1024px) {
+      // モバイル/タブレットは縦積みでサイドバー幅切替が無意味なので非表示
+      display: none;
+    }
+  }
+
+  // 文字サイズ・サイドバー幅切替ボタン (ボタングループ)
+  .font-size-toggle,
   .sidebar-size-toggle {
     display: inline-flex;
+    align-items: center;
     gap: 2px;
-    margin-left: auto;
     padding: 2px;
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 6px;
-
-    @media (max-width: 1024px) {
-      display: none; // モバイル/タブレットは縦積みなので不要
-    }
   }
 
+  .toggle-label {
+    color: rgba(255, 255, 255, 0.45);
+    font-family: var(--font-japanese);
+    font-size: 10px;
+    font-weight: bold;
+    padding: 0 4px 0 2px;
+    user-select: none;
+  }
+
+  .font-size-btn,
   .sidebar-size-btn {
     width: 26px;
     height: 22px;
@@ -114,6 +134,38 @@ body:has(.mandara-editor) {
       color: var(--color-accent);
     }
   }
+
+  .font-size-btn {
+    font-family: var(--font-japanese);
+  }
+
+  // サイドバー折りたたみボタン
+  .sidebar-collapse-btn {
+    width: 28px;
+    height: 26px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.3);
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 14px;
+    line-height: 1;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      color: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    &[aria-pressed="true"] {
+      background: rgba(174, 129, 255, 0.25);
+      color: var(--color-accent);
+      border-color: rgba(174, 129, 255, 0.4);
+    }
+  }
 }
 
 .mandara-content {
@@ -135,6 +187,11 @@ body:has(.mandara-editor) {
     grid-template-columns: 1fr 720px;
   }
 
+  // サイドバー折りたたみ: 9マスを全幅に広げてメモ列を隠す
+  body[data-sidebar-collapsed="true"] & {
+    grid-template-columns: 1fr;
+  }
+
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
     height: auto;
@@ -145,6 +202,11 @@ body:has(.mandara-editor) {
       grid-template-columns: 1fr;
     }
   }
+}
+
+// サイドバー折りたたみ時はメモ列を非表示
+body[data-sidebar-collapsed="true"] .mandara-memo-area {
+  display: none;
 }
 
 // 9-Grid Mandara — コンテナ内で100%高さを使う
@@ -174,7 +236,7 @@ body:has(.mandara-editor) {
   padding: var(--spacing-md);
   color: var(--color-white);
   font-family: var(--font-japanese);
-  font-size: 20px;
+  font-size: var(--mandara-cell-font-size);
   resize: none;
   transition: all var(--transition-normal);
   height: 100%;
@@ -182,7 +244,7 @@ body:has(.mandara-editor) {
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.4);
-    font-size: 16px;
+    font-size: var(--mandara-cell-placeholder-font-size);
   }
 
   &:focus {
@@ -196,7 +258,7 @@ body:has(.mandara-editor) {
     background: rgba(174, 129, 255, 0.2);
     border-color: var(--color-accent);
     font-weight: bold;
-    font-size: 24px;
+    font-size: var(--mandara-cell-center-font-size);
     text-align: center;
     display: flex;
     align-items: center;
@@ -204,9 +266,25 @@ body:has(.mandara-editor) {
 
     &::placeholder {
       font-weight: bold;
-      font-size: 18px;
+      font-size: var(--mandara-cell-center-placeholder-font-size);
     }
   }
+}
+
+// マスの文字サイズ切替 (body[data-cell-font-size])
+body[data-cell-font-size="small"] {
+  --mandara-cell-font-size: 15px;
+  --mandara-cell-placeholder-font-size: 13px;
+  --mandara-cell-center-font-size: 18px;
+  --mandara-cell-center-placeholder-font-size: 14px;
+  --mandara-memo-font-size: 14px;
+}
+body[data-cell-font-size="large"] {
+  --mandara-cell-font-size: 26px;
+  --mandara-cell-placeholder-font-size: 20px;
+  --mandara-cell-center-font-size: 32px;
+  --mandara-cell-center-placeholder-font-size: 22px;
+  --mandara-memo-font-size: 18px;
 }
 
 // Memo Area — グリッドと同じ高さで内部スクロール
@@ -275,7 +353,7 @@ body:has(.mandara-editor) {
   padding: var(--spacing-lg);
   color: var(--color-white);
   font-family: var(--font-japanese);
-  font-size: 16px;
+  font-size: var(--mandara-memo-font-size);
   line-height: 1.6;
   resize: vertical;
   transition: all var(--transition-normal);
