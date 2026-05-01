@@ -20,6 +20,8 @@ import { createInsightController } from "./mandara-insight-controller.js";
 import { renderApiSettings } from "./mandara-insight-api-tab.js";
 import { createTagsTodosUI } from "./mandara-tags-todos-ui.js";
 import { initSidebarSize } from "./sidebar-size.js";
+import { initMandaraViewPrefs } from "./mandara-view-prefs.js";
+import { isImeComposing } from "./utils/keyboard.js";
 
 // Controllers (初期化時に生成される)
 let insightController = null;
@@ -558,22 +560,13 @@ function setupEventListeners() {
   // Tag input with IME support
   const tagInput = document.getElementById("tag-input");
   if (tagInput) {
-    let isComposingTag = false;
-
-    tagInput.addEventListener("compositionstart", () => {
-      isComposingTag = true;
-    });
-
-    tagInput.addEventListener("compositionend", () => {
-      isComposingTag = false;
-    });
-
     tagInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !isComposingTag) {
-        e.preventDefault();
-        addTag(tagInput.value);
-        tagInput.value = "";
-      }
+      if (e.key !== "Enter") return;
+      // IME 変換確定の Enter は submit せず、IME に処理を譲る
+      if (isImeComposing(e)) return;
+      e.preventDefault();
+      addTag(tagInput.value);
+      tagInput.value = "";
     });
   }
 
@@ -602,22 +595,13 @@ function setupEventListeners() {
   // Todo input with IME support
   const todoInput = document.getElementById("todo-input");
   if (todoInput) {
-    let isComposingTodo = false;
-
-    todoInput.addEventListener("compositionstart", () => {
-      isComposingTodo = true;
-    });
-
-    todoInput.addEventListener("compositionend", () => {
-      isComposingTodo = false;
-    });
-
     todoInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !isComposingTodo) {
-        e.preventDefault();
-        addTodo(todoInput.value);
-        todoInput.value = "";
-      }
+      if (e.key !== "Enter") return;
+      // IME 変換確定の Enter は submit せず、IME に処理を譲る
+      if (isImeComposing(e)) return;
+      e.preventDefault();
+      addTodo(todoInput.value);
+      todoInput.value = "";
     });
   }
 
@@ -666,7 +650,25 @@ function setupEventListeners() {
       // Add to custom order at the beginning
       mandaraOrder.unshift(newMandara.id);
       await saveMandaraOrder();
+
+      // 別パネル (LIST / INSIGHT) を開いていると新マンダラの編集画面が
+      // 隠れてしまい、作成されたことに気付きにくい。明示的に閉じる。
+      closeListView();
+      if (insightController?.isInsightPanelOpen?.()) {
+        insightController.closeInsightPanel();
+      }
+
       loadMandaraIntoUI(newMandara); // This will update URL automatically
+
+      // 編集画面の先頭にスクロールし、タイトル入力にフォーカスさせて
+      // 「ここに新しいマンダラができた」ことを視覚的に伝える。
+      window.scrollTo({ top: 0, behavior: "auto" });
+      const titleInput = document.getElementById("mandara-title");
+      if (titleInput) {
+        titleInput.focus();
+        titleInput.select();
+      }
+
       showToast("新しいマンダラを作成しました");
     });
   }
@@ -804,8 +806,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   await waitForFirebaseCheck();
   downgradeToLocalIfNeeded();
 
-  // サイドバー幅切替ボタンを即座に初期化 (データ読込みを待たずに)
+  // ビュー設定 (サイドバー幅・文字サイズ・サイドバー折りたたみ) を即座に
+  // 初期化。データ読込みを待たずに body 属性を反映できるようにする。
   initSidebarSize();
+  initMandaraViewPrefs();
 
   if (isOnlineMode()) {
     // Online mode - require authentication

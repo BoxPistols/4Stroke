@@ -566,7 +566,12 @@
         console.warn('[LOGIN] Firebase is not configured on this environment');
         const warning = document.createElement('div');
         warning.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; padding: 12px 20px; background: rgba(241, 250, 140, 0.95); color: #1a1a2e; font-family: sans-serif; font-size: 14px; text-align: center; z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,0.3);';
-        warning.innerHTML = 'ログイン機能はこの環境では無効化されています。 <a href="main.html" style="color: #1a1a2e; text-decoration: underline; font-weight: bold;">ローカルモードで利用する →</a>';
+        warning.appendChild(document.createTextNode('ログイン機能はこの環境では無効化されています。 '));
+        const localModeLink = document.createElement('a');
+        localModeLink.href = 'main.html';
+        localModeLink.textContent = 'ローカルモードで利用する →';
+        localModeLink.style.cssText = 'color: #1a1a2e; text-decoration: underline; font-weight: bold;';
+        warning.appendChild(localModeLink);
         document.body.insertBefore(warning, document.body.firstChild);
         // ログインボタンのみ無効化 (ローカルモードボタンは有効のまま)
         const loginButtonIds = [

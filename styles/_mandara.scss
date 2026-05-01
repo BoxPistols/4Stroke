@@ -76,42 +76,110 @@ body:has(.mandara-editor) {
     }
   }
 
-  // サイドバー幅切替ボタン
-  .sidebar-size-toggle {
+  // ビュー設定ツールバー (文字サイズ・サイドバー幅・折りたたみ)
+  // - 全コントロールを共通の高さ・角丸・パディングに揃える
+  // - role="toolbar" + role="group" + aria-pressed で a11y 対応
+  .mandara-view-toggles {
+    --toggle-h: 30px;     // 外枠の高さ (全グループ共通)
+    --toggle-btn-h: 24px; // 内側ボタンの高さ
+    --toggle-radius: 8px;
+    --toggle-bg: rgba(0, 0, 0, 0.3);
+    --toggle-border: rgba(255, 255, 255, 0.12);
+
     display: inline-flex;
-    gap: 2px;
+    align-items: center;
+    gap: var(--spacing-sm);
     margin-left: auto;
-    padding: 2px;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
 
     @media (max-width: 1024px) {
-      display: none; // モバイル/タブレットは縦積みなので不要
+      // モバイル/タブレットは縦積みで意味がないので非表示
+      display: none;
     }
   }
 
-  .sidebar-size-btn {
-    width: 26px;
-    height: 22px;
-    border: none;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.45);
+  .view-toggle-group {
+    display: inline-flex;
+    align-items: center;
+    height: var(--toggle-h);
+    padding: 0 3px;
+    background: var(--toggle-bg);
+    border: 1px solid var(--toggle-border);
+    border-radius: var(--toggle-radius);
+    gap: 1px;
+
+    // 単独ボタンを収めるラッパー (折りたたみボタン用) はパディングなし
+    &--single {
+      padding: 0;
+    }
+  }
+
+  .view-toggle-label {
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 8px 0 6px;
+    margin-right: 2px;
+    color: rgba(255, 255, 255, 0.55);
     font-family: var(--font-primary);
     font-size: 11px;
-    font-weight: bold;
-    border-radius: 4px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    user-select: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .view-toggle-btn {
+    height: var(--toggle-btn-h);
+    min-width: 26px;
+    padding: 0 8px;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.55);
+    font-family: var(--font-primary);
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 5px;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: background 0.15s ease, color 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 
     &:hover {
-      color: rgba(255, 255, 255, 0.9);
+      color: rgba(255, 255, 255, 0.95);
       background: rgba(255, 255, 255, 0.06);
     }
 
-    &.active {
+    &:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 1px;
+    }
+
+    &[aria-pressed="true"] {
       background: rgba(174, 129, 255, 0.25);
       color: var(--color-accent);
+    }
+
+    // 日本語ラベルのボタン (小/中/大) は和文フォントに切替
+    &.font-size-btn {
+      font-family: var(--font-japanese);
+      font-size: 12px;
+    }
+
+    // アイコンボタン (折りたたみ) は外枠と同じ高さに
+    &--icon {
+      height: var(--toggle-h);
+      width: var(--toggle-h);
+      min-width: var(--toggle-h);
+      padding: 0;
+      font-size: 15px;
+      border-radius: var(--toggle-radius);
+
+      &[aria-pressed="true"] {
+        // アイコンボタンは active 時に枠ごと色付け
+        border: 1px solid rgba(174, 129, 255, 0.45);
+      }
     }
   }
 }
@@ -135,6 +203,16 @@ body:has(.mandara-editor) {
     grid-template-columns: 1fr 720px;
   }
 
+  // サイドバー折りたたみ: 9マスを全幅に広げてメモ列を隠す。
+  // 注意: 折りたたみトグルはモバイル/タブレットでは非表示なので、
+  //       折りたたみ系ルールはデスクトップ限定にしないとモバイル
+  //       ユーザーが解除手段を失う (PR #50 レビュー P1)
+  @media (min-width: 1025px) {
+    body[data-sidebar-collapsed="true"] & {
+      grid-template-columns: 1fr;
+    }
+  }
+
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
     height: auto;
@@ -144,6 +222,13 @@ body:has(.mandara-editor) {
     body[data-sidebar-size="wide"] & {
       grid-template-columns: 1fr;
     }
+  }
+}
+
+// サイドバー折りたたみ時はメモ列を非表示 (デスクトップのみ)
+@media (min-width: 1025px) {
+  body[data-sidebar-collapsed="true"] .mandara-memo-area {
+    display: none;
   }
 }
 
@@ -174,7 +259,7 @@ body:has(.mandara-editor) {
   padding: var(--spacing-md);
   color: var(--color-white);
   font-family: var(--font-japanese);
-  font-size: 20px;
+  font-size: var(--mandara-cell-font-size);
   resize: none;
   transition: all var(--transition-normal);
   height: 100%;
@@ -182,7 +267,7 @@ body:has(.mandara-editor) {
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.4);
-    font-size: 16px;
+    font-size: var(--mandara-cell-placeholder-font-size);
   }
 
   &:focus {
@@ -196,7 +281,7 @@ body:has(.mandara-editor) {
     background: rgba(174, 129, 255, 0.2);
     border-color: var(--color-accent);
     font-weight: bold;
-    font-size: 24px;
+    font-size: var(--mandara-cell-center-font-size);
     text-align: center;
     display: flex;
     align-items: center;
@@ -204,9 +289,25 @@ body:has(.mandara-editor) {
 
     &::placeholder {
       font-weight: bold;
-      font-size: 18px;
+      font-size: var(--mandara-cell-center-placeholder-font-size);
     }
   }
+}
+
+// マスの文字サイズ切替 (body[data-cell-font-size])
+body[data-cell-font-size="small"] {
+  --mandara-cell-font-size: 15px;
+  --mandara-cell-placeholder-font-size: 13px;
+  --mandara-cell-center-font-size: 18px;
+  --mandara-cell-center-placeholder-font-size: 14px;
+  --mandara-memo-font-size: 14px;
+}
+body[data-cell-font-size="large"] {
+  --mandara-cell-font-size: 26px;
+  --mandara-cell-placeholder-font-size: 20px;
+  --mandara-cell-center-font-size: 32px;
+  --mandara-cell-center-placeholder-font-size: 22px;
+  --mandara-memo-font-size: 18px;
 }
 
 // Memo Area — グリッドと同じ高さで内部スクロール
@@ -275,7 +376,7 @@ body:has(.mandara-editor) {
   padding: var(--spacing-lg);
   color: var(--color-white);
   font-family: var(--font-japanese);
-  font-size: 16px;
+  font-size: var(--mandara-memo-font-size);
   line-height: 1.6;
   resize: vertical;
   transition: all var(--transition-normal);

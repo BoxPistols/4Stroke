@@ -24,9 +24,9 @@ function saveSize(size) {
 
 function applySize(size) {
   document.body.setAttribute("data-sidebar-size", size);
-  // アクティブボタンの表示更新
+  // アクティブボタンの表示更新 (aria-pressed で a11y/CSS 双方を制御)
   document.querySelectorAll(".sidebar-size-btn").forEach((btn) => {
-    btn.classList.toggle("active", btn.dataset.size === size);
+    btn.setAttribute("aria-pressed", btn.dataset.size === size ? "true" : "false");
   });
 }
 
