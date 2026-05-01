@@ -2344,8 +2344,10 @@ body[data-sidebar-size=medium] .mandara-content {
 body[data-sidebar-size=wide] .mandara-content {
   grid-template-columns: 1fr 720px;
 }
-body[data-sidebar-collapsed=true] .mandara-content {
-  grid-template-columns: 1fr;
+@media (min-width: 1025px) {
+  body[data-sidebar-collapsed=true] .mandara-content {
+    grid-template-columns: 1fr;
+  }
 }
 @media (max-width: 1024px) {
   .mandara-content {
@@ -2358,10 +2360,11 @@ body[data-sidebar-collapsed=true] .mandara-content {
   }
 }
 
-body[data-sidebar-collapsed=true] .mandara-memo-area {
-  display: none;
+@media (min-width: 1025px) {
+  body[data-sidebar-collapsed=true] .mandara-memo-area {
+    display: none;
+  }
 }
-
 .mandara-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

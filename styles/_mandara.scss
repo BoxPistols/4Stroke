@@ -203,9 +203,14 @@ body:has(.mandara-editor) {
     grid-template-columns: 1fr 720px;
   }
 
-  // サイドバー折りたたみ: 9マスを全幅に広げてメモ列を隠す
-  body[data-sidebar-collapsed="true"] & {
-    grid-template-columns: 1fr;
+  // サイドバー折りたたみ: 9マスを全幅に広げてメモ列を隠す。
+  // 注意: 折りたたみトグルはモバイル/タブレットでは非表示なので、
+  //       折りたたみ系ルールはデスクトップ限定にしないとモバイル
+  //       ユーザーが解除手段を失う (PR #50 レビュー P1)
+  @media (min-width: 1025px) {
+    body[data-sidebar-collapsed="true"] & {
+      grid-template-columns: 1fr;
+    }
   }
 
   @media (max-width: 1024px) {
@@ -220,9 +225,11 @@ body:has(.mandara-editor) {
   }
 }
 
-// サイドバー折りたたみ時はメモ列を非表示
-body[data-sidebar-collapsed="true"] .mandara-memo-area {
-  display: none;
+// サイドバー折りたたみ時はメモ列を非表示 (デスクトップのみ)
+@media (min-width: 1025px) {
+  body[data-sidebar-collapsed="true"] .mandara-memo-area {
+    display: none;
+  }
 }
 
 // 9-Grid Mandara — コンテナ内で100%高さを使う
