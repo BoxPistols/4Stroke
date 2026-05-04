@@ -21,7 +21,9 @@
       "Bash(npm install:*)",
       "Bash(git pull:*)",
       "Bash(gh pr view:*)",
-      "Bash(gh pr merge:*)"
+      "Bash(gh pr merge:*)",
+      "mcp__5c966501-ffd2-4c8a-adb1-3eb6d620ef1b__get_deployment",
+      "mcp__5c966501-ffd2-4c8a-adb1-3eb6d620ef1b__search_vercel_documentation"
     ],
     "deny": [],
     "ask": []
