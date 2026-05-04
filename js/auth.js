@@ -26,6 +26,7 @@ import {
   GithubAuthProvider,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
@@ -226,6 +227,21 @@ export async function registerWithEmail(email, password) {
 }
 
 /**
+ * パスワードリセットメールを送信
+ * @param {string} email - メールアドレス
+ * @returns {Promise<void>}
+ */
+export async function sendPasswordReset(email) {
+  try {
+    await sendPasswordResetEmail(requireAuth(), email);
+    console.log('✅ パスワードリセットメール送信成功:', email);
+  } catch (error) {
+    console.error('❌ パスワードリセットメール送信失敗:', error.message);
+    throw error;
+  }
+}
+
+/**
  * メールリンクを送信（パスワードなしログイン）
  * @param {string} email - メールアドレス
  */
@@ -332,6 +348,7 @@ export function getErrorMessage(error) {
     'auth/wrong-password': 'パスワードが間違っています',
     'auth/email-already-in-use': 'このメールアドレスは既に使用されています',
     'auth/weak-password': 'パスワードは6文字以上にしてください',
+    'auth/missing-email': 'メールアドレスを入力してください',
     'auth/popup-closed-by-user': 'ログインがキャンセルされました',
     'auth/popup-blocked': 'ポップアップがブロックされました。リダイレクト方式で再試行します。',
     'auth/unauthorized-domain': 'このドメインは認証に許可されていません。localhost:8888 でアクセスしてください。',

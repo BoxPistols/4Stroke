@@ -307,6 +307,32 @@
         display: none;
       }
 
+      .forgot-password-link {
+        text-align: right;
+        margin-top: -0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .forgot-password-link a {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.85rem;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .forgot-password-link a:hover {
+        color: var(--color-purple);
+        text-decoration: underline;
+      }
+
+      .form-text {
+        display: block;
+        margin-top: 0.4rem;
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.65);
+      }
+
       .spinner {
         display: inline-block;
         width: 16px;
@@ -456,6 +482,9 @@
             placeholder="6+ characters"
           />
         </div>
+        <div class="forgot-password-link">
+          <a id="show-forgot-password" href="#">Forgot password?</a>
+        </div>
         <button type="submit" class="btn btn-primary" id="login-btn">
           Login
         </button>
@@ -494,6 +523,29 @@
           Register
         </button>
         <button type="button" id="show-login" class="btn btn-secondary">
+          Back to Login
+        </button>
+      </form>
+
+      <!-- Password Reset Form (initially hidden) -->
+      <form id="reset-password-form" class="form-hidden">
+        <div class="form-group">
+          <label for="reset-email">Email Address</label>
+          <input
+            type="email"
+            id="reset-email"
+            required
+            autocomplete="email"
+            placeholder="your@email.com"
+          />
+          <small class="form-text">
+            登録済みのメールアドレスを入力すると、パスワードリセット用のリンクをお送りします。
+          </small>
+        </div>
+        <button type="submit" class="btn btn-primary" id="reset-btn">
+          Send Reset Link
+        </button>
+        <button type="button" id="show-login-from-reset" class="btn btn-secondary">
           Back to Login
         </button>
       </form>
@@ -554,6 +606,7 @@
         completeEmailLinkSignIn,
         loginWithEmail,
         registerWithEmail,
+        sendPasswordReset,
         getErrorMessage,
         isAuthAvailable,
       } from "./js/auth.js";
@@ -618,6 +671,7 @@
       const emailLinkForm = document.getElementById("email-link-form");
       const loginForm = document.getElementById("login-form");
       const registerForm = document.getElementById("register-form");
+      const resetPasswordForm = document.getElementById("reset-password-form");
       const errorMessage = document.getElementById("error-message");
       const successMessage = document.getElementById("success-message");
       const googleLoginBtn = document.getElementById("google-login");
@@ -627,6 +681,8 @@
       const showLoginBtn = document.getElementById("show-login");
       const showPasswordLoginBtn = document.getElementById("show-password-login");
       const showEmailLinkBtn = document.getElementById("show-email-link");
+      const showForgotPasswordBtn = document.getElementById("show-forgot-password");
+      const showLoginFromResetBtn = document.getElementById("show-login-from-reset");
 
       // ページ読み込み時: メールリンクログインの完了チェック + リダイレクト認証
       // (Firebase 未設定時はスキップ)
@@ -779,11 +835,32 @@
         }
       });
 
+      // パスワードリセットメール送信
+      resetPasswordForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("reset-email").value;
+        const submitBtn = document.getElementById("reset-btn");
+
+        submitBtn.dataset.originalText = submitBtn.innerHTML;
+        setLoading(submitBtn, true);
+
+        try {
+          await sendPasswordReset(email);
+          showSuccess(`${email} にパスワードリセット用リンクを送信しました。メールを確認してください。`);
+          setLoading(submitBtn, false);
+          resetPasswordForm.reset();
+        } catch (error) {
+          showError(getErrorMessage(error));
+          setLoading(submitBtn, false);
+        }
+      });
+
       // フォーム切り替えヘルパー
       function hideAllForms() {
         emailLinkForm.classList.add("form-hidden");
         loginForm.classList.add("form-hidden");
         registerForm.classList.add("form-hidden");
+        resetPasswordForm.classList.add("form-hidden");
         errorMessage.classList.remove("show");
         successMessage.classList.remove("show");
       }
@@ -807,6 +884,17 @@
       showEmailLinkBtn.addEventListener("click", () => {
         hideAllForms();
         emailLinkForm.classList.remove("form-hidden");
+      });
+
+      showForgotPasswordBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        hideAllForms();
+        resetPasswordForm.classList.remove("form-hidden");
+      });
+
+      showLoginFromResetBtn.addEventListener("click", () => {
+        hideAllForms();
+        loginForm.classList.remove("form-hidden");
       });
     </script>
   </body>
