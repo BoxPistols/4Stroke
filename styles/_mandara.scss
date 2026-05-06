@@ -92,8 +92,19 @@ body:has(.mandara-editor) {
     margin-left: auto;
 
     @media (max-width: 1024px) {
-      // モバイル/タブレットは縦積みで意味がないので非表示
-      display: none;
+      // モバイル/タブレットは1列レイアウトのため、サイドバー幅・折りたたみ
+      // 系のコントロールは無効。文字サイズ切替だけを残してメタ情報の下に
+      // 折り返して表示する。
+      margin-left: 0;
+      margin-top: var(--spacing-xs);
+      flex-wrap: wrap;
+      width: 100%;
+
+      // サイドバー幅 (S/M/L) と折りたたみボタンはモバイルで意味がないので非表示
+      .view-toggle-group:has(.sidebar-size-btn),
+      .view-toggle-group--single {
+        display: none;
+      }
     }
   }
 
