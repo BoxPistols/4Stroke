@@ -10,6 +10,12 @@ import { waitForFirebaseCheck } from "./firebase-available.js";
 import { TIMINGS } from "./constants.js";
 import { createNewMandara as createMandaraLogic } from "./mandara-logic.js";
 import {
+  exportMandarasToJson,
+  parseMandarasJson,
+  mergeMandaras,
+  buildBackupFilename,
+} from "./board-io.js";
+import {
   renderMandaraList as renderMandaraListView,
   showListView as showListViewModule,
   closeListView as closeListViewModule,
@@ -356,6 +362,95 @@ async function deleteAllMandaras() {
   } catch (error) {
     console.error("[ERROR] Failed to delete all mandaras:", error);
     alert("削除に失敗しました");
+  }
+}
+
+// Export all mandaras as a JSON backup file
+async function exportAllToJson() {
+  try {
+    await loadAllMandaras();
+    await loadMandaraOrder();
+
+    if (allMandaras.length === 0) {
+      alert("エクスポートするマンダラがありません");
+      return;
+    }
+
+    const json = exportMandarasToJson(allMandaras, mandaraOrder);
+    const blob = new Blob([json], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = buildBackupFilename();
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast(`${allMandaras.length}件をエクスポートしました`);
+  } catch (error) {
+    console.error("[ERROR] Failed to export mandaras:", error);
+    alert("エクスポートに失敗しました");
+  }
+}
+
+const IMPORT_ERROR_MESSAGES = {
+  INVALID_JSON: "JSONファイルを読み取れませんでした",
+  INVALID_FORMAT: "4STROKESのバックアップ形式ではありません",
+  UNSUPPORTED_VERSION:
+    "このバックアップは新しいバージョンのアプリで作成されています",
+};
+
+// Import mandaras from a JSON backup file (merge, non-destructive)
+async function importFromJsonFile(file) {
+  let imported;
+  try {
+    imported = parseMandarasJson(await file.text()).mandaras;
+  } catch (error) {
+    console.error("[ERROR] Failed to parse backup file:", error);
+    alert(IMPORT_ERROR_MESSAGES[error.message] || "読み込みに失敗しました");
+    return;
+  }
+
+  const { merged, added, updated, skipped } = mergeMandaras(
+    allMandaras,
+    imported
+  );
+  const changedIds = new Set([...added, ...updated]);
+
+  if (changedIds.size === 0) {
+    showToast("すべて取り込み済みです (追加・更新なし)");
+    return;
+  }
+
+  if (
+    !confirm(
+      `${added.length}件を追加、${updated.length}件を更新します。` +
+        (skipped.length > 0 ? `\n(${skipped.length}件は既存の方が新しいためスキップ)` : "")
+    )
+  ) {
+    return;
+  }
+
+  try {
+    for (const mandara of merged) {
+      if (changedIds.has(mandara.id)) {
+        await Storage.saveMandara(currentUserId, mandara);
+      }
+    }
+
+    // 再読込 (loadMandaraOrder が新規IDを順序に取り込む)
+    await loadAllMandaras();
+    await loadMandaraOrder();
+    rerenderList();
+    if (!currentMandara || !allMandaras.some((m) => m.id === currentMandara.id)) {
+      await loadFirstOrCreateNew();
+    }
+
+    showToast(`インポート完了: 追加${added.length}件 / 更新${updated.length}件`);
+  } catch (error) {
+    console.error("[ERROR] Failed to import mandaras:", error);
+    alert("インポートに失敗しました");
   }
 }
 
@@ -772,6 +867,26 @@ function setupEventListeners() {
   const deleteAllBtn = document.getElementById("delete-all-btn");
   if (deleteAllBtn) {
     deleteAllBtn.addEventListener("click", deleteAllMandaras);
+  }
+
+  // Export JSON button
+  const exportJsonBtn = document.getElementById("export-json-btn");
+  if (exportJsonBtn) {
+    exportJsonBtn.addEventListener("click", exportAllToJson);
+  }
+
+  // Import JSON button (delegates to hidden file input)
+  const importJsonBtn = document.getElementById("import-json-btn");
+  const importJsonInput = document.getElementById("import-json-input");
+  if (importJsonBtn && importJsonInput) {
+    importJsonBtn.addEventListener("click", () => importJsonInput.click());
+    importJsonInput.addEventListener("change", async () => {
+      const file = importJsonInput.files?.[0];
+      importJsonInput.value = ""; // 同じファイルの再選択を可能にする
+      if (file) {
+        await importFromJsonFile(file);
+      }
+    });
   }
 
   // Logout button
