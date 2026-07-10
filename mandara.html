@@ -159,63 +159,33 @@
         </div>
       </div>
 
+      <!-- Fractal navigation: breadcrumb (zoom path) + zoom-out -->
+      <div
+        class="mandara-breadcrumb-bar"
+        role="toolbar"
+        aria-label="階層ナビゲーション"
+      >
+        <nav
+          id="mandara-breadcrumb"
+          class="mandara-breadcrumb"
+          aria-label="現在の階層"
+        >
+          <!-- Populated by JavaScript -->
+        </nav>
+        <button
+          type="button"
+          id="zoom-out-btn"
+          class="btn btn-secondary zoom-out-btn"
+          title="いま見ている全体を、より大きな構造の1マスにする"
+        >
+          ⤴ 親構造を作る
+        </button>
+      </div>
+
       <div class="mandara-content">
-        <!-- 9-grid Mandara -->
-        <div class="mandara-grid">
-          <textarea
-            id="cell-1"
-            class="mandara-cell"
-            data-cell="1"
-            placeholder="1"
-          ></textarea>
-          <textarea
-            id="cell-2"
-            class="mandara-cell"
-            data-cell="2"
-            placeholder="2"
-          ></textarea>
-          <textarea
-            id="cell-3"
-            class="mandara-cell"
-            data-cell="3"
-            placeholder="3"
-          ></textarea>
-          <textarea
-            id="cell-4"
-            class="mandara-cell"
-            data-cell="4"
-            placeholder="4"
-          ></textarea>
-          <textarea
-            id="cell-5"
-            class="mandara-cell mandara-center"
-            data-cell="5"
-            placeholder="中心キーワード"
-          ></textarea>
-          <textarea
-            id="cell-6"
-            class="mandara-cell"
-            data-cell="6"
-            placeholder="6"
-          ></textarea>
-          <textarea
-            id="cell-7"
-            class="mandara-cell"
-            data-cell="7"
-            placeholder="7"
-          ></textarea>
-          <textarea
-            id="cell-8"
-            class="mandara-cell"
-            data-cell="8"
-            placeholder="8"
-          ></textarea>
-          <textarea
-            id="cell-9"
-            class="mandara-cell"
-            data-cell="9"
-            placeholder="9"
-          ></textarea>
+        <!-- 9-grid Mandara (JS renders the focused grid) -->
+        <div class="mandara-grid" id="mandara-grid">
+          <!-- Populated by JavaScript (renderFocusedGrid) -->
         </div>
 
         <!-- Memo Area -->

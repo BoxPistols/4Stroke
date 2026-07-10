@@ -21,6 +21,8 @@ import {
   setCellText,
   removeGridSubtree,
   validateBoard,
+  projectRootCells,
+  getGridDisplayCells,
 } from "../js/board-logic.js";
 import { createNewMandara } from "../js/mandara-logic.js";
 
@@ -296,6 +298,71 @@ describe("breadcrumb / traversal", () => {
     const child = expandCell(board, root.id, firstPerimeterCellId(root));
     expect(findGridOfCell(board, child.centerCellId).id).toBe(child.id);
     expect(findGridOfCell(board, "missing")).toBeNull();
+  });
+});
+
+describe("projectRootCells (レガシー互換シャドウ)", () => {
+  it("projects the root grid into cells{1..9}", () => {
+    const board = createBoard("root");
+    const root = getGrid(board, board.rootGridId);
+    root.cellIds.forEach((cellId, i) => {
+      root.cells[cellId].text = `c${i + 1}`;
+    });
+    const cells = projectRootCells(board);
+    for (let i = 1; i <= 9; i++) expect(cells[i]).toBe(`c${i}`);
+  });
+
+  it("reflects only the root grid, not child grids", () => {
+    const board = createBoard("root");
+    const root = getGrid(board, board.rootGridId);
+    const cellId = firstPerimeterCellId(root);
+    setCellText(board, root.id, cellId, "健康");
+    const child = expandCell(board, root.id, cellId);
+    // 子の周辺セルを埋めても、ルート射影には出てこない
+    setCellText(board, child.id, firstPerimeterCellId(child), "運動");
+    const cells = projectRootCells(board);
+    expect(Object.values(cells)).toContain("健康");
+    expect(Object.values(cells)).not.toContain("運動");
+  });
+
+  it("returns empty strings for an empty board", () => {
+    const cells = projectRootCells(createBoard(""));
+    for (let i = 1; i <= 9; i++) expect(cells[i]).toBe("");
+  });
+});
+
+describe("getGridDisplayCells", () => {
+  it("returns 9 positioned cells with center flagged", () => {
+    const board = createBoard("root");
+    const display = getGridDisplayCells(board, board.rootGridId);
+    expect(display).toHaveLength(9);
+    expect(display[0].position).toBe(1);
+    expect(display[4].isCenter).toBe(true);
+    expect(display.filter((c) => c.isCenter)).toHaveLength(1);
+  });
+
+  it("flags cells that have a child grid", () => {
+    const board = createBoard("root");
+    const root = getGrid(board, board.rootGridId);
+    const cellId = firstPerimeterCellId(root);
+    expandCell(board, root.id, cellId);
+    const display = getGridDisplayCells(board, root.id);
+    const expanded = display.find((c) => c.cellId === cellId);
+    expect(expanded.hasChild).toBe(true);
+    expect(display.filter((c) => c.hasChild)).toHaveLength(1);
+  });
+
+  it("returns the focused child grid's cells, not the root's", () => {
+    const board = createBoard("root");
+    const root = getGrid(board, board.rootGridId);
+    const child = expandCell(board, root.id, firstPerimeterCellId(root));
+    setCellText(board, child.id, firstPerimeterCellId(child), "子の内容");
+    const display = getGridDisplayCells(board, child.id);
+    expect(display.map((c) => c.text)).toContain("子の内容");
+  });
+
+  it("returns [] for an unknown grid", () => {
+    expect(getGridDisplayCells(createBoard(""), "missing")).toEqual([]);
   });
 });
 

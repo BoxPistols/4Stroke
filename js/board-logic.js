@@ -150,6 +150,42 @@ export function boardToLegacyMandara(board) {
   };
 }
 
+// --- 表示・射影ヘルパー ---
+
+/**
+ * ルートGridの9セルを v1 cells{1..9} 形式に射影する。
+ * レガシー読み取り(list-view / insight / local-analyzer / export)用の
+ * 派生シャドウ。Board が真実、これは常に再生成される読み取り専用キャッシュ。
+ */
+export function projectRootCells(board) {
+  const root = getGrid(board, board?.rootGridId);
+  const cells = {};
+  for (let i = 1; i <= 9; i++) {
+    const cellId = root?.cellIds[i - 1];
+    cells[i] = cellId ? root.cells[cellId]?.text ?? "" : "";
+  }
+  return cells;
+}
+
+/**
+ * 表示用: 指定Gridの各マスを position 順(1始まり)で返す。
+ * @returns {Array<{position, cellId, text, isCenter, hasChild}>}
+ */
+export function getGridDisplayCells(board, gridId) {
+  const grid = getGrid(board, gridId);
+  if (!grid) return [];
+  return grid.cellIds.map((cellId, index) => {
+    const cell = grid.cells[cellId];
+    return {
+      position: index + 1,
+      cellId,
+      text: cell?.text ?? "",
+      isCenter: grid.centerCellId === cellId,
+      hasChild: !!cell?.childGridId,
+    };
+  });
+}
+
 // --- ツリー探索ヘルパー ---
 
 export function getGrid(board, gridId) {

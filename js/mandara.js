@@ -8,7 +8,17 @@ import {
 } from "./storage-service.js";
 import { waitForFirebaseCheck } from "./firebase-available.js";
 import { TIMINGS } from "./constants.js";
-import { createNewMandara as createMandaraLogic } from "./mandara-logic.js";
+import {
+  createBoard,
+  migrateMandaraToBoard,
+  projectRootCells,
+  getGridDisplayCells,
+  getGrid,
+  getBreadcrumb,
+  expandCell,
+  createParentGrid,
+  setCellText,
+} from "./board-logic.js";
 import {
   exportMandarasToJson,
   parseMandarasJson,
@@ -46,7 +56,8 @@ const removeTodo = (id) => tagsTodosUI?.removeTodo(id);
 
 // Current state
 let currentUserId = null;
-let currentMandara = null;
+let currentMandara = null; // v2 Board (with a live cells{1..9} shadow of the root grid)
+let focusGridId = null; // どのGridをエディタに表示しているか (フラクタルナビ)
 let allMandaras = [];
 let mandaraOrder = []; // Custom order of mandara IDs
 let saveTimer = null;
@@ -135,35 +146,43 @@ function showToast(msg) {
   }
 }
 
-// Create new mandara
+// Create new mandara (v2 Board with a legacy cells shadow)
 function createNewMandara() {
-  return createMandaraLogic();
+  const board = createBoard("");
+  refreshCellsShadow(board);
+  return board;
+}
+
+// レガシー読み取り互換のため、ルートGridの内容を cells{1..9} に射影して
+// Board 自身に載せておく (list-view / insight / export はこれを読む)
+function refreshCellsShadow(board) {
+  if (board) board.cells = projectRootCells(board);
 }
 
 // Load mandara into UI
 function loadMandaraIntoUI(mandara) {
-  currentMandara = mandara;
+  // v1 マンダラなら Board へ移行 (冪等・非破壊)。以降 Board を真実として扱う。
+  const board = migrateMandaraToBoard(mandara);
+  refreshCellsShadow(board);
+  currentMandara = board;
+  focusGridId = board.rootGridId;
 
-  // Title
-  document.getElementById("mandara-title").value = mandara.title || "";
+  // Title (Board レベル)
+  document.getElementById("mandara-title").value = board.title || "";
 
-  // Cells
-  for (let i = 1; i <= 9; i++) {
-    const cell = document.getElementById(`cell-${i}`);
-    if (cell) {
-      cell.value = mandara.cells[i] || "";
-    }
-  }
+  // フォーカス中の Grid を描画 + パンくず
+  renderFocusedGrid();
+  renderBreadcrumb();
 
   // Memo
-  document.getElementById("mandara-memo").value = mandara.memo || "";
+  document.getElementById("mandara-memo").value = board.memo || "";
 
   // Dates
   document.getElementById("created-date").textContent = `作成: ${formatDate(
-    mandara.createdAt
+    board.createdAt
   )}`;
   document.getElementById("updated-date").textContent = `更新: ${formatDate(
-    mandara.updatedAt
+    board.updatedAt
   )}`;
 
   // Tags
@@ -174,8 +193,93 @@ function loadMandaraIntoUI(mandara) {
 
   // Update URL with current mandara ID
   const newUrl = new URL(window.location);
-  newUrl.searchParams.set("id", mandara.id);
+  newUrl.searchParams.set("id", board.id);
   window.history.replaceState({}, "", newUrl);
+}
+
+// フォーカス中の Grid の9マスを #mandara-grid に描画する。
+// 既存の #cell-1..9 / .mandara-cell / .mandara-center を踏襲しつつ、
+// マスごとに「展開」ボタン(中心以外)と子マンダラ有無の表示を付与する。
+function renderFocusedGrid() {
+  const container = document.getElementById("mandara-grid");
+  if (!container || !currentMandara) return;
+
+  const cells = getGridDisplayCells(currentMandara, focusGridId);
+  container.textContent = "";
+
+  cells.forEach(({ position, cellId, text, isCenter, hasChild }) => {
+    const wrap = document.createElement("div");
+    wrap.className = "mandara-cell-wrap" + (isCenter ? " is-center" : "");
+    wrap.dataset.position = String(position);
+
+    const ta = document.createElement("textarea");
+    ta.id = `cell-${position}`;
+    ta.className = "mandara-cell" + (isCenter ? " mandara-center" : "");
+    ta.dataset.cell = String(position);
+    ta.dataset.cellId = cellId;
+    ta.placeholder = isCenter ? "中心キーワード" : String(position);
+    ta.value = text;
+    wrap.appendChild(ta);
+
+    // 中心マスはそのGridのテーマなので展開不可
+    if (!isCenter) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "cell-expand-btn" + (hasChild ? " has-child" : "");
+      btn.dataset.cellId = cellId;
+      btn.title = hasChild ? "子マンダラを開く" : "このマスを中心に展開する";
+      btn.setAttribute(
+        "aria-label",
+        hasChild ? "子マンダラを開く" : "このマスを中心に展開する"
+      );
+      btn.textContent = hasChild ? "◉" : "⤢";
+      wrap.appendChild(btn);
+    }
+
+    container.appendChild(wrap);
+  });
+}
+
+// パンくず(ルート → フォーカス中Grid)を描画
+function renderBreadcrumb() {
+  const nav = document.getElementById("mandara-breadcrumb");
+  if (!nav || !currentMandara) return;
+
+  const crumbs = getBreadcrumb(currentMandara, focusGridId);
+  nav.textContent = "";
+
+  crumbs.forEach((crumb, index) => {
+    if (index > 0) {
+      const sep = document.createElement("span");
+      sep.className = "breadcrumb-sep";
+      sep.setAttribute("aria-hidden", "true");
+      sep.textContent = "›";
+      nav.appendChild(sep);
+    }
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "breadcrumb-item";
+    btn.dataset.gridId = crumb.gridId;
+    const isCurrent = crumb.gridId === focusGridId;
+    btn.textContent = crumb.label || (index === 0 ? "ルート" : "(無題)");
+    if (isCurrent) {
+      btn.classList.add("is-current");
+      btn.setAttribute("aria-current", "true");
+    }
+    nav.appendChild(btn);
+  });
+
+  // ルート以外を表示中のときだけ "親構造を作る" を活性化するのではなく、
+  // 常に有効(どの階層からでも上位構造を作れる)。ボタンはHTML側に常設。
+}
+
+// フォーカス中の Grid へ移動して再描画 (編集は事前にフラッシュ保存する)
+async function navigateToGrid(gridId) {
+  if (!currentMandara || !getGrid(currentMandara, gridId)) return;
+  await flushSave();
+  focusGridId = gridId;
+  renderFocusedGrid();
+  renderBreadcrumb();
 }
 
 // Save current mandara
@@ -183,21 +287,33 @@ async function saveCurrentMandara() {
   if (!currentMandara) return;
 
   try {
-    // Update mandara with current UI values
+    // Board レベルの値
     currentMandara.title = document.getElementById("mandara-title").value;
     currentMandara.memo = document.getElementById("mandara-memo").value;
 
-    for (let i = 1; i <= 9; i++) {
-      const cell = document.getElementById(`cell-${i}`);
-      if (cell) {
-        currentMandara.cells[i] = cell.value;
-      }
-    }
+    // フォーカス中の Grid の9マスを書き戻す。
+    // setCellText が親子(中心セル)の同期を担うので、子Gridで編集しても
+    // 親セル/ルートまで矛盾なく反映される。
+    document
+      .getElementById("mandara-grid")
+      ?.querySelectorAll("textarea.mandara-cell")
+      .forEach((ta) => {
+        const cellId = ta.dataset.cellId;
+        if (cellId) {
+          setCellText(currentMandara, focusGridId, cellId, ta.value);
+        }
+      });
 
+    // レガシー読み取り互換のシャドウを最新化してから永続化
+    refreshCellsShadow(currentMandara);
     currentMandara.updatedAt = new Date().toISOString();
 
-    // Save entire mandara object (includes tags, todos, cells, memo, etc.)
+    // Save entire board (grids, freeNodes, tags, todos, cells shadow, ...)
     await Storage.saveMandara(currentUserId, currentMandara);
+
+    // メモリ上の一覧も最新化 (list-view を開き直さなくても中心プレビューが揃う)
+    const idx = allMandaras.findIndex((m) => m.id === currentMandara.id);
+    if (idx >= 0) allMandaras[idx] = currentMandara;
 
     // Update updated date display
     document.getElementById("updated-date").textContent = `更新: ${formatDate(
@@ -207,6 +323,7 @@ async function saveCurrentMandara() {
     console.log("[INFO] Saved mandara:", {
       id: currentMandara.id,
       title: currentMandara.title,
+      grids: Object.keys(currentMandara.grids || {}).length,
       tags: currentMandara.tags?.length || 0,
       todos: currentMandara.todos?.length || 0,
     });
@@ -224,6 +341,40 @@ function debouncedSave() {
   saveTimer = setTimeout(() => {
     saveCurrentMandara();
   }, TIMINGS.DEBOUNCE_DELAY);
+}
+
+// 保留中のデバウンスを取り消して即時保存する (階層移動・構造変更の前に呼ぶ)
+async function flushSave() {
+  clearTimeout(saveTimer);
+  await saveCurrentMandara();
+}
+
+// ズームイン: マスを中心として子Gridを展開し、その子へ移動する
+async function expandCellAndFocus(cellId) {
+  if (!currentMandara) return;
+  await flushSave();
+  const child = expandCell(currentMandara, focusGridId, cellId);
+  if (!child) return; // 中心マスなどは展開不可
+  refreshCellsShadow(currentMandara);
+  await saveCurrentMandara();
+  focusGridId = child.id;
+  renderFocusedGrid();
+  renderBreadcrumb();
+  showToast("マスを展開しました");
+}
+
+// ズームアウト: いまの全体を1マスに含む親Gridを新設し、新ルートへ移動する
+async function createParentAndFocus() {
+  if (!currentMandara) return;
+  await flushSave();
+  const parent = createParentGrid(currentMandara);
+  if (!parent) return;
+  refreshCellsShadow(currentMandara);
+  await saveCurrentMandara();
+  focusGridId = currentMandara.rootGridId;
+  renderFocusedGrid();
+  renderBreadcrumb();
+  showToast("親構造を作成しました");
 }
 
 
@@ -638,12 +789,37 @@ function setupEventListeners() {
     titleInput.addEventListener("input", debouncedSave);
   }
 
-  // Cell inputs
-  for (let i = 1; i <= 9; i++) {
-    const cell = document.getElementById(`cell-${i}`);
-    if (cell) {
-      cell.addEventListener("input", debouncedSave);
-    }
+  // Cell inputs + expand buttons (delegated — the grid is re-rendered on navigation)
+  const gridContainer = document.getElementById("mandara-grid");
+  if (gridContainer) {
+    gridContainer.addEventListener("input", (e) => {
+      if (e.target.classList.contains("mandara-cell")) {
+        debouncedSave();
+      }
+    });
+    gridContainer.addEventListener("click", (e) => {
+      const btn = e.target.closest(".cell-expand-btn");
+      if (btn && btn.dataset.cellId) {
+        expandCellAndFocus(btn.dataset.cellId);
+      }
+    });
+  }
+
+  // Breadcrumb navigation (delegated)
+  const breadcrumbNav = document.getElementById("mandara-breadcrumb");
+  if (breadcrumbNav) {
+    breadcrumbNav.addEventListener("click", (e) => {
+      const item = e.target.closest(".breadcrumb-item");
+      if (item && item.dataset.gridId) {
+        navigateToGrid(item.dataset.gridId);
+      }
+    });
+  }
+
+  // Zoom out: create a parent structure
+  const zoomOutBtn = document.getElementById("zoom-out-btn");
+  if (zoomOutBtn) {
+    zoomOutBtn.addEventListener("click", createParentAndFocus);
   }
 
   // Memo input
