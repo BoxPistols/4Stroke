@@ -18,6 +18,7 @@ import {
   expandCell,
   createParentGrid,
   setCellText,
+  isGridEmpty,
 } from "./board-logic.js";
 import {
   exportMandarasToJson,
@@ -167,6 +168,11 @@ function loadMandaraIntoUI(mandara) {
   currentMandara = board;
   focusGridId = board.rootGridId;
 
+  // 一覧の参照も移行後の Board に差し替える (最初の保存前でも list-view /
+  // insight 横断分析が編集中と同じオブジェクトを読むようにする)。
+  const listIdx = allMandaras.findIndex((m) => m.id === board.id);
+  if (listIdx >= 0) allMandaras[listIdx] = board;
+
   // Title (Board レベル)
   document.getElementById("mandara-title").value = board.title || "";
 
@@ -273,53 +279,58 @@ function renderBreadcrumb() {
   // 常に有効(どの階層からでも上位構造を作れる)。ボタンはHTML側に常設。
 }
 
-// フォーカス中の Grid へ移動して再描画 (編集は事前にフラッシュ保存する)
+// フォーカス中の Grid へ移動して再描画。移動前に現在のUIを同期取り込みし、
+// その後に永続化する (取り込みと再描画の間に await を挟まない = 取りこぼし防止)。
 async function navigateToGrid(gridId) {
   if (!currentMandara || !getGrid(currentMandara, gridId)) return;
-  await flushSave();
+  if (gridId === focusGridId) return; // 現在地は再描画不要 (フォーカスも保つ)
+  clearTimeout(saveTimer);
+  captureUiIntoBoard();
   focusGridId = gridId;
   renderFocusedGrid();
   renderBreadcrumb();
+  await persistBoard();
 }
 
 // Save current mandara
-async function saveCurrentMandara() {
+// 現在のUI(タイトル/メモ/フォーカス中Gridの9マス)を Board モデルへ
+// **同期的に**取り込む。DOM読み取り→モデル反映→シャドウ更新まで await を
+// 挟まないため、この後すぐ再描画してもキーストロークを取りこぼさない。
+function captureUiIntoBoard() {
   if (!currentMandara) return;
 
+  currentMandara.title = document.getElementById("mandara-title").value;
+  currentMandara.memo = document.getElementById("mandara-memo").value;
+
+  // フォーカス中の Grid の9マスを書き戻す。setCellText が親子(中心セル)の
+  // 同期を担うので、子Gridで編集しても親セル/ルートまで矛盾なく反映される。
+  document
+    .getElementById("mandara-grid")
+    ?.querySelectorAll("textarea.mandara-cell")
+    .forEach((ta) => {
+      const cellId = ta.dataset.cellId;
+      if (cellId) {
+        setCellText(currentMandara, focusGridId, cellId, ta.value);
+      }
+    });
+
+  // レガシー読み取り互換のシャドウを最新化
+  refreshCellsShadow(currentMandara);
+  currentMandara.updatedAt = new Date().toISOString();
+
+  // メモリ上の一覧も同一参照に揃える (list-view/insight が最新を読む)
+  const idx = allMandaras.findIndex((m) => m.id === currentMandara.id);
+  if (idx >= 0) allMandaras[idx] = currentMandara;
+}
+
+// Board を永続化する (取り込みは captureUiIntoBoard 側の責務)。
+async function persistBoard() {
+  if (!currentMandara) return;
   try {
-    // Board レベルの値
-    currentMandara.title = document.getElementById("mandara-title").value;
-    currentMandara.memo = document.getElementById("mandara-memo").value;
-
-    // フォーカス中の Grid の9マスを書き戻す。
-    // setCellText が親子(中心セル)の同期を担うので、子Gridで編集しても
-    // 親セル/ルートまで矛盾なく反映される。
-    document
-      .getElementById("mandara-grid")
-      ?.querySelectorAll("textarea.mandara-cell")
-      .forEach((ta) => {
-        const cellId = ta.dataset.cellId;
-        if (cellId) {
-          setCellText(currentMandara, focusGridId, cellId, ta.value);
-        }
-      });
-
-    // レガシー読み取り互換のシャドウを最新化してから永続化
-    refreshCellsShadow(currentMandara);
-    currentMandara.updatedAt = new Date().toISOString();
-
-    // Save entire board (grids, freeNodes, tags, todos, cells shadow, ...)
     await Storage.saveMandara(currentUserId, currentMandara);
-
-    // メモリ上の一覧も最新化 (list-view を開き直さなくても中心プレビューが揃う)
-    const idx = allMandaras.findIndex((m) => m.id === currentMandara.id);
-    if (idx >= 0) allMandaras[idx] = currentMandara;
-
-    // Update updated date display
     document.getElementById("updated-date").textContent = `更新: ${formatDate(
       currentMandara.updatedAt
     )}`;
-
     console.log("[INFO] Saved mandara:", {
       id: currentMandara.id,
       title: currentMandara.title,
@@ -327,12 +338,18 @@ async function saveCurrentMandara() {
       tags: currentMandara.tags?.length || 0,
       todos: currentMandara.todos?.length || 0,
     });
-
     showAutoSaveMessage();
   } catch (error) {
     console.error("[ERROR] Failed to save mandara:", error);
     alert("保存に失敗しました");
   }
+}
+
+// 取り込み + 永続化。tagsTodosUI / insight コントローラーのコールバック互換。
+async function saveCurrentMandara() {
+  if (!currentMandara) return;
+  captureUiIntoBoard();
+  await persistBoard();
 }
 
 // Debounced save
@@ -343,37 +360,38 @@ function debouncedSave() {
   }, TIMINGS.DEBOUNCE_DELAY);
 }
 
-// 保留中のデバウンスを取り消して即時保存する (階層移動・構造変更の前に呼ぶ)
-async function flushSave() {
-  clearTimeout(saveTimer);
-  await saveCurrentMandara();
-}
-
 // ズームイン: マスを中心として子Gridを展開し、その子へ移動する
 async function expandCellAndFocus(cellId) {
   if (!currentMandara) return;
-  await flushSave();
+  clearTimeout(saveTimer);
+  captureUiIntoBoard(); // 展開元セルの最新テキストを確定してから展開
   const child = expandCell(currentMandara, focusGridId, cellId);
   if (!child) return; // 中心マスなどは展開不可
   refreshCellsShadow(currentMandara);
-  await saveCurrentMandara();
   focusGridId = child.id;
   renderFocusedGrid();
   renderBreadcrumb();
+  await persistBoard();
   showToast("マスを展開しました");
 }
 
 // ズームアウト: いまの全体を1マスに含む親Gridを新設し、新ルートへ移動する
 async function createParentAndFocus() {
   if (!currentMandara) return;
-  await flushSave();
+  clearTimeout(saveTimer);
+  captureUiIntoBoard();
+  // 空(全マス空+子なし)のルートに親を積み増しても意味がないので防ぐ
+  if (isGridEmpty(getGrid(currentMandara, currentMandara.rootGridId))) {
+    showToast("先に内容を入力してください");
+    return;
+  }
   const parent = createParentGrid(currentMandara);
   if (!parent) return;
   refreshCellsShadow(currentMandara);
-  await saveCurrentMandara();
   focusGridId = currentMandara.rootGridId;
   renderFocusedGrid();
   renderBreadcrumb();
+  await persistBoard();
   showToast("親構造を作成しました");
 }
 

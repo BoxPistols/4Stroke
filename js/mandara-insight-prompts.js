@@ -4,10 +4,11 @@
  * MANDARAデータからプロンプト用コンテキスト文字列を生成
  */
 export function buildMandaraContext(mandara) {
+  const cells = mandara.cells || {};
   const cellGrid = [
-    [mandara.cells[1] || "(空)", mandara.cells[2] || "(空)", mandara.cells[3] || "(空)"],
-    [mandara.cells[4] || "(空)", mandara.cells[5] || "(空)", mandara.cells[6] || "(空)"],
-    [mandara.cells[7] || "(空)", mandara.cells[8] || "(空)", mandara.cells[9] || "(空)"],
+    [cells[1] || "(空)", cells[2] || "(空)", cells[3] || "(空)"],
+    [cells[4] || "(空)", cells[5] || "(空)", cells[6] || "(空)"],
+    [cells[7] || "(空)", cells[8] || "(空)", cells[9] || "(空)"],
   ];
 
   const gridStr = cellGrid
@@ -47,9 +48,10 @@ ${todos}`;
  * 入力されたセルの数をカウント（分析可能かの判定用）
  */
 export function countFilledCells(mandara) {
+  const cells = mandara.cells || {};
   let count = 0;
   for (let i = 1; i <= 9; i++) {
-    if (mandara.cells[i] && mandara.cells[i].trim()) count++;
+    if (cells[i] && cells[i].trim()) count++;
   }
   return count;
 }

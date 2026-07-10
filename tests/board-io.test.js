@@ -44,6 +44,20 @@ describe("exportMandarasToJson / parseMandarasJson round-trip", () => {
     expect(parsed.mandaras[0].rootGridId).toBe(board.rootGridId);
   });
 
+  it("synthesizes a cells shadow for an imported v2 board that lacks one", () => {
+    // 外部で手編集され cells シャドウを持たない v2 Board を取り込むケース。
+    // 横断分析(countFilledCells 等)がクラッシュしないようシャドウを補う。
+    const board = createBoard("外部");
+    const rootId = board.rootGridId;
+    const centerId = board.grids[rootId].centerCellId;
+    board.grids[rootId].cells[centerId].text = "中枢";
+    delete board.cells; // シャドウなしを再現
+    const raw = JSON.stringify([board]);
+    const [imported] = parseMandarasJson(raw).mandaras;
+    expect(imported.cells).toBeDefined();
+    expect(imported.cells[5]).toBe("中枢");
+  });
+
   it("accepts a raw mandara array (localStorage direct copy)", () => {
     const raw = JSON.stringify([sampleMandara({ id: "m1" })]);
     const parsed = parseMandarasJson(raw);

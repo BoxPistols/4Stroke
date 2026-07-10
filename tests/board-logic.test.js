@@ -23,6 +23,7 @@ import {
   validateBoard,
   projectRootCells,
   getGridDisplayCells,
+  isGridEmpty,
 } from "../js/board-logic.js";
 import { createNewMandara } from "../js/mandara-logic.js";
 
@@ -196,6 +197,30 @@ describe("createParentGrid (ズームアウト)", () => {
     expect(slotCell.text).toBe("タイトル");
   });
 
+  it("keeps the parent-cell/child-center mirror when falling back to title", () => {
+    // 中心が空 + タイトルあり: スロットセルと旧ルート中心が一致すること
+    const board = createBoard("大テーマ");
+    const oldRootId = board.rootGridId;
+    createParentGrid(board);
+    const newRoot = getGrid(board, board.rootGridId);
+    const slotCell = Object.values(newRoot.cells).find((c) => c.childGridId);
+    const oldRoot = getGrid(board, oldRootId);
+    expect(slotCell.text).toBe("大テーマ");
+    expect(oldRoot.cells[oldRoot.centerCellId].text).toBe("大テーマ");
+    // これで editing の同値ガードに阻まれずミラーが保たれる
+    expect(slotCell.text).toBe(oldRoot.cells[oldRoot.centerCellId].text);
+    expect(validateBoard(board)).toEqual([]);
+  });
+
+  it("clamps a negative slotIndex instead of crashing", () => {
+    const board = createBoard("x");
+    expect(() => createParentGrid(board, { slotIndex: -5 })).not.toThrow();
+    const newRoot = getGrid(board, board.rootGridId);
+    const slotCell = Object.values(newRoot.cells).find((c) => c.childGridId);
+    expect(slotCell).toBeTruthy();
+    expect(validateBoard(board)).toEqual([]);
+  });
+
   it("can be applied repeatedly (parent of parent)", () => {
     const board = createBoard("x");
     const originalRootId = board.rootGridId;
@@ -298,6 +323,39 @@ describe("breadcrumb / traversal", () => {
     const child = expandCell(board, root.id, firstPerimeterCellId(root));
     expect(findGridOfCell(board, child.centerCellId).id).toBe(child.id);
     expect(findGridOfCell(board, "missing")).toBeNull();
+  });
+
+  it("getBreadcrumb does not crash on a broken parent back-link", () => {
+    const board = createBoard("root");
+    const rootId = board.rootGridId;
+    // 破損: 親セルの所属Gridが存在しないIDを指す孤児Gridを差し込む
+    const orphan = createGrid("3x3", { parentCellId: "cell_ghost" });
+    board.grids[orphan.id] = orphan;
+    expect(() => getBreadcrumb(board, orphan.id)).not.toThrow();
+    const crumbs = getBreadcrumb(board, orphan.id);
+    expect(crumbs[crumbs.length - 1].label).toBe("(無題)");
+    expect(() => getBreadcrumb(board, rootId)).not.toThrow();
+  });
+});
+
+describe("isGridEmpty", () => {
+  it("treats a fresh grid as empty and a filled one as non-empty", () => {
+    const board = createBoard("");
+    const root = getGrid(board, board.rootGridId);
+    expect(isGridEmpty(root)).toBe(true);
+    setCellText(board, root.id, firstPerimeterCellId(root), "何か");
+    expect(isGridEmpty(root)).toBe(false);
+  });
+
+  it("treats a grid with a child link as non-empty even if text is blank", () => {
+    const board = createBoard("");
+    const root = getGrid(board, board.rootGridId);
+    expandCell(board, root.id, firstPerimeterCellId(root));
+    expect(isGridEmpty(root)).toBe(false);
+  });
+
+  it("returns true for null", () => {
+    expect(isGridEmpty(null)).toBe(true);
   });
 });
 

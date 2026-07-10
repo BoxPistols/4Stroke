@@ -6,6 +6,8 @@
  * 設計ドキュメント: docs/MANDARA_EVOLUTION_PLAN.md §6
  */
 
+import { projectRootCells } from "./board-logic.js";
+
 export const BACKUP_TYPE = "4strokes-mandara-backup";
 export const BACKUP_VERSION = 1;
 
@@ -74,9 +76,13 @@ function normalizeImportedItem(item) {
   if (!item || typeof item !== "object") return null;
   if (typeof item.id !== "string" || item.id.length === 0) return null;
 
-  // v2 Board はそのまま (grids必須)
+  // v2 Board はそのまま (grids必須)。ただしレガシー読み取り(insight横断分析
+  // 等)が参照する cells シャドウが欠けていれば射影して補う — 外部で手編集
+  // された Board を取り込んでもクラッシュしないようにする。
   if (item.schemaVersion === 2) {
-    return item.grids && item.rootGridId ? item : null;
+    if (!item.grids || !item.rootGridId) return null;
+    if (!item.cells) item.cells = projectRootCells(item);
+    return item;
   }
 
   // v1 マンダラ: cells 1..9 を補完

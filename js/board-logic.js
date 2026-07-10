@@ -231,11 +231,11 @@ export function getBreadcrumb(board, gridId) {
     if (!grid?.parentCellId) {
       return { gridId: id, label: board.title || "ルート" };
     }
-    const parentCell = getCell(
-      board,
-      findGridOfCell(board, grid.parentCellId).id,
-      grid.parentCellId
-    );
+    // 破損した親リンク(親セルの所属Gridが失われている)でもクラッシュしない
+    const parentGrid = findGridOfCell(board, grid.parentCellId);
+    const parentCell = parentGrid
+      ? getCell(board, parentGrid.id, grid.parentCellId)
+      : null;
     return { gridId: id, label: parentCell?.text || "(無題)" };
   });
 }
@@ -305,19 +305,28 @@ export function createParentGrid(board, options = {}) {
   const perimeterIds = parentGrid.cellIds.filter(
     (id) => id !== parentGrid.centerCellId
   );
-  const slot =
-    perimeterIds[
-      Math.min(options.slotIndex ?? 0, perimeterIds.length - 1)
-    ];
-  const slotCell = parentGrid.cells[slot];
+  // 負値・過大値どちらも安全な範囲に丸める
+  const slotIndex = Math.max(
+    0,
+    Math.min(options.slotIndex ?? 0, perimeterIds.length - 1)
+  );
+  const slotCell = parentGrid.cells[perimeterIds[slotIndex]];
 
   // 現ルートのテーマ (中心テキスト or Boardタイトル) を親のセルに写す
   const oldCenterText = oldRoot.centerCellId
     ? oldRoot.cells[oldRoot.centerCellId].text
     : "";
-  slotCell.text = oldCenterText || board.title || "";
+  const mirrorText = oldCenterText || board.title || "";
+  slotCell.text = mirrorText;
   slotCell.childGridId = oldRoot.id;
   oldRoot.parentCellId = slotCell.id;
+  // 親セル ⇄ 子中心 のミラー不変条件を維持する。
+  // 中心が空でタイトルを採用した場合、旧ルートの中心にも書き戻して同期する
+  // (さもないと親セル=タイトル / 子中心=空 で不整合になり、同値ガードにより
+  //  setCellText でも修復できなくなる)。
+  if (oldRoot.centerCellId) {
+    oldRoot.cells[oldRoot.centerCellId].text = mirrorText;
+  }
 
   board.grids[parentGrid.id] = parentGrid;
   board.rootGridId = parentGrid.id;
@@ -382,8 +391,22 @@ export function removeGridSubtree(board, gridId) {
 // --- 整合性チェック ---
 
 /**
+ * Grid が空 (全マス空文字 かつ 子Gridを一切持たない) か判定する。
+ * ズームアウトで空の親を積み増すのを防ぐガード等に使う。
+ */
+export function isGridEmpty(grid) {
+  if (!grid) return true;
+  return grid.cellIds.every((cellId) => {
+    const cell = grid.cells[cellId];
+    return !cell?.childGridId && !(cell?.text ?? "").trim();
+  });
+}
+
+/**
  * Boardの構造整合性を検査し、問題の一覧を返す (空配列 = 正常)。
- * 双方向リンクの破れ・孤児Grid・循環を検出する。
+ * 双方向リンクの破れ(DANGLING/BROKEN)と、ルートから到達できないGrid
+ * (ORPHAN_GRID)を検出する。到達可能な循環は ORPHAN として顕在化する
+ * (循環そのものを固有コードでは報告しない)。
  */
 export function validateBoard(board) {
   const issues = [];
