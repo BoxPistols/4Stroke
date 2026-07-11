@@ -2372,6 +2372,101 @@ body[data-sidebar-size=wide] .mandara-content {
     display: none;
   }
 }
+.import-modal .modal-content {
+  max-width: 720px;
+  width: 92vw;
+}
+.import-modal [hidden] {
+  display: none !important;
+}
+.import-modal .import-md-text {
+  width: 100%;
+  min-height: 160px;
+  box-sizing: border-box;
+  padding: var(--spacing-md);
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-normal);
+  border-radius: var(--radius-md);
+  color: var(--color-white);
+  font-family: var(--font-japanese);
+  font-size: var(--font-size-md);
+  resize: vertical;
+}
+.import-modal .import-md-text:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+.import-modal .import-actions {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: flex-start;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: center;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-md);
+}
+.import-modal .import-status {
+  margin-top: var(--spacing-sm);
+  min-height: 1.4em;
+  font-size: var(--font-size-md);
+  color: rgba(255, 255, 255, 0.8);
+}
+.import-modal .import-status.is-error {
+  color: #ffb4b4;
+}
+.import-modal .import-preview {
+  margin-top: var(--spacing-sm);
+  max-height: 260px;
+  overflow-y: auto;
+}
+.import-modal .import-preview:not(:empty) {
+  padding: var(--spacing-md);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-normal);
+  border-radius: var(--radius-md);
+}
+.import-modal .import-preview .import-preview-center {
+  font-weight: bold;
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-xs);
+}
+.import-modal .import-preview .import-preview-rationale {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: var(--spacing-sm);
+}
+.import-modal .import-preview .import-preview-groups {
+  margin: 0;
+  padding-left: 1.2em;
+}
+.import-modal .import-preview .import-preview-groups > li {
+  margin-bottom: var(--spacing-xs);
+}
+.import-modal .import-preview .import-preview-groups ul {
+  padding-left: 1.2em;
+  color: rgba(255, 255, 255, 0.8);
+}
+.import-modal .import-preview .import-preview-memo {
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.65);
+}
+
 .mandara-breadcrumb-bar {
   display: flex;
   /**

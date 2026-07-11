@@ -243,6 +243,102 @@ body:has(.mandara-editor) {
   }
 }
 
+// Markdownインポートモーダル
+.import-modal {
+  .modal-content {
+    max-width: 720px;
+    width: 92vw;
+  }
+
+  // 既存の .btn 系スタイルが display を当てて UA の [hidden] を上書きするため、
+  // hidden 属性を確実に効かせる (AIボタンはキーがある時だけ表示)
+  [hidden] {
+    display: none !important;
+  }
+
+  .import-md-text {
+    width: 100%;
+    min-height: 160px;
+    box-sizing: border-box;
+    padding: var(--spacing-md);
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border-normal);
+    border-radius: var(--radius-md);
+    color: var(--color-white);
+    font-family: var(--font-japanese);
+    font-size: var(--font-size-md);
+    resize: vertical;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-accent);
+    }
+  }
+
+  .import-actions {
+    @include flex(start, center);
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    margin-top: var(--spacing-md);
+  }
+
+  .import-status {
+    margin-top: var(--spacing-sm);
+    min-height: 1.4em;
+    font-size: var(--font-size-md);
+    color: rgba(255, 255, 255, 0.8);
+
+    &.is-error {
+      color: #ffb4b4;
+    }
+  }
+
+  .import-preview {
+    margin-top: var(--spacing-sm);
+    max-height: 260px;
+    overflow-y: auto;
+
+    &:not(:empty) {
+      padding: var(--spacing-md);
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border-normal);
+      border-radius: var(--radius-md);
+    }
+
+    .import-preview-center {
+      font-weight: bold;
+      font-size: var(--font-size-lg);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .import-preview-rationale {
+      font-size: var(--font-size-sm);
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .import-preview-groups {
+      margin: 0;
+      padding-left: 1.2em;
+
+      > li {
+        margin-bottom: var(--spacing-xs);
+      }
+
+      ul {
+        padding-left: 1.2em;
+        color: rgba(255, 255, 255, 0.8);
+      }
+    }
+
+    .import-preview-memo {
+      margin-top: var(--spacing-sm);
+      font-size: var(--font-size-sm);
+      color: rgba(255, 255, 255, 0.65);
+    }
+  }
+}
+
 // フラクタルナビ: パンくず + ズームアウト
 .mandara-breadcrumb-bar {
   @include flex(space-between, center);

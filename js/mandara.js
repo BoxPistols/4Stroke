@@ -26,6 +26,8 @@ import {
   mergeMandaras,
   buildBackupFilename,
 } from "./board-io.js";
+import { boardToMarkdown } from "./board-md.js";
+import { initImportUI } from "./mandara-import-ui.js";
 import {
   renderMandaraList as renderMandaraListView,
   showListView as showListViewModule,
@@ -534,6 +536,19 @@ async function deleteAllMandaras() {
   }
 }
 
+// テキストをファイルとしてダウンロードさせる
+function downloadTextFile(filename, text, mime) {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 // Export all mandaras as a JSON backup file
 async function exportAllToJson() {
   try {
@@ -546,21 +561,44 @@ async function exportAllToJson() {
     }
 
     const json = exportMandarasToJson(allMandaras, mandaraOrder);
-    const blob = new Blob([json], { type: "application/json;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = buildBackupFilename();
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    downloadTextFile(
+      buildBackupFilename(),
+      json,
+      "application/json;charset=utf-8"
+    );
 
     showToast(`${allMandaras.length}件をエクスポートしました`);
   } catch (error) {
     console.error("[ERROR] Failed to export mandaras:", error);
     alert("エクスポートに失敗しました");
   }
+}
+
+// 現在のマンダラ(ツリー全体)をMarkdownとしてダウンロードする
+function exportCurrentBoardAsMarkdown() {
+  if (!currentMandara) return;
+  captureUiIntoBoard(); // 未保存の編集も反映してから出力
+  const md = boardToMarkdown(currentMandara);
+  const safeTitle = (currentMandara.title || "mandara").replace(
+    /[\\/:*?"<>|]/g,
+    "_"
+  );
+  downloadTextFile(`${safeTitle}.md`, md, "text/markdown;charset=utf-8");
+  showToast("Markdownを出力しました");
+}
+
+// Markdownインポート確定時: Boardを保存して開く
+async function handleImportedBoard(board) {
+  await Storage.saveMandara(currentUserId, board);
+  await loadAllMandaras();
+  await loadMandaraOrder();
+  loadMandaraIntoUI(board);
+  const gridCount = Object.keys(board.grids || {}).length;
+  showToast(
+    gridCount > 1
+      ? `取り込みました (子マンダラ ${gridCount - 1}枚を含む)`
+      : "取り込みました"
+  );
 }
 
 const IMPORT_ERROR_MESSAGES = {
@@ -1069,6 +1107,12 @@ function setupEventListeners() {
     exportJsonBtn.addEventListener("click", exportAllToJson);
   }
 
+  // Export current board as Markdown
+  const exportMdBtn = document.getElementById("export-md-btn");
+  if (exportMdBtn) {
+    exportMdBtn.addEventListener("click", exportCurrentBoardAsMarkdown);
+  }
+
   // Import JSON button (delegates to hidden file input)
   const importJsonBtn = document.getElementById("import-json-btn");
   const importJsonInput = document.getElementById("import-json-input");
@@ -1170,6 +1214,9 @@ async function initializeApp() {
     getCurrentMandara: () => currentMandara,
     saveCurrentMandara,
   });
+
+  // Markdownインポートモーダルを初期化
+  initImportUI({ onImported: handleImportedBoard });
 
   // Insight コントローラーを初期化 (状態参照とコールバックを注入)
   insightController = createInsightController({
