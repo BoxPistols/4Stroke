@@ -80,7 +80,12 @@ function normalizeImportedItem(item) {
   // 等)が参照する cells シャドウが欠けていれば射影して補う — 外部で手編集
   // された Board を取り込んでもクラッシュしないようにする。
   if (item.schemaVersion === 2) {
-    if (!item.grids || !item.rootGridId) return null;
+    // rootGridId が grids 内に実在しない Board (外部で手編集され壊れた
+    // バックアップ等)を弾く。実在しないルートを許すと、以降のレンダリング/
+    // ナビゲーション操作が軒並みクラッシュする。
+    if (!item.grids || !item.rootGridId || !item.grids[item.rootGridId]) {
+      return null;
+    }
     if (!item.cells) item.cells = projectRootCells(item);
     return item;
   }

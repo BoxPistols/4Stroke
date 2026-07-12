@@ -89,6 +89,16 @@ describe("parseMandarasJson validation", () => {
     );
   });
 
+  it("rejects a v2 board whose rootGridId does not exist in grids", () => {
+    // 外部で手編集され rootGridId が壊れた Board。実在しないルートを
+    // 許すと、以降のレンダリング/ナビゲーションがクラッシュする。
+    const board = createBoard("壊れたBoard");
+    board.rootGridId = "grid_does_not_exist";
+    expect(() => parseMandarasJson(JSON.stringify([board]))).toThrow(
+      "INVALID_FORMAT"
+    );
+  });
+
   it("rejects future backup versions", () => {
     const json = JSON.stringify({
       type: BACKUP_TYPE,

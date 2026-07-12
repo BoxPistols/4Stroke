@@ -64,6 +64,16 @@ describe("createGrid / createBoard", () => {
     expect(validateBoard(board)).toEqual([]);
   });
 
+  it("createdAt/updatedAt are ISO strings, not Date objects", () => {
+    // ストレージ層(Firestore/localStorage)へ保存する際の型を統一するため。
+    // Dateオブジェクトのまま残ると saveCurrentMandara が updatedAt だけ文字列に
+    // 上書きし、createdAt(Date)/updatedAt(string) の型が混在してしまう。
+    const board = createBoard("x");
+    expect(typeof board.createdAt).toBe("string");
+    expect(typeof board.updatedAt).toBe("string");
+    expect(() => new Date(board.createdAt).toISOString()).not.toThrow();
+  });
+
   it("all defined patterns are creatable", () => {
     for (const pattern of Object.keys(GRID_PATTERNS)) {
       expect(createGrid(pattern).pattern).toBe(pattern);
@@ -117,6 +127,12 @@ describe("migrateMandaraToBoard (v1 -> v2)", () => {
     expect(board.linkedGarageIds).toEqual([]);
     expect(validateBoard(board)).toEqual([]);
   });
+
+  it("falls back to ISO string dates when the v1 source has none", () => {
+    const board = migrateMandaraToBoard({ id: "m1", cells: {} });
+    expect(typeof board.createdAt).toBe("string");
+    expect(typeof board.updatedAt).toBe("string");
+  });
 });
 
 describe("boardToLegacyMandara (v2 -> v1 互換)", () => {
@@ -126,6 +142,15 @@ describe("boardToLegacyMandara (v2 -> v1 互換)", () => {
     const legacy = boardToLegacyMandara(migrateMandaraToBoard(v1));
     expect(legacy.id).toBe(v1.id);
     for (let i = 1; i <= 9; i++) expect(legacy.cells[i]).toBe(`c${i}`);
+  });
+
+  it("does not crash when linkedGarageIds is missing (malformed board)", () => {
+    // 外部で手編集された、あるいは古いバージョンで書かれた v2 Board が
+    // linkedGarageIds を欠いていてもクラッシュしないことを確認する
+    const board = createBoard("x");
+    delete board.linkedGarageIds;
+    expect(() => boardToLegacyMandara(board)).not.toThrow();
+    expect(boardToLegacyMandara(board).linkedGarageId).toBeNull();
   });
 });
 

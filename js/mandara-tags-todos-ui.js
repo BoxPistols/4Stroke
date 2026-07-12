@@ -14,6 +14,7 @@ import {
   reorderTodo as reorderTodoLogic,
 } from "./mandara-logic.js";
 import { setupTodoDragAndDrop } from "./todo-drag.js";
+import { isImeComposing } from "./utils/keyboard.js";
 
 /**
  * context: {
@@ -157,6 +158,74 @@ export function createTagsTodosUI(context) {
     }
   }
 
+  // タグ/TODO入力欄・コンテナへのイベント配線 (IME対応込み)。
+  // mandara.js のファイルサイズ上限(CI: 1000行)対応として、
+  // setupEventListeners から移設した。
+  function wireEvents() {
+    const tagInput = document.getElementById("tag-input");
+    if (tagInput) {
+      tagInput.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter") return;
+        // IME 変換確定の Enter は submit せず、IME に処理を譲る
+        if (isImeComposing(e)) return;
+        e.preventDefault();
+        addTag(tagInput.value);
+        tagInput.value = "";
+      });
+    }
+
+    const tagsContainer = document.getElementById("tags-container");
+    if (tagsContainer) {
+      tagsContainer.addEventListener("click", (e) => {
+        if (e.target.classList.contains("tag-remove")) {
+          console.log("[INFO] Tag remove button clicked:", e.target.dataset.tag);
+          removeTag(e.target.dataset.tag);
+        } else if (e.target.classList.contains("tag-text")) {
+          console.log("[INFO] Tag text clicked for edit");
+          editTag(parseInt(e.target.dataset.index));
+        }
+      });
+      console.log("[INFO] Tags container listener attached");
+    } else {
+      console.warn("[WARN] Tags container not found");
+    }
+
+    const todoInput = document.getElementById("todo-input");
+    if (todoInput) {
+      todoInput.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter") return;
+        if (isImeComposing(e)) return;
+        e.preventDefault();
+        addTodo(todoInput.value);
+        todoInput.value = "";
+      });
+    }
+
+    const todosContainer = document.getElementById("todos-container");
+    if (todosContainer) {
+      todosContainer.addEventListener("click", (e) => {
+        if (e.target.classList.contains("todo-remove")) {
+          console.log("[INFO] Todo remove button clicked");
+          removeTodo(e.target.dataset.id);
+        } else if (e.target.classList.contains("todo-text")) {
+          console.log("[INFO] Todo text clicked for edit");
+          editTodo(e.target.dataset.id);
+        }
+      });
+
+      todosContainer.addEventListener("change", (e) => {
+        if (e.target.classList.contains("todo-checkbox")) {
+          console.log("[INFO] Todo checkbox changed");
+          toggleTodo(e.target.dataset.id);
+        }
+      });
+
+      console.log("[INFO] Todo container listeners attached");
+    } else {
+      console.warn("[WARN] Todos container not found");
+    }
+  }
+
   return {
     renderTags,
     addTag,
@@ -167,5 +236,6 @@ export function createTagsTodosUI(context) {
     editTodo,
     toggleTodo,
     removeTodo,
+    wireEvents,
   };
 }

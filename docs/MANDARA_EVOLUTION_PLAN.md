@@ -119,7 +119,7 @@ interface FreeNode {
 
 読み込み時に `schemaVersion` 欠如を検出したら純関数で変換(不可逆な破壊はしない):
 
-```
+```text
 v1.cells[1..9] → rootGrid(pattern:"3x3") の cells に写像(5番→centerCell)
 v1.memo/tags/todos/title → Board 直下へ
 linkedGarageId → linkedGarageIds: [id] (nullなら [])
@@ -202,7 +202,7 @@ linkedGarageId → linkedGarageIds: [id] (nullなら [])
 
 ### 4.1 パイプライン定義
 
-```
+```text
 入力(3経路)                     処理                         出力
 ────────────────           ─────────────────           ─────────────
 a) Markdown貼り付け    →    1. 前処理(見出し/リスト        プレビュー画面
@@ -289,7 +289,7 @@ AIキーのサーバサイドプロキシ(★7)と同じFunctionに同居させ�
 
 このプロジェクトはフレームワークなしのVanilla JS+SCSS。その前提での推奨構成:
 
-```
+```html
 <div class="canvas-viewport">            ← overflow:hidden、pointerイベント捕捉
   <div class="canvas-world"              ← transform: translate(x,y) scale(z)
        style="transform: ...">

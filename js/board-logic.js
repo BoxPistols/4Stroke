@@ -81,8 +81,12 @@ export function createBoard(title = "") {
     tags: [],
     todos: [],
     linkedGarageIds: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    // ISO文字列で統一する。mandara.js の captureUiIntoBoard/saveCurrentMandara は
+    // updatedAt を new Date().toISOString() で上書きするため、Date型のまま
+    // 保存前状態が残ると createdAt(Date)/updatedAt(string) の型が混在し、
+    // ストレージ層での比較・シリアライズが不整合になる。
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
 }
 
@@ -117,8 +121,8 @@ export function migrateMandaraToBoard(mandara) {
     tags: Array.isArray(mandara.tags) ? [...mandara.tags] : [],
     todos: Array.isArray(mandara.todos) ? mandara.todos.map((t) => ({ ...t })) : [],
     linkedGarageIds: mandara.linkedGarageId ? [mandara.linkedGarageId] : [],
-    createdAt: mandara.createdAt ?? new Date(),
-    updatedAt: mandara.updatedAt ?? new Date(),
+    createdAt: mandara.createdAt ?? new Date().toISOString(),
+    updatedAt: mandara.updatedAt ?? new Date().toISOString(),
   };
 }
 
@@ -144,7 +148,7 @@ export function boardToLegacyMandara(board) {
     memo: board.memo,
     tags: [...board.tags],
     todos: board.todos.map((t) => ({ ...t })),
-    linkedGarageId: board.linkedGarageIds[0] ?? null,
+    linkedGarageId: board.linkedGarageIds?.[0] ?? null,
     createdAt: board.createdAt,
     updatedAt: board.updatedAt,
   };
