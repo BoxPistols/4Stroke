@@ -191,7 +191,7 @@ export function analyzeLocally(mandara) {
 
 function buildSummary(mandara, filled, empty, completeness, issueCount) {
   const title = mandara.title || "(無題)";
-  const center = mandara.cells[5]?.trim() || "(未設定)";
+  const center = (mandara.cells || {})[5]?.trim() || "(未設定)";
 
   let status = "";
   if (completeness >= 90) status = "ほぼ完成しています";

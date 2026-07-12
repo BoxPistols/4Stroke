@@ -92,7 +92,7 @@ A: Data is stored in your browser. It's as safe as your device, but not backed u
 A: Only if you want to use online mode. Local mode works without any configuration.
 
 **Q: Can I export my data?**
-A: Currently not supported. Feature planned for future release.
+A: Mandara data can be exported/imported as JSON from the list view ("JSON出力" / "JSON読込" buttons). Import is a non-destructive merge: unknown items are added, existing items are replaced only when the backup is newer. Garage data export is planned for a future release.
 
 ---
 

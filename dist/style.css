@@ -2254,6 +2254,13 @@ body:has(.mandara-editor) {
 }
 @media (max-width: 1024px) {
   .mandara-header .mandara-view-toggles {
+    margin-left: 0;
+    margin-top: var(--spacing-xs);
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .mandara-header .mandara-view-toggles .view-toggle-group:has(.sidebar-size-btn),
+  .mandara-header .mandara-view-toggles .view-toggle-group--single {
     display: none;
   }
 }
@@ -2365,6 +2372,194 @@ body[data-sidebar-size=wide] .mandara-content {
     display: none;
   }
 }
+.import-modal .modal-content {
+  max-width: 720px;
+  width: 92vw;
+}
+.import-modal [hidden] {
+  display: none !important;
+}
+.import-modal .import-md-text {
+  width: 100%;
+  min-height: 160px;
+  box-sizing: border-box;
+  padding: var(--spacing-md);
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-normal);
+  border-radius: var(--radius-md);
+  color: var(--color-white);
+  font-family: var(--font-japanese);
+  font-size: var(--font-size-md);
+  resize: vertical;
+}
+.import-modal .import-md-text:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+.import-modal .import-actions {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: flex-start;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: center;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-md);
+}
+.import-modal .import-status {
+  margin-top: var(--spacing-sm);
+  min-height: 1.4em;
+  font-size: var(--font-size-md);
+  color: rgba(255, 255, 255, 0.8);
+}
+.import-modal .import-status.is-error {
+  color: #ffb4b4;
+}
+.import-modal .import-preview {
+  margin-top: var(--spacing-sm);
+  max-height: 260px;
+  overflow-y: auto;
+}
+.import-modal .import-preview:not(:empty) {
+  padding: var(--spacing-md);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-normal);
+  border-radius: var(--radius-md);
+}
+.import-modal .import-preview .import-preview-center {
+  font-weight: bold;
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-xs);
+}
+.import-modal .import-preview .import-preview-rationale {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: var(--spacing-sm);
+}
+.import-modal .import-preview .import-preview-groups {
+  margin: 0;
+  padding-left: 1.2em;
+}
+.import-modal .import-preview .import-preview-groups > li {
+  margin-bottom: var(--spacing-xs);
+}
+.import-modal .import-preview .import-preview-groups ul {
+  padding-left: 1.2em;
+  color: rgba(255, 255, 255, 0.8);
+}
+.import-modal .import-preview .import-preview-memo {
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.mandara-breadcrumb-bar {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: center;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-normal);
+  border-radius: var(--radius-md);
+}
+@media (max-width: 768px) {
+  .mandara-breadcrumb-bar {
+    padding: var(--spacing-sm);
+  }
+}
+
+.mandara-breadcrumb {
+  display: flex;
+  /**
+    * justify-content / Horizontal ===（1st Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+  */
+  justify-content: flex-start;
+  /**
+    * align-items / Vertical |||（2nd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+  */
+  align-items: center;
+  /**
+    * Column === |||（3rd Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+  */
+  /**
+    * Wrap = Fold at the edge -|（4th Argument）
+    * @see: https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+  */
+  flex-wrap: wrap;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.mandara-breadcrumb .breadcrumb-item {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.65);
+  font-family: var(--font-japanese);
+  font-size: var(--font-size-md);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+.mandara-breadcrumb .breadcrumb-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-white);
+}
+.mandara-breadcrumb .breadcrumb-item.is-current {
+  color: var(--color-white);
+  font-weight: bold;
+  cursor: default;
+}
+.mandara-breadcrumb .breadcrumb-sep {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: var(--font-size-md);
+  user-select: none;
+}
+
+.zoom-out-btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 .mandara-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -2422,6 +2617,54 @@ body[data-sidebar-size=wide] .mandara-content {
 .mandara-cell.mandara-center::placeholder {
   font-weight: bold;
   font-size: var(--mandara-cell-center-placeholder-font-size);
+}
+
+.mandara-cell-wrap {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+}
+.mandara-cell-wrap .mandara-cell {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cell-expand-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-normal);
+  background: rgba(20, 18, 24, 0.72);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+}
+.mandara-cell-wrap:hover .cell-expand-btn, .mandara-cell-wrap:focus-within .cell-expand-btn {
+  opacity: 1;
+}
+.cell-expand-btn:hover {
+  background: var(--color-accent);
+  color: var(--color-white);
+}
+.cell-expand-btn.has-child {
+  opacity: 1;
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+@media (hover: none) {
+  .cell-expand-btn {
+    opacity: 0.85;
+  }
 }
 
 body[data-cell-font-size=small] {

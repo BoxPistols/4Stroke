@@ -56,6 +56,15 @@
           </button>
         </li>
         <li>
+          <button
+            id="import-md-btn"
+            class="import-md-btn"
+            title="Markdownから取り込み"
+          >
+            IMPORT
+          </button>
+        </li>
+        <li>
           <button id="insight-btn" class="insight-btn" title="AI Insight">
             INSIGHT
           </button>
@@ -159,63 +168,33 @@
         </div>
       </div>
 
+      <!-- Fractal navigation: breadcrumb (zoom path) + zoom-out -->
+      <div
+        class="mandara-breadcrumb-bar"
+        role="toolbar"
+        aria-label="階層ナビゲーション"
+      >
+        <nav
+          id="mandara-breadcrumb"
+          class="mandara-breadcrumb"
+          aria-label="現在の階層"
+        >
+          <!-- Populated by JavaScript -->
+        </nav>
+        <button
+          type="button"
+          id="zoom-out-btn"
+          class="btn btn-secondary zoom-out-btn"
+          title="いま見ている全体を、より大きな構造の1マスにする"
+        >
+          ⤴ 親構造を作る
+        </button>
+      </div>
+
       <div class="mandara-content">
-        <!-- 9-grid Mandara -->
-        <div class="mandara-grid">
-          <textarea
-            id="cell-1"
-            class="mandara-cell"
-            data-cell="1"
-            placeholder="1"
-          ></textarea>
-          <textarea
-            id="cell-2"
-            class="mandara-cell"
-            data-cell="2"
-            placeholder="2"
-          ></textarea>
-          <textarea
-            id="cell-3"
-            class="mandara-cell"
-            data-cell="3"
-            placeholder="3"
-          ></textarea>
-          <textarea
-            id="cell-4"
-            class="mandara-cell"
-            data-cell="4"
-            placeholder="4"
-          ></textarea>
-          <textarea
-            id="cell-5"
-            class="mandara-cell mandara-center"
-            data-cell="5"
-            placeholder="中心キーワード"
-          ></textarea>
-          <textarea
-            id="cell-6"
-            class="mandara-cell"
-            data-cell="6"
-            placeholder="6"
-          ></textarea>
-          <textarea
-            id="cell-7"
-            class="mandara-cell"
-            data-cell="7"
-            placeholder="7"
-          ></textarea>
-          <textarea
-            id="cell-8"
-            class="mandara-cell"
-            data-cell="8"
-            placeholder="8"
-          ></textarea>
-          <textarea
-            id="cell-9"
-            class="mandara-cell"
-            data-cell="9"
-            placeholder="9"
-          ></textarea>
+        <!-- 9-grid Mandara (JS renders the focused grid) -->
+        <div class="mandara-grid" id="mandara-grid">
+          <!-- Populated by JavaScript (renderFocusedGrid) -->
         </div>
 
         <!-- Memo Area -->
@@ -253,7 +232,62 @@
 
           <!-- Actions -->
           <div class="mandara-actions">
+            <button
+              id="export-md-btn"
+              class="btn btn-secondary"
+              title="このマンダラのツリー全体をMarkdownでダウンロード"
+            >
+              MD出力
+            </button>
             <button id="delete-mandara-btn" class="btn btn-danger">削除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Markdown Import Modal -->
+    <div id="import-modal" class="modal import-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Markdownから取り込み</h2>
+          <button class="modal-close" id="import-modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="settings-description">
+            メモやドキュメントを貼り付けると、マンダラのマス目に分類して取り込みます。
+            「見出しで分類」は # / ## / ### と箇条書きの構造をそのまま写します。
+          </p>
+          <textarea
+            id="import-md-text"
+            class="import-md-text"
+            placeholder="ここにMarkdownやテキストを貼り付け..."
+          ></textarea>
+          <div class="import-actions">
+            <button type="button" id="import-md-file-btn" class="btn btn-tertiary">
+              .mdファイルを開く
+            </button>
+            <input
+              type="file"
+              id="import-md-file"
+              accept=".md,.markdown,text/markdown,text/plain"
+              hidden
+            />
+            <button type="button" id="import-parse-btn" class="btn btn-secondary">
+              見出しで分類
+            </button>
+            <button type="button" id="import-ai-btn" class="btn btn-primary" hidden>
+              AIで分類
+            </button>
+          </div>
+          <div id="import-status" class="import-status" role="status"></div>
+          <div id="import-preview" class="import-preview"></div>
+          <div class="modal-actions">
+            <button type="button" id="import-confirm-btn" class="btn btn-primary" disabled>
+              取り込む
+            </button>
+            <button type="button" id="import-cancel-btn" class="btn btn-tertiary">
+              キャンセル
+            </button>
           </div>
         </div>
       </div>
@@ -287,6 +321,18 @@
         </div>
 
         <div class="list-actions">
+          <button type="button" id="export-json-btn" class="btn btn-secondary">
+            JSON出力
+          </button>
+          <button type="button" id="import-json-btn" class="btn btn-secondary">
+            JSON読込
+          </button>
+          <input
+            type="file"
+            id="import-json-input"
+            accept="application/json,.json"
+            hidden
+          />
           <button type="button" id="select-all-btn" class="btn btn-secondary">
             全選択
           </button>
