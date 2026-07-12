@@ -574,21 +574,38 @@ async function exportAllToJson() {
   }
 }
 
+// ファイル名として安全な文字列にする (Windows禁止文字/制御文字/前後空白/
+// 長さを丸める。空文字化した場合はフォールバック名を返す)
+function sanitizeFilenameBase(name, fallback) {
+  const cleaned = String(name || "")
+    // eslint-disable-next-line no-control-regex
+    .replace(/[\x00-\x1f\\/:*?"<>|]/g, "_")
+    .trim()
+    .replace(/\.+$/, "") // 末尾のドット (Windowsで問題になりうる)
+    .slice(0, 100);
+  return cleaned || fallback;
+}
+
 // 現在のマンダラ(ツリー全体)をMarkdownとしてダウンロードする
 function exportCurrentBoardAsMarkdown() {
   if (!currentMandara) return;
   captureUiIntoBoard(); // 未保存の編集も反映してから出力
   const md = boardToMarkdown(currentMandara);
-  const safeTitle = (currentMandara.title || "mandara").replace(
-    /[\\/:*?"<>|]/g,
-    "_"
-  );
+  const safeTitle = sanitizeFilenameBase(currentMandara.title, "mandara");
   downloadTextFile(`${safeTitle}.md`, md, "text/markdown;charset=utf-8");
   showToast("Markdownを出力しました");
 }
 
-// Markdownインポート確定時: Boardを保存して開く
+// Markdownインポート確定時: 編集中のマンダラを保存してから、取り込んだ
+// BoardをStorageへ保存して開く。
+// 先に flush しないと、インポート直前に入力していた未保存の文字が
+// 「取り込み後に発火する保留中のデバウンス保存」で失われる恐れがある。
 async function handleImportedBoard(board) {
+  clearTimeout(saveTimer);
+  if (currentMandara) {
+    captureUiIntoBoard();
+    await persistBoard();
+  }
   await Storage.saveMandara(currentUserId, board);
   await loadAllMandaras();
   await loadMandaraOrder();
@@ -1204,8 +1221,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
+// initializeApp の再入防止ガード。
+// onAuthChange は Firebase の onAuthStateChanged をそのまま公開しており、
+// 同一セッション中に複数回発火し得る (トークン更新・複数タブ間の
+// セッション同期・アカウント連携フロー等)。ガードが無いと
+// setupEventListeners/initImportUI 等がボタンへ二重にリスナーを
+// 束ね、1クリックでインポート/新規作成/削除が二重実行される。
+let appInitialized = false;
+
 // Initialize app logic
 async function initializeApp() {
+  if (appInitialized) {
+    console.log("[INFO] initializeApp already ran, skipping re-init");
+    return;
+  }
+  appInitialized = true;
+
   // 共有APIキーを先にロード (存在すれば)
   await ensureSharedKeysLoaded();
 

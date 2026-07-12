@@ -191,6 +191,129 @@ describe("round-trip (構造レベル)", () => {
   });
 });
 
+describe("セルフレビューで見つかった不具合の回帰テスト", () => {
+  it("F1: cell body lines that look structural do not corrupt the round-trip", () => {
+    const board = createBoard("採用計画");
+    const root = getGrid(board, board.rootGridId);
+    setCellText(board, root.id, root.centerCellId, "採用計画");
+    const [c1] = root.cellIds.filter((id) => id !== root.centerCellId);
+    // 本文2行目以降が見出し/箇条書き/区切り線に見える危険な内容
+    setCellText(
+      board,
+      root.id,
+      c1,
+      "採用\n## 詳細メモ\n- 偽の箇条書き\n---\n通常の行"
+    );
+
+    const md = boardToMarkdown(board);
+    // エクスポートではエスケープされて出力される
+    expect(md).toContain("\\## 詳細メモ");
+    expect(md).toContain("\\- 偽の箇条書き");
+    expect(md).toContain("\\---");
+
+    const reimported = markdownToBoard(md);
+    const reRoot = getGrid(reimported, reimported.rootGridId);
+    const [rc1] = reRoot.cellIds.filter((id) => id !== reRoot.centerCellId);
+    // 再インポート後、セルのテキストは元と完全一致する (誤って
+    // 新しいグループ/子セル/メモへ分解されていない)
+    expect(reRoot.cells[rc1].text).toBe(
+      "採用\n## 詳細メモ\n- 偽の箇条書き\n---\n通常の行"
+    );
+    expect(validateBoard(reimported)).toEqual([]);
+  });
+
+  it("F2: a real H1 appearing after preamble text is still used as the title", () => {
+    const draft = parseMarkdownToDraft(
+      "intro text\n# Title\n## G\nbody line"
+    );
+    expect(draft.title).toBe("Title");
+    expect(draft.center).toBe("Title");
+    expect(draft.groups.map((g) => g.label)).toEqual(["G"]);
+    expect(draft.groups[0].body).toEqual(["body line"]);
+    // 見出し登場前の地の文は備考メモへ (タイトルを奪わない)
+    expect(draft.memo).toContain("intro text");
+  });
+
+  it("F2: preamble becomes the title only when the document has no heading at all", () => {
+    const draft = parseMarkdownToDraft("ただのメモ\n続きの文章");
+    expect(draft.title).toBe("ただのメモ");
+    expect(draft.memo).toContain("続きの文章");
+  });
+
+  it("F3: an empty-label group round-trips as truly empty, not the literal string (無題)", () => {
+    // H3がH2より先に出現 -> 暗黙の空ラベルグループが生成される
+    const board = markdownToBoard("# T\n### Child A\n### Child B");
+    const root = getGrid(board, board.rootGridId);
+    const [c1] = root.cellIds.filter((id) => id !== root.centerCellId);
+    expect(root.cells[c1].text).toBe(""); // "(無題)" になっていない
+
+    const md = boardToMarkdown(board);
+    expect(md).not.toContain("(無題)");
+
+    const reimported = markdownToBoard(md);
+    const reRoot = getGrid(reimported, reimported.rootGridId);
+    const [rc1] = reRoot.cellIds.filter((id) => id !== reRoot.centerCellId);
+    expect(reRoot.cells[rc1].text).toBe("");
+    const child = getGrid(reimported, reRoot.cells[rc1].childGridId);
+    const childLabels = child.cellIds
+      .filter((id) => id !== child.centerCellId)
+      .map((id) => child.cells[id].text)
+      .filter(Boolean);
+    expect(childLabels).toEqual(["Child A", "Child B"]);
+  });
+
+  it("F4: fenced code blocks are not misinterpreted as structure", () => {
+    const md = [
+      "# T",
+      "## G",
+      "```",
+      "# not a heading",
+      "---",
+      "- not a bullet",
+      "```",
+      "real body",
+    ].join("\n");
+    const draft = parseMarkdownToDraft(md);
+    expect(draft.groups.map((g) => g.label)).toEqual(["G"]);
+    // フェンス内の行はすべて G の本文として取り込まれる (誤って新規
+    // グループ化されたり、メモモードへ切り替わったりしない)
+    const bodyJoined = draft.groups[0].body.join("\n");
+    expect(bodyJoined).toContain("# not a heading");
+    expect(bodyJoined).toContain("---");
+    expect(bodyJoined).toContain("- not a bullet");
+    expect(bodyJoined).toContain("real body");
+    expect(draft.memo).toBe("");
+  });
+
+  it("F5: a bullet list appearing before any heading has its marker stripped, not treated as a title marker leak", () => {
+    const draft = parseMarkdownToDraft("- item1\n- item2\n- item3");
+    // 見出しが無いので最初の行 (マーカーを除いた内容) がタイトルになる
+    expect(draft.title).toBe("item1");
+    expect(draft.title).not.toContain("-");
+    expect(draft.memo).toContain("item2");
+    expect(draft.memo).not.toContain("- item2");
+  });
+
+  it("caps overflow items in memo so a pathological document cannot blow up storage", () => {
+    const draft = {
+      title: "大量",
+      center: "大量",
+      groups: Array.from({ length: 500 }, (_, i) => ({
+        label: `G${i + 1}`,
+        body: [],
+        children: [],
+      })),
+      memo: "",
+      tags: [],
+    };
+    const board = draftToBoard(draft);
+    // 8件は通常のマスへ、残り492件はoverflowだが上限200件でクリップされる
+    const overflowLines = board.memo.split("\n");
+    expect(overflowLines.length).toBeLessThan(210);
+    expect(board.memo).toContain("省略しました");
+  });
+});
+
 describe("aiResultToDraft (AI応答の正規化)", () => {
   it("normalizes a well-formed AI response into a draft", () => {
     const draft = aiResultToDraft({

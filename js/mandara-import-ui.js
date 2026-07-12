@@ -10,6 +10,13 @@
 import { parseMarkdownToDraft, draftToBoard } from "./board-md.js";
 import { classifyTextWithAI, isAIAvailable } from "./mandara-import-ai.js";
 
+// 病的に巨大な貼り付け/ファイルでプレビューのDOM生成が固まるのを防ぐ上限。
+// board-md.js 内部の防御的切り詰め(300,000文字)より小さく設定し、
+// ここで先に分かりやすいエラーとして弾く。
+const MAX_IMPORT_CHARS = 200_000;
+const MAX_PREVIEW_GROUPS = 50;
+const MAX_PREVIEW_CHILDREN = 20;
+
 /**
  * @param {Object} deps
  * @param {(board: Object) => Promise<void>} deps.onImported - 確定時に生成済みBoardを受け取る
@@ -78,22 +85,36 @@ export function initImportUI({ onImported }) {
 
     const list = document.createElement("ul");
     list.className = "import-preview-groups";
-    (draft.groups || []).forEach((group, i) => {
+    const groups = draft.groups || [];
+    // DOM生成が固まらないよう表示件数に上限を設ける (実際の取り込みは
+    // draftToBoard 側で別途 MAX_GROUPS=8 に収まるので機能上の影響はない)
+    groups.slice(0, MAX_PREVIEW_GROUPS).forEach((group, i) => {
       const li = document.createElement("li");
       const label = document.createElement("strong");
       label.textContent = `${i + 1}. ${group.label || "(無題)"}`;
       li.appendChild(label);
-      if ((group.children || []).length) {
+      const children = group.children || [];
+      if (children.length) {
         const sub = document.createElement("ul");
-        group.children.forEach((c) => {
+        children.slice(0, MAX_PREVIEW_CHILDREN).forEach((c) => {
           const cli = document.createElement("li");
           cli.textContent = c.label;
           sub.appendChild(cli);
         });
+        if (children.length > MAX_PREVIEW_CHILDREN) {
+          const more = document.createElement("li");
+          more.textContent = `…ほか${children.length - MAX_PREVIEW_CHILDREN}件`;
+          sub.appendChild(more);
+        }
         li.appendChild(sub);
       }
       list.appendChild(li);
     });
+    if (groups.length > MAX_PREVIEW_GROUPS) {
+      const more = document.createElement("li");
+      more.textContent = `…ほか${groups.length - MAX_PREVIEW_GROUPS}グループ`;
+      list.appendChild(more);
+    }
     preview.appendChild(list);
 
     if (draft.memo) {
@@ -119,6 +140,13 @@ export function initImportUI({ onImported }) {
       setStatus("Markdownを貼り付けるか、ファイルを選択してください。", true);
       return null;
     }
+    if (text.length > MAX_IMPORT_CHARS) {
+      setStatus(
+        `テキストが大きすぎます (${text.length.toLocaleString()}文字 / 上限${MAX_IMPORT_CHARS.toLocaleString()}文字)。分割して取り込んでください。`,
+        true
+      );
+      return null;
+    }
     return text;
   }
 
@@ -136,6 +164,15 @@ export function initImportUI({ onImported }) {
     const file = fileInput.files?.[0];
     fileInput.value = "";
     if (!file) return;
+    // textareaへ巨大な文字列を流し込むこと自体がハングの原因になるため、
+    // 読み込む前にファイルサイズで弾く (文字数上限とほぼ等価な目安)
+    if (file.size > MAX_IMPORT_CHARS * 2) {
+      setStatus(
+        `ファイルが大きすぎます (${Math.round(file.size / 1024).toLocaleString()}KB)。分割して取り込んでください。`,
+        true
+      );
+      return;
+    }
     textInput.value = await file.text();
     setStatus(`${file.name} を読み込みました。分類方法を選んでください。`);
   });
@@ -155,6 +192,10 @@ export function initImportUI({ onImported }) {
       renderPreview(await classifyTextWithAI(text));
     } catch (error) {
       console.error("[ERROR] AI classification failed:", error);
+      // 失敗時は直前の(見出し分類等による)確定可能な下書きを残さない。
+      // エラーメッセージと一緒に「取り込む」が押せる状態のままだと、
+      // ユーザーが意図せず古いプレビューを取り込んでしまう恐れがある。
+      resetPreview();
       const message =
         error?.userMessage ||
         "AI分類に失敗しました。「見出しで分類」をお試しください。";
